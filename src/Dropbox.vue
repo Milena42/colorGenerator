@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 
 /**
  * значение инпута - массив rgbargbargba и количество пикселей
@@ -7,6 +7,15 @@ import { ref } from 'vue';
 const pixels = defineModel<Uint8ClampedArray>('pixels');
 const imageHere = ref(false);
 const image = ref();
+
+const canvas = ref<HTMLCanvasElement>();
+const ctx = ref<CanvasRenderingContext2D>();
+
+onMounted(() => {
+    canvas.value = document.createElement("canvas");
+    ctx.value = canvas.value.getContext("2d") ?? undefined;
+});
+
 
 function dragenter(e: DragEvent) {
     e.stopPropagation();
@@ -34,6 +43,9 @@ function drop(e: DragEvent) {
 function loadImgData(e: Event) {
     const img1: HTMLImageElement = e.target as HTMLImageElement;
 
+    //TODO надо уменьшать большие картинки, выяснить достаточный для генерации размер
+    // возможна проблема с размыванием векторных покрасов => возвращаясь к проблеме золотого картона
+
     ////TODO борьба с зернистостью тут?
     let theWidth: number;
     let theHeight: number;
@@ -48,18 +60,16 @@ function loadImgData(e: Event) {
     }
     ////////////////
 
-
-    const canvasImg = document.createElement("canvas");
-    canvasImg.width = theWidth;
-    canvasImg.height = theHeight;
-
-    const ctx = canvasImg.getContext("2d");
-    if (!ctx) {
+    if (!ctx.value || !canvas.value) {
         console.log("no canvas?");
         return;
     }
-    ctx.drawImage(img1, 0, 0, theWidth, theHeight);
-    let imgData = ctx.getImageData(0, 0, theWidth, theHeight);
+
+    canvas.value.width = theWidth;
+    canvas.value.height = theHeight;
+
+    ctx.value.drawImage(img1, 0, 0, theWidth, theHeight);
+    let imgData = ctx.value.getImageData(0, 0, theWidth, theHeight);
 
     pixels.value = imgData.data; /// одномерный массив rgbargbargba
 }

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Data } from 'plotly.js';
 import Plotly from 'plotly.js-dist';
-import { onMounted, useTemplateRef, watch } from 'vue';
+import { inject, onMounted, ref, useTemplateRef, watch, type Ref } from 'vue';
 import type { ColorInMap } from './myTypes';
 
 const props = defineProps<{
@@ -9,6 +9,9 @@ const props = defineProps<{
     data: Map<string, ColorInMap>,
     totalQ: number,
 }>();
+
+const showQuantity: Ref<boolean> = inject('showQuantityOnPlots') ?? ref(true);
+const defaultSizeOfPoint = 5;
 
 const graphDiv = useTemplateRef<HTMLElement>("graphDiv");
 
@@ -22,7 +25,11 @@ function draw() {
     const y = Array.from(data.values(), (v) => v.y);
     const z = Array.from(data.values(), (v) => v.l);
     const colors = Array.from(data.keys());
-    const sizes = Array.from(data.values(), (v) => (props.k * Math.sqrt(100 * v.q / props.totalQ)));
+    let sizes;
+    if (showQuantity.value) {
+        sizes = Array.from(data.values(), (v) => (props.k * Math.sqrt(100 * v.q / props.totalQ)));
+    } else sizes = defaultSizeOfPoint;
+
 
     const traces: Data[] = [{
         x,
@@ -66,8 +73,8 @@ function draw() {
 
 onMounted(draw);
 
-watch(() => props.data, draw, { flush: "post" });//TODO тут надо почитать варианты
-//скорее всего, оно выполняется до отрисовки компонента, когда еще нет этого дива, надо сразу после появления дива
+watch(() => props.data, draw, { flush: "post" });
+watch(showQuantity, draw, { flush: "post" });
 
 </script>
 <template>

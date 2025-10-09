@@ -5,9 +5,9 @@ import { kmeans } from 'ml-kmeans';
 import { PolynomialRegression } from 'ml-regression';
 import { reactive, ref, watch } from 'vue';
 import ArrayOfPlots from './ArrayOfPlots.vue';
-import Dropbox from './Dropbox.vue';
+import DropBox from './DropBox.vue';
 import MapPlot3d from './MapPlot3d.vue';
-import Mockup from './Mockup.vue';
+import MockUp from './MockUp.vue';
 import { cartesianFromPolar, polarFromCartesian } from './math';
 import { Color, accentColorRoles, bgColorRoles, colorRoles, type MockupColors, type Theme } from './myTypes';
 import { darkTheme, darkThemeHighContrast, lightTheme, lightThemeHighContrast } from './themes.ts';
@@ -484,8 +484,8 @@ watch(userImg, () => {
 
 <template>
     <div class="row userUpload">
-        <Dropbox v-model:pixels="userImg">Загрузите изображение сюда
-        </Dropbox>
+        <DropBox v-model:pixels="userImg">Загрузите изображение сюда
+        </DropBox>
         <MapPlot3d :k="500" :data="imgMap" :totalQ="totalPixels" />
         <MapPlot3d :k="500" :data="debugMap" :totalQ="totalPixels" style="border: 1px solid red;" />
     </div>
@@ -493,10 +493,10 @@ watch(userImg, () => {
     <div class="m1">
         <MapPlot3d :k="30" :data="generatedMap" :totalQ="generatedMap.size" />
         <div class="mockups">
-            <Mockup :colors="generatedDark"></Mockup>
-            <Mockup :colors="generatedLight"></Mockup>
-            <Mockup :colors="generatedDarkHighContrast"></Mockup>
-            <Mockup :colors="generatedLightHighContrast"></Mockup>
+            <MockUp :colors="generatedDark" />
+            <MockUp :colors="generatedLight" />
+            <MockUp :colors="generatedDarkHighContrast" />
+            <MockUp :colors="generatedLightHighContrast" />
         </div>
     </div>
 </template>

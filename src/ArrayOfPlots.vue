@@ -8,8 +8,10 @@ const props = defineProps<{
 
 </script>
 <template>
-    <div class="row" v-if="maps && (maps.length < 6)">
-        <MapPlot3d v-for="map of props.maps" :k="500" :data="map" :totalQ="totalQ" />
+    <div v-if="maps">
+        <div class="row" v-if="maps.length < 6">
+            <MapPlot3d v-for="map of props.maps" :k="500" :data="map" :totalQ="totalQ" />
+        </div>
+        <div v-else>Оперативки может не хватить, кол-во графиков: {{ maps.length }}</div>
     </div>
-    <div v-else>Оперативки может не хватить</div>
 </template>

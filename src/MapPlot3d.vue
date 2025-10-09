@@ -2,11 +2,11 @@
 import type { Data } from 'plotly.js';
 import Plotly from 'plotly.js-dist';
 import { inject, onMounted, ref, useTemplateRef, watch, type Ref } from 'vue';
-import type { ColorInMap } from './myTypes';
+import type { Color } from './myTypes';
 
 const props = defineProps<{
     k: number,
-    data: Map<string, ColorInMap>,
+    data: Map<string, Color>,
     totalQ: number,
 }>();
 

@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import MapPlot3d from './MapPlot3d.vue';
-import type { ColorInMap } from './myTypes';
+import type { Color } from './myTypes';
 const props = defineProps<{
-    maps: Map<string, ColorInMap>[] | undefined,
+    maps: Map<string, Color>[] | undefined,
     totalQ: number,
 }>();
 

@@ -9,19 +9,19 @@ import Dropbox from './Dropbox.vue';
 import MapPlot3d from './MapPlot3d.vue';
 import Mockup from './Mockup.vue';
 import { cartesianFromPolar, polarFromCartesian } from './math';
-import { ColorInMap, accentColorRoles, bgColorRoles, colorRoles, type MockupColors, type Theme } from './myTypes';
+import { Color, accentColorRoles, bgColorRoles, colorRoles, type MockupColors, type Theme } from './myTypes';
 import { darkTheme, darkThemeHighContrast, lightTheme, lightThemeHighContrast } from './themes.ts';
 
 const userImg = ref<Uint8ClampedArray>();
 let totalPixels = 1;
-const imgMap = ref<Map<string, ColorInMap>>(new Map());
-const debugMap = ref<Map<string, ColorInMap>>(new Map());
-const generatedMap = ref<Map<string, ColorInMap>>(new Map());
+const imgMap = ref<Map<string, Color>>(new Map());
+const debugMap = ref<Map<string, Color>>(new Map());
+const generatedMap = ref<Map<string, Color>>(new Map());
 let imgMaxL: number;
 let imgMinL: number;
 
 function fillMapFromImg() {
-    const newImgMap: Map<string, ColorInMap> = new Map();
+    const newImgMap: Map<string, Color> = new Map();
     imgMaxL = 0;
     imgMinL = 100;
     if (!userImg.value) return newImgMap;
@@ -46,7 +46,7 @@ function fillMapFromImg() {
         const rgb = chroma(r, g, b);
         const colorString = rgb.hex();
         let q;
-        let elem: ColorInMap;
+        let elem: Color;
         if (!newImgMap.has(colorString)) {
 
             q = 1;
@@ -59,8 +59,7 @@ function fillMapFromImg() {
             l *= 100;
             c *= 100;
 
-            let [x, y] = cartesianFromPolar(c, h);
-            elem = new ColorInMap(l, c, h, x, y, q);
+            elem = new Color(l, { c, h }, q);
 
             if (elem.l > imgMaxL) imgMaxL = elem.l;
             if (elem.l < imgMinL) imgMinL = elem.l;
@@ -90,12 +89,12 @@ const themes: [Theme, MockupColors][] = [
 
 
 const mapsClustered = ref([new Map()]);
-function makeClusters(mapOfColors: Map<string, ColorInMap>, numberOfClusters: number) {
+function makeClusters(mapOfColors: Map<string, Color>, numberOfClusters: number) {
     //const coords = Array.from(mapOfColors.values(), (v) => [v.x, v.y]);
     const coords = Array.from(mapOfColors.values(), (v) => cartesianFromPolar(1, v.h));
 
     const clusterIndexesForPoints = kmeans(coords, numberOfClusters, { initialization: "mostDistant" }).clusters;
-    const clusters: Map<string, ColorInMap>[] = [];
+    const clusters: Map<string, Color>[] = [];
     for (let i = 0; i < numberOfClusters; i++) {
         clusters.push(new Map());
     }
@@ -108,7 +107,7 @@ function makeClusters(mapOfColors: Map<string, ColorInMap>, numberOfClusters: nu
     });
     return clusters;
 }
-function makeClustersUnknownNumber(mapOfColors: Map<string, ColorInMap>) {
+function makeClustersUnknownNumber(mapOfColors: Map<string, Color>) {
     //TODO мб kmeans
     // попробовать делить широкие кластеры в зависимости от диапазона h
 
@@ -123,7 +122,7 @@ function makeClustersUnknownNumber(mapOfColors: Map<string, ColorInMap>) {
     const pointsInClusters = dbscan.run(coords, 3, 2);
 
     const clusters = pointsInClusters.map((indexesInCluster) => {
-        const clusterMap: Map<string, ColorInMap> = new Map();
+        const clusterMap: Map<string, Color> = new Map();
         indexesInCluster.forEach((i) => {
             clusterMap.set(initialKeys[i], mapOfColors.get(initialKeys[i])!);
         });
@@ -157,7 +156,7 @@ function generateClusteredSimple() {
         const clusters = dbscan.run(coords, 1, 2);
         const initialKeys = Array.from(imgMap.value.keys());
         mapsClustered.value = clusters.map((indexesInCluster) => {
-            const clusterMap: Map<string, ColorInMap> = new Map();
+            const clusterMap: Map<string, Color> = new Map();
             indexesInCluster.forEach((i) => {
                 clusterMap.set(initialKeys[i], imgMap.value.get(initialKeys[i])!);
             })
@@ -165,23 +164,23 @@ function generateClusteredSimple() {
         })
     */
 
-    const clustersMaxChromas = mapsClustered.value.map((map: Map<string, ColorInMap>) =>
+    const clustersMaxChromas = mapsClustered.value.map((map: Map<string, Color>) =>
         Math.max(...Array.from(map.values(), (v) => v.c))
     );
     const maxChroma = Math.max(...clustersMaxChromas);
 
-    const clustersLRanges = mapsClustered.value.map((map: Map<string, ColorInMap>) => {
-        let l = Array.from(map.values(), (v) => v.l);
+    const clustersLRanges = mapsClustered.value.map((map: Map<string, Color>) => {
+        const l = Array.from(map.values(), (v) => v.l);
         return Math.max(...l) - Math.min(...l);
     }
     );
     const maxLRange = Math.max(...clustersLRanges);
 
 
-    const newGeneratedMap: Map<string, ColorInMap> = new Map();
+    const newGeneratedMap: Map<string, Color> = new Map();
 
-    for (let i in mapsClustered.value) {//TODO сделано только для 2 кластеров
-        const map: Map<string, ColorInMap> = mapsClustered.value[i];
+    for (const i in mapsClustered.value) {//TODO сделано только для 2 кластеров
+        const map: Map<string, Color> = mapsClustered.value[i];
         const l = Array.from(map.values(), (v) => v.l);
         const x = Array.from(map.values(), (v) => v.x);
         const y = Array.from(map.values(), (v) => v.y);
@@ -203,15 +202,15 @@ function generateClusteredSimple() {
 
         themes.forEach(([themeRules, generatedTheme]) => {
             currentColorRoles.forEach((key) => {
-                let { l, cMax } = themeRules[key];
+                const { l, cMax } = themeRules[key];
 
-                let x = xFromL.predict(l);
-                let y = yFromL.predict(l);
+                const x = xFromL.predict(l);
+                const y = yFromL.predict(l);
                 let [c, h] = polarFromCartesian(x, y);
                 if (c > cMax) c = cMax;
 
-                let elem = new ColorInMap(l, c, h, x, y, 1);
-                let rgbString = elem.adjustForRGB();
+                const elem = new Color(l, { c, h });
+                const rgbString = elem.adjustForRGB();
 
                 newGeneratedMap.set(rgbString, elem);
 
@@ -224,7 +223,7 @@ function generateClusteredSimple() {
 }
 
 
-function arraysForRegression(m: Map<string, ColorInMap>) {
+function arraysForRegression(m: Map<string, Color>) {
     const lArray: number[] = [];
     const xArray: number[] = [];
     const yArray: number[] = [];
@@ -239,7 +238,7 @@ function arraysForRegression(m: Map<string, ColorInMap>) {
     return [lArray, xArray, yArray];
 }
 
-function generateRegressionFromMap(mapOfColors: Map<string, ColorInMap>, roles: string) {
+function generateRegressionFromMap(mapOfColors: Map<string, Color>, roles: string) {
 
     let currentColorRoles = colorRoles;
     switch (roles) {
@@ -253,7 +252,7 @@ function generateRegressionFromMap(mapOfColors: Map<string, ColorInMap>, roles: 
             break;
     }
 
-    const newGeneratedMap: Map<string, ColorInMap> = new Map();
+    const newGeneratedMap: Map<string, Color> = new Map();
 
     //console.log(mapOfColors);
     if (mapOfColors.size == 0) {
@@ -263,14 +262,13 @@ function generateRegressionFromMap(mapOfColors: Map<string, ColorInMap>, roles: 
     if (mapOfColors.size == 1) {
         themes.forEach(([themeRules, generatedTheme]) => {
             currentColorRoles.forEach((key) => {
-                let { l, cMax } = themeRules[key];
+                const { l, cMax } = themeRules[key];
 
                 let { c, h } = Array.from(mapOfColors)[0][1];
                 if (c > cMax) c = cMax;
 
-                let [x, y] = cartesianFromPolar(c, h);
-                let elem = new ColorInMap(l, c, h, x, y, 1);
-                let rgbString = elem.adjustForRGB();
+                const elem = new Color(l, { c, h });
+                const rgbString = elem.adjustForRGB();
 
                 newGeneratedMap.set(rgbString, elem);
 
@@ -286,15 +284,15 @@ function generateRegressionFromMap(mapOfColors: Map<string, ColorInMap>, roles: 
 
     themes.forEach(([themeRules, generatedTheme]) => {
         currentColorRoles.forEach((key) => {
-            let { l, cMax } = themeRules[key];
+            const { l, cMax } = themeRules[key];
 
-            let x = xFromL.predict(l);
-            let y = yFromL.predict(l);
+            const x = xFromL.predict(l);
+            const y = yFromL.predict(l);
             let [c, h] = polarFromCartesian(x, y);
             if (c > cMax) c = cMax;
 
-            let elem = new ColorInMap(l, c, h, x, y, 1);
-            let rgbString = elem.adjustForRGB();
+            const elem = new Color(l, { c, h });
+            const rgbString = elem.adjustForRGB();
 
             newGeneratedMap.set(rgbString, elem);
 
@@ -304,7 +302,7 @@ function generateRegressionFromMap(mapOfColors: Map<string, ColorInMap>, roles: 
     return newGeneratedMap;
 }
 
-function hRangeOfMap(mapOfColors: Map<string, ColorInMap>) {
+function hRangeOfMap(mapOfColors: Map<string, Color>) {
     const allH = Array.from(mapOfColors.values(), (v) => v.h).sort((a, b) => (a - b));
 
     const first = allH[0];
@@ -335,10 +333,10 @@ function unitedMaps<T>(m1: Map<string, T>, m2: Map<string, T>) {
 
 function generateLogical() {
 
-    const black = { k: "#000000", v: new ColorInMap(0, 0, 0, 0, 0, 1) };
-    const black1 = { k: "#010101", v: new ColorInMap(1, 0, 0, 0, 0, 1) };
-    const white = { k: "#ffffff", v: new ColorInMap(100, 0, 0, 0, 0, 1) };
-    const white1 = { k: "#fefefe", v: new ColorInMap(99, 0, 0, 0, 0, 1) };
+    const black = { k: "#000000", v: new Color(0, { c: 0, h: 0 }) };
+    const black1 = { k: "#010101", v: new Color(1, { c: 0, h: 0 }) };
+    const white = { k: "#ffffff", v: new Color(100, { c: 0, h: 0 }) };
+    const white1 = { k: "#fefefe", v: new Color(99, { c: 0, h: 0 }) };
 
     const chromaLimit = 8;
     const upperLimit = 70;
@@ -346,7 +344,7 @@ function generateLogical() {
     const sufficientNumber = 0.01 * totalPixels;
     console.log("chromaN", sufficientNumber);
 
-    function arrIsLargeEnough(arr: [string, ColorInMap][], enough: number) {
+    function arrIsLargeEnough(arr: [string, Color][], enough: number) {
         if (arr.length == 0) return false;
         const q = arr.map(([k, v]) => v.q).reduce((e1, e2) => (e1 + e2));
         console.log("q", q);
@@ -435,7 +433,7 @@ function generateLogical() {
         console.log("complementary");
 
         //TODO? считаю по максимальной насыщенности, мб надо по средней
-        const [c0, c1] = mapsClustered.value.map((map: Map<string, ColorInMap>) =>
+        const [c0, c1] = mapsClustered.value.map((map: Map<string, Color>) =>
             Math.max(...Array.from(map.values(), (v) => v.c))
         );
         let accentMap;
@@ -466,7 +464,7 @@ function generateLogical() {
 
     //TODO
 
-    const newGeneratedMap: Map<string, ColorInMap> = new Map();
+    const newGeneratedMap: Map<string, Color> = new Map();
     return newGeneratedMap;
 
 }

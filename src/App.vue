@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import chroma from 'chroma-js';
+import clustering from "density-clustering";
 import { kmeans } from 'ml-kmeans';
 import { PolynomialRegression } from 'ml-regression';
-import { reactive, ref, watch } from 'vue';
+import { provide, reactive, ref, watch } from 'vue';
 import ArrayOfPlots from './ArrayOfPlots.vue';
 import Dropbox from './Dropbox.vue';
 import MapPlot3d from './MapPlot3d.vue';
@@ -17,6 +18,9 @@ const debugMap = ref<Map<string, ColorInMap>>(new Map());
 const generatedMap = ref<Map<string, ColorInMap>>(new Map());
 let imgMaxL: number;
 let imgMinL: number;
+
+const showQuantityOnPlots = ref(true);
+provide("showQuantityOnPlots", showQuantityOnPlots);
 
 function fillMapFromImg() {
     const newImgMap: Map<string, ColorInMap> = new Map();
@@ -242,6 +246,30 @@ function makeClusters(mapOfColors: Map<string, ColorInMap>, numberOfClusters: nu
     });
     return clusters;
 }
+function makeClustersUnknownNumber(mapOfColors: Map<string, ColorInMap>) {
+    //TODO мб kmeans
+    // попробовать делить широкие кластеры в зависимости от диапазона h
+
+    const minQToUsePoint = 0.01 * totalPixels / 100;
+
+    const filteredPoints = Array.from(mapOfColors).filter(([k, v]) => (v.q > minQToUsePoint));
+    debugMap.value = new Map(filteredPoints);
+    const initialKeys = filteredPoints.map(([k, v]) => k);
+    const coords = filteredPoints.map(([k, v]) => cartesianFromPolar(v.c, v.h));
+
+    const dbscan = new clustering.DBSCAN();
+    const pointsInClusters = dbscan.run(coords, 3, 2);
+
+    const clusters = pointsInClusters.map((indexesInCluster) => {
+        const clusterMap: Map<string, ColorInMap> = new Map();
+        indexesInCluster.forEach((i) => {
+            clusterMap.set(initialKeys[i], mapOfColors.get(initialKeys[i])!);
+        });
+        return clusterMap;
+    });
+    return clusters;
+}
+
 function generateClusteredSimple() {
 
     //const coords = Array.from(imgMap.value.values(), (v) => [v.x, v.y]);
@@ -456,20 +484,20 @@ function generateLogical() {
     const sufficientNumber = 0.01 * totalPixels;
     console.log("chromaN", sufficientNumber);
 
-    function arrLargeEnough(arr: [string, ColorInMap][], enough: number) {
+    function arrIsLargeEnough(arr: [string, ColorInMap][], enough: number) {
         if (arr.length == 0) return false;
         const q = arr.map(([k, v]) => v.q).reduce((e1, e2) => (e1 + e2));
         console.log("q", q);
         return q > enough;
     }
 
-    const upperCylinderContainsChroma = arrLargeEnough(Array.from(imgMap.value).filter(([k, v]) => (v.l > upperLimit && v.c > 0.5)), sufficientNumber);
-    const lowerCylinderContainsChroma = arrLargeEnough(Array.from(imgMap.value).filter(([k, v]) => (v.l < lowerLimit && v.c > 0.5)), sufficientNumber);
+    const upperCylinderContainsChroma = arrIsLargeEnough(Array.from(imgMap.value).filter(([k, v]) => (v.l > upperLimit && v.c > 0.5)), sufficientNumber);
+    const lowerCylinderContainsChroma = arrIsLargeEnough(Array.from(imgMap.value).filter(([k, v]) => (v.l < lowerLimit && v.c > 0.5)), sufficientNumber);
     console.log("grayN", 0.2 * totalPixels);
-    const theresALotOfGray = arrLargeEnough(Array.from(imgMap.value).filter(([k, v]) => (v.l > 30 && v.l < 80 && v.c < chromaLimit)), 0.2 * totalPixels);
+    const theresALotOfGray = arrIsLargeEnough(Array.from(imgMap.value).filter(([k, v]) => (v.l > 30 && v.l < 80 && v.c < chromaLimit)), 0.2 * totalPixels);
     const centralChromaTorus = new Map(Array.from(imgMap.value).filter(([k, v]) => (v.c > chromaLimit)));
 
-    debugMap.value = centralChromaTorus;
+    //debugMap.value = centralChromaTorus;
 
     if (!centralChromaTorus.size) {
         // видимо, это нечто серое
@@ -490,49 +518,14 @@ function generateLogical() {
     }
 
 
-    //TODO вот эта часть с вычислением числа кластеров для определения моно/компл/триада работает очень криво
-    // скорее всего, потому что фиксированно заданы границы шагов гистограммы
-    // мб добавить сюда кластеризацию через плотность
-    const numberOfSectors = 6;
-    const sectorSize = 360 / numberOfSectors;
-    const hHistogram = new Array(numberOfSectors);
-    hHistogram.fill(0);
-    const hVariation = Array.from(centralChromaTorus, ([k, v]) => v.h);
-    hVariation.forEach((h) => {
-        const sectorNumber = Math.floor(h / sectorSize);
-        hHistogram[sectorNumber]++;
-    });
+    //это будет новая кластеризация бублика для определения типа темы
+    // или мб можно 1 2 3 и сравнить метрики
 
-    const totalInHist = hHistogram.reduce((s, v) => (s + v));
-    let histSorted = Array.from(hHistogram, (v, k) => ({ v: v, k: k })).sort((e1, e2) => (e2.v - e1.v));
-    let sum = 0;
-    let sectorsInSum = 0;
-    while (sum < 80) {
-        sum += (100 * histSorted[sectorsInSum].v / totalInHist);
-        sectorsInSum++;
-    }
+    mapsClustered.value = makeClustersUnknownNumber(centralChromaTorus);
+    const numberOfAccents = mapsClustered.value.length;
 
 
-
-    function areNeighbors(k1: number, k2: number) {
-        const d = Math.abs(k1 - k2);
-        return (d == 1 || d == (numberOfSectors - 1));
-    }
-    function areNeighborsArr(k: number[]) {
-        k.sort((a, b) => a - b);
-        for (let i = 1; i < k.length; i++) {
-            if (k[i] - k[i - 1] != 1) {
-                if (!(k[i] == (numberOfSectors - 1) && k[0] == 1))
-                    return false;
-            }
-        }
-        return true;
-    }
-
-    //TODO? тут 3 привязано к 6 секторам всего, потому что 180 градусов
-    if ((sectorsInSum == 1) ||
-        (sectorsInSum == 2 && areNeighbors(histSorted[0].k, histSorted[1].k))
-    ) {
+    if (numberOfAccents == 1) {
         //это монохром или аналоговая, норм регрессией по всем
         console.log("mono");
 
@@ -557,7 +550,7 @@ function generateLogical() {
 
         const otherPart = new Map(Array.from(imgMap.value).filter(([k, v]) => !hInRange(v.h, accentHRange)));
 
-        debugMap.value = centralChromaTorus;
+        //debugMap.value = centralChromaTorus;
 
         if (!upperCylinderContainsChroma) {//TODO надо отдельно мб проверять оставшееся, потому что желтый очень светлый и в итоге точек нет, падает регрессия
             otherPart.set(white.k, white.v);
@@ -575,13 +568,9 @@ function generateLogical() {
 
     //кластеризация бублика
 
-    if ((sectorsInSum == 2) ||
-        (sectorsInSum == 3 && areNeighborsArr([histSorted[0].k, histSorted[1].k, histSorted[2].k]))
-    ) {
+    if (numberOfAccents == 2) {
         // комплементарная
         console.log("complementary");
-
-        mapsClustered.value = makeClusters(centralChromaTorus, 2);
 
         //TODO? считаю по максимальной насыщенности, мб надо по средней
         const [c0, c1] = mapsClustered.value.map((map: Map<string, ColorInMap>) =>
@@ -613,7 +602,6 @@ function generateLogical() {
     // триада, больше 3 я не рассматриваю
     console.log("triadic");
 
-    mapsClustered.value = makeClusters(centralChromaTorus, 3);
     //TODO
 
     const newGeneratedMap: Map<string, ColorInMap> = new Map();
@@ -629,19 +617,30 @@ watch(userImg, () => {
     generatedMap.value = generateLogical();
 
 });
-
+const enum tabs { picture, colorWheel };
+const currentTab = ref(tabs.picture);
 </script>
 
 <template>
+    <input type="checkbox" v-model="showQuantityOnPlots" id="showQ">
+    <label for="showQ">показывать количество на графиках</label>
     <div class="col page">
-        <div class="row userUpload">
-            <Dropbox v-model:pixels="userImg">Загрузите изображение сюда
-            </Dropbox>
-            <MapPlot3d :k="500" :data="imgMap" :totalQ="totalPixels" />
-            <MapPlot3d :k="500" :data="debugMap" :totalQ="totalPixels" style="border: 1px solid red;" />
+        <div>
+            <button @click="currentTab = tabs.picture">С картинки</button>
+            <button @click="currentTab = tabs.colorWheel">По кругу</button>
         </div>
+        <div v-show="currentTab == tabs.picture">
+            <div class="row userUpload">
+                <Dropbox v-model:pixels="userImg">Загрузите изображение сюда
+                </Dropbox>
+                <MapPlot3d :k="500" :data="imgMap" :totalQ="totalPixels" />
+                <MapPlot3d :k="500" :data="debugMap" :totalQ="totalPixels" style="border: 1px solid red;" />
+            </div>
+            <ArrayOfPlots :maps="mapsClustered" :totalQ="totalPixels" />
+        </div>
+        <div v-show="currentTab == tabs.colorWheel">
 
-        <ArrayOfPlots :maps="mapsClustered" :totalQ="totalPixels" />
+        </div>
         <div class="m1">
             <MapPlot3d :k="30" :data="generatedMap" :totalQ="generatedMap.size" />
             <div class="mockups">

@@ -69,7 +69,7 @@ function loadImgData(e: Event) {
     canvas.value.height = theHeight;
 
     ctx.value.drawImage(img1, 0, 0, theWidth, theHeight);
-    let imgData = ctx.value.getImageData(0, 0, theWidth, theHeight);
+    const imgData = ctx.value.getImageData(0, 0, theWidth, theHeight);
 
     pixels.value = imgData.data; /// одномерный массив rgbargbargba
 }

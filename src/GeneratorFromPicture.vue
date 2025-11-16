@@ -3,7 +3,7 @@ import chroma from 'chroma-js';
 import clustering from "density-clustering";
 import { kmeans } from 'ml-kmeans';
 import { PolynomialRegression } from 'ml-regression';
-import { reactive, ref, watch } from 'vue';
+import { reactive, ref, shallowRef, watch, type ShallowRef } from 'vue';
 import ArrayOfPlots from './ArrayOfPlots.vue';
 import DropBox from './DropBox.vue';
 import MapPlot3d from './MapPlot3d.vue';
@@ -14,9 +14,9 @@ import { darkTheme, darkThemeHighContrast, lightTheme, lightThemeHighContrast } 
 
 const userImg = ref<Uint8ClampedArray>();
 let totalPixels = 1;
-const imgMap = ref<Map<string, Color>>(new Map());
-const debugMap = ref<Map<string, Color>>(new Map());
-const generatedMap = ref<Map<string, Color>>(new Map());
+const imgMap: ShallowRef<Map<string, Color>> = shallowRef(new Map<string, Color>());
+const debugMap: ShallowRef<Map<string, Color>> = shallowRef(new Map<string, Color>());
+const generatedMap: ShallowRef<Map<string, Color>> = shallowRef(new Map<string, Color>());
 let imgMaxL: number;
 let imgMinL: number;
 

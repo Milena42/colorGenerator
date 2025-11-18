@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue';
+import PaletteOutput from './PaletteOutput.vue';
 import type { MockupColors } from './myTypes';
 
 
@@ -20,19 +21,22 @@ const cssColors = computed(() => {
 
 </script>
 <template>
-    <div class="mockup" :style="cssColors">
-        <div>
-            <h2>Заголовок</h2>
-            <p>Пример текста. <a href="#">Много текста</a>, чтобы посмотреть контрастность. Еще текст, чтобы строки
-                переносились...</p>
-            <button>Кнопка</button>
-        </div>
+    <div class="row">
+        <div class="mockup" :style="cssColors">
+            <div>
+                <h2>Заголовок</h2>
+                <p>Пример текста. <a href="#">Много текста</a>, чтобы посмотреть контрастность. Еще текст, чтобы строки
+                    переносились...</p>
+                <button>Кнопка</button>
+            </div>
 
-        <div class="overlay">
-            <p>Пример текста. <a href="#">Много текста</a>, чтобы посмотреть контрастность. Еще текст, чтобы строки
-                переносились...</p>
-            <button>Кнопка</button>
+            <div class="overlay">
+                <p>Пример текста. <a href="#">Много текста</a>, чтобы посмотреть контрастность. Еще текст, чтобы строки
+                    переносились...</p>
+                <button>Кнопка</button>
+            </div>
         </div>
+        <PaletteOutput :colors="colors" />
     </div>
 </template>
 <style scoped>

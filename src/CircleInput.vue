@@ -18,11 +18,14 @@ export class circleObject {
         this.cx = this.color.x * this.svgSquareWidth / 100 + this.svgSquareWidth / 2;
         this.cy = this.color.y * this.svgSquareWidth / 100 + this.svgSquareWidth / 2;
     }
-    calculateColor() {
+    calculateColorCoords() {
         this.color.x = (this.cx - this.svgSquareWidth / 2) * 100 / this.svgSquareWidth;
         this.color.y = (this.cy - this.svgSquareWidth / 2) * 100 / this.svgSquareWidth;
+    }
+    calculateColor() {
+        this.calculateColorCoords();
         this.rgb = this.color.adjustForRGB();
-        this.calculateCoords();
+        //this.calculateCoords();
     }
 
     rgb = "#fff";

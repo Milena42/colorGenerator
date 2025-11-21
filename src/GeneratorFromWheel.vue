@@ -1,52 +1,33 @@
 <script setup lang="ts">
-import { reactive, ref, watch } from 'vue';
+import { reactive, ref, watch, type Ref } from 'vue';
 import ColorWheel from './ColorWheel.vue';
 import MockUp from './MockUp.vue';
-import { Color, colorRoles, type ColorRole, type MockupColors, type Theme } from './myTypes';
+import { Color, accentColorRoles, bgColorRoles, type MockupColors, type Theme } from './myTypes';
 import { darkTheme, darkThemeHighContrast, lightTheme, lightThemeHighContrast } from './themes';
 
-const generatedMap = ref<Map<string, Color>>(new Map());
+const generatedMap: Ref<Map<string, Color>> = ref<Map<string, Color>>(new Map<string, Color>());
 
-type HScheme = Record<ColorRole, number>;
 const schemeTypes = ["mono", "complementary", "analog", "triad"];
 type schemeType = (typeof schemeTypes)[number];
 
-const schemeRules = new Map<string, HScheme>([
-    ["mono", {
-        bg: 0,
-        overlay: 0,
-        accentLarge: 0,
-        accentSmall: 0,
-        text: 0,
-        textOnAccent: 0,
+type HDifferenceFromL = (l: number) => number;
+
+const schemeRules = new Map<string, HDifferenceFromL>([
+    ["mono", (l) => { return 0; }],
+    ["complementary", (l) => {
+        if (30 <= l && l <= 80)
+            return 0;
+        return 180;
     }],
-    ["complementary", {
-        bg: 180,
-        overlay: 180,
-        accentLarge: 0,
-        accentSmall: 0,
-        text: 180,
-        textOnAccent: 180,
+    ["analog", (l) => {
+        return 180 * (l - 50) / 100;
     }],
-    ["analog", {
-        bg: -30,
-        overlay: -15,
-        accentLarge: 0,
-        accentSmall: 0,
-        text: 30,
-        textOnAccent: 30,
-    }],
-    ["triad", {
-        bg: -120,
-        overlay: -120,
-        accentLarge: 0,
-        accentSmall: 120,
-        text: 120,
-        textOnAccent: -120,
+    ["triad", (l) => {
+        if (l <= 30) return -120;
+        if (l <= 80) return 0;
+        return 120;
     }]
 ]);
-
-
 
 
 
@@ -68,16 +49,37 @@ const inputAccent = reactive(new Color(50, { c: 0, h: 0 }));
 
 const typeOfScheme = ref<schemeType>(schemeTypes[0]);
 
-function generate() {
+const inputCBg = ref<number>(0);
+
+function generateGrayAndAccents() {
     const newGeneratedMap: Map<string, Color> = new Map();
     themes.forEach(([themeRules, generatedTheme]) => {
-        colorRoles.forEach((key) => {
+        accentColorRoles.forEach((key) => {
             const { l, cMax } = themeRules[key];
-            const hDifference = schemeRules.get(typeOfScheme.value)![key];
 
+
+            const hDifference = schemeRules.get(typeOfScheme.value)!(l);
             const h = inputAccent.h + hDifference;
+
             let c = inputAccent.c;
             if (c > cMax) c = cMax;
+
+            const elem = new Color(l, { c, h });
+            const rgbString = elem.adjustForRGB();
+
+            newGeneratedMap.set(rgbString, elem);
+
+            generatedTheme[key] = rgbString;
+        });
+        bgColorRoles.forEach((key) => {
+            const { l, cMax } = themeRules[key];
+
+
+            const hDifference = schemeRules.get(typeOfScheme.value)!(l);
+            const h = inputAccent.h + hDifference;
+
+
+            let c = Math.min(cMax, inputAccent.c) * inputCBg.value / 100;
 
 
             const elem = new Color(l, { c, h });
@@ -88,13 +90,23 @@ function generate() {
             generatedTheme[key] = rgbString;
         });
     });
-    generatedMap.value = newGeneratedMap;
+    return newGeneratedMap;
+}
+
+function generate() {
+    // цветная - частный случай чб, когда насыщенность максимальна
+    generatedMap.value = generateGrayAndAccents();
+
 }
 
 watch(inputAccent, generate);
 
 
-
+/*
+    менять количество акцентных кругов в зависимости от фигуры
+    мб показывать все полученные цвета на круге? но их много, большинство не управляемые (контуры?)
+    фича поменять местами акценты (который тон на которую роль)
+*/
 </script>
 <template>
     <div class="row">
@@ -102,11 +114,8 @@ watch(inputAccent, generate);
             <select v-model="typeOfScheme" @change="generate">
                 <option v-for="t in schemeTypes" :value="t">{{ t }}</option>
             </select>
-
-            <!--TODO: цветовой круг и генерация по нему-->
+            <input v-model.number="inputCBg" @change="generate" type="range" :min="0" :max="100" />
             <ColorWheel v-model:accent="inputAccent" />
-
-
         </div>
 
         <div class="m1">

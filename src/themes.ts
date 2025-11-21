@@ -3,7 +3,7 @@ import type { Theme } from './myTypes';
 export const darkTheme: Theme = {
     bg: {
         l: 20,
-        cMax: 3,
+        cMax: 2,
     },
     overlay: {
         l: 28,
@@ -19,17 +19,17 @@ export const darkTheme: Theme = {
     },
     text: {
         l: 96,
-        cMax: 3,
+        cMax: 2,
     },
     textOnAccent: {
         l: 96,
-        cMax: 3,
+        cMax: 2,
     },
 };
 export const darkThemeHighContrast: Theme = {
     bg: {
         l: 20,
-        cMax: 3,
+        cMax: 2,
     },
     overlay: {
         l: 28,
@@ -44,18 +44,18 @@ export const darkThemeHighContrast: Theme = {
         cMax: 15,
     },
     text: {
-        l: 96,
-        cMax: 3,
+        l: 98,
+        cMax: 2,
     },
     textOnAccent: {
         l: 20,
-        cMax: 3,
+        cMax: 2,
     },
 };
 export const lightTheme: Theme = {
     bg: {
         l: 96,
-        cMax: 3,
+        cMax: 2,
     },
     overlay: {
         l: 88,
@@ -66,23 +66,23 @@ export const lightTheme: Theme = {
         cMax: 15,
     },
     accentSmall: {
-        l: 50,
+        l: 45,
         cMax: 15,
     },
     text: {
         l: 20,
-        cMax: 3,
+        cMax: 2,
     },
     textOnAccent: {
         l: 20,
-        cMax: 3,
+        cMax: 2,
     },
 };
 
 export const lightThemeHighContrast: Theme = {
     bg: {
         l: 96,
-        cMax: 3,
+        cMax: 2,
     },
     overlay: {
         l: 88,
@@ -93,15 +93,15 @@ export const lightThemeHighContrast: Theme = {
         cMax: 15,
     },
     accentSmall: {
-        l: 40,
+        l: 35,
         cMax: 15,
     },
     text: {
         l: 20,
-        cMax: 3,
+        cMax: 2,
     },
     textOnAccent: {
         l: 96,
-        cMax: 3,
+        cMax: 2,
     },
 };

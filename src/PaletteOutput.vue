@@ -2,7 +2,7 @@
 import type { MockupColors } from './myTypes';
 
 
-const props = defineProps<{
+defineProps<{
     colors: MockupColors,
 }>();
 

@@ -80,7 +80,7 @@ function generateGrayAndAccents() {
             const h = inputAccent.h + hDifference;
 
 
-            let c = cMax * inputCBg.value / maxCBg;
+            const c = cMax * inputCBg.value / maxCBg;
 
 
             const elem = new Color(l, { c, h });

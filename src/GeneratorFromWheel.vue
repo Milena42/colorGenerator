@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { reactive, ref, watch, type Ref } from 'vue';
 import ColorWheel from './ColorWheel.vue';
+//import MapPlot3d from './MapPlot3d.vue';
 import MockUp from './MockUp.vue';
 import { Color, accentColorRoles, bgColorRoles, type MockupColors, type Theme } from './myTypes';
 import { darkTheme, darkThemeHighContrast, lightTheme, lightThemeHighContrast } from './themes';
@@ -50,6 +51,7 @@ const inputAccent = reactive(new Color(50, { c: 0, h: 0 }));
 const typeOfScheme = ref<schemeType>(schemeTypes[0]);
 
 const inputCBg = ref<number>(0);
+const inputCAccent = ref<number>(0);
 
 function generateGrayAndAccents() {
     const newGeneratedMap: Map<string, Color> = new Map();
@@ -61,8 +63,7 @@ function generateGrayAndAccents() {
             const hDifference = schemeRules.get(typeOfScheme.value)!(l);
             const h = inputAccent.h + hDifference;
 
-            let c = inputAccent.c;
-            if (c > cMax) c = cMax;
+            const c = Math.min(cMax, inputCAccent.value);
 
             const elem = new Color(l, { c, h });
             const rgbString = elem.adjustForRGB();
@@ -79,7 +80,7 @@ function generateGrayAndAccents() {
             const h = inputAccent.h + hDifference;
 
 
-            let c = Math.min(cMax, inputAccent.c) * inputCBg.value / 100;
+            let c = Math.min(cMax, inputCBg.value);
 
 
             const elem = new Color(l, { c, h });
@@ -101,6 +102,17 @@ function generate() {
 
 watch(inputAccent, generate);
 
+function changeCBg() {
+    if (inputCBg.value > inputCAccent.value) inputCAccent.value = inputCBg.value;
+    inputAccent.c = inputCAccent.value;
+    generate();
+}
+
+function changeCAccent() {
+    if (inputCBg.value > inputCAccent.value) inputCBg.value = inputCAccent.value;
+    inputAccent.c = inputCAccent.value;
+    generate();
+}
 
 /*
     менять количество акцентных кругов в зависимости от фигуры
@@ -114,12 +126,17 @@ watch(inputAccent, generate);
             <select v-model="typeOfScheme" @change="generate">
                 <option v-for="t in schemeTypes" :value="t">{{ t }}</option>
             </select>
-            <input v-model.number="inputCBg" @change="generate" type="range" :min="0" :max="100" />
-            <ColorWheel v-model:accent="inputAccent" />
+            <div class="col">
+                <label>макс. насыщенность акцента</label>
+                <input v-model.number="inputCAccent" @change="changeCAccent" type="range" :min="0" :max="32" />
+                <input v-model.number="inputCBg" @change="changeCBg" type="range" :min="0" :max="32" />
+                <label>макс. насыщенность фона</label>
+            </div>
+            <ColorWheel v-model:accent="inputAccent" v-model:accentChroma="inputCAccent" v-model:bgChroma="inputCBg" />
         </div>
 
         <div class="m1">
-            <!--<MapPlot3d :k="30" :data="generatedMap" :totalQ="generatedMap.size" /> TODO оно зависает-->
+            <!--<MapPlot3d :k="30" :data="generatedMap" :totalQ="generatedMap.size" /> --><!--TODO оно зависает-->
             <div class="mockups">
                 <MockUp :colors="generatedDark"></Mockup>
                 <MockUp :colors="generatedLight"></Mockup>

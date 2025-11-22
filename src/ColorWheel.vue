@@ -6,7 +6,8 @@ import { Color } from './myTypes';
 
 
 const accent = defineModel<Color>('accent');
-
+const accentChroma = defineModel<number>('accentChroma');
+const bgChroma = defineModel<number>('bgChroma');
 
 const svgSquareWidth = 500;
 
@@ -39,12 +40,6 @@ function mousemove(event: MouseEvent) {
 };
 function dragend() {
     draggedCircle.value = undefined;
-}
-
-const inputL = ref(accent.value?.l ?? 50);
-function changeL() {
-    circle1.color.l = inputL.value;
-    circle1.calculateColor();
 }
 
 
@@ -92,9 +87,12 @@ function drawOklchModel() {
         <svg version="1.1" :width="svgSquareWidth" :height="svgSquareWidth" ref="svg" xmlns="http://www.w3.org/2000/svg"
             style="border:1px solid black" @mousemove="mousemove" @mouseup="dragend" @mouseleave="dragend">
             <CircleInput :circle-obj="circle1" @drag-start="(e) => dragstart(circle1, e)" />
+            <circle :r="accentChroma * svgSquareWidth / 100" :cx="svgSquareWidth / 2" :cy="svgSquareWidth / 2" fill="none"
+                stroke="black" stroke-width="2" />
+            <circle :r="bgChroma * svgSquareWidth / 100" :cx="svgSquareWidth / 2" :cy="svgSquareWidth / 2" fill="none"
+                stroke="black" stroke-width="2" />
         </svg>
     </div>
-    <input v-model="inputL" @change="changeL" type="range" min="0" max="100" />
 </template>
 <style scoped>
 .temp {

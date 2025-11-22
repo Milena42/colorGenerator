@@ -1,5 +1,8 @@
 import type { Theme } from './myTypes';
 
+export const maxCBg = 5;
+export const maxCAccent = 15;
+
 export const darkTheme: Theme = {
     bg: {
         l: 20,

@@ -4,7 +4,7 @@ import ColorWheel from './ColorWheel.vue';
 //import MapPlot3d from './MapPlot3d.vue';
 import MockUp from './MockUp.vue';
 import { Color, accentColorRoles, bgColorRoles, type MockupColors, type Theme } from './myTypes';
-import { darkTheme, darkThemeHighContrast, lightTheme, lightThemeHighContrast } from './themes';
+import { darkTheme, darkThemeHighContrast, lightTheme, lightThemeHighContrast, maxCAccent, maxCBg } from './themes';
 
 const generatedMap: Ref<Map<string, Color>> = ref<Map<string, Color>>(new Map<string, Color>());
 
@@ -50,8 +50,8 @@ const inputAccent = reactive(new Color(50, { c: 0, h: 0 }));
 
 const typeOfScheme = ref<schemeType>(schemeTypes[0]);
 
-const inputCBg = ref<number>(0);
-const inputCAccent = ref<number>(0);
+const inputCBg = ref<number>(maxCBg);
+const inputCAccent = ref<number>(maxCAccent);
 
 function generateGrayAndAccents() {
     const newGeneratedMap: Map<string, Color> = new Map();
@@ -63,7 +63,7 @@ function generateGrayAndAccents() {
             const hDifference = schemeRules.get(typeOfScheme.value)!(l);
             const h = inputAccent.h + hDifference;
 
-            const c = Math.min(cMax, inputCAccent.value);
+            const c = cMax * inputCAccent.value / maxCAccent;
 
             const elem = new Color(l, { c, h });
             const rgbString = elem.adjustForRGB();
@@ -80,7 +80,7 @@ function generateGrayAndAccents() {
             const h = inputAccent.h + hDifference;
 
 
-            let c = Math.min(cMax, inputCBg.value);
+            let c = cMax * inputCBg.value / maxCBg;
 
 
             const elem = new Color(l, { c, h });
@@ -128,8 +128,16 @@ function changeCAccent() {
             </select>
             <div class="col">
                 <label>макс. насыщенность акцента</label>
-                <input v-model.number="inputCAccent" @change="changeCAccent" type="range" :min="0" :max="32" />
-                <input v-model.number="inputCBg" @change="changeCBg" type="range" :min="0" :max="32" />
+                <input v-model.number="inputCAccent" @change="changeCAccent" type="range" :min="0" :max="maxCAccent"
+                    :step="0.1" :style="{ width: maxCAccent + 'rem' }" list="values" />
+                <datalist id="values">
+                    <option value="0" label="0"></option>
+                    <option value="1" label="1"></option>
+                    <option value="5" label="5"></option>
+                    <option value="15" label="15"></option>
+                </datalist>
+                <input v-model.number="inputCBg" @change="changeCBg" type="range" :min="0" :max="maxCBg" :step="0.1"
+                    :style="{ width: maxCBg + 'rem' }" list="values" />
                 <label>макс. насыщенность фона</label>
             </div>
             <ColorWheel v-model:accent="inputAccent" v-model:accentChroma="inputCAccent" v-model:bgChroma="inputCBg" />

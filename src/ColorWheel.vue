@@ -6,8 +6,8 @@ import { Color } from './myTypes';
 
 
 const accent = defineModel<Color>('accent');
-const accentChroma = defineModel<number>('accentChroma');
-const bgChroma = defineModel<number>('bgChroma');
+const accentChroma = defineModel<number>('accentChroma', { required: true });
+const bgChroma = defineModel<number>('bgChroma', { required: true });
 
 const svgSquareWidth = 500;
 

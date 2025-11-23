@@ -35,7 +35,9 @@ function mousemove(event: MouseEvent) {
     const deltaY = event.clientY - startY;
     draggedCircle.value.cx = initialCircleX + deltaX;
     draggedCircle.value.cy = initialCircleY + deltaY;
-    draggedCircle.value.calculateColor();
+    draggedCircle.value.calculateColorCoords();
+    draggedCircle.value.color.c = 20;
+    draggedCircle.value.calculateCoords();
 
 };
 function dragend() {

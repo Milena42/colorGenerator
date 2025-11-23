@@ -46,7 +46,7 @@ const themes: [Theme, MockupColors][] = [
 
 
 
-const inputAccent = reactive(new Color(50, { c: 0, h: 0 }));
+const inputAccent = reactive(new Color(50, { c: 20, h: 0 }));
 
 const typeOfScheme = ref<schemeType>(schemeTypes[0]);
 

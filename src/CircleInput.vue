@@ -8,7 +8,7 @@ export class circleObject {
         this.color = color;
         this.svgSquareWidth = svgSquareWidth;
 
-        this.rgb = this.color.adjustForRGB();
+        //this.rgb = this.color.adjustForRGB();
         this.calculateCoords();
     }
 
@@ -44,6 +44,8 @@ defineProps<{
 
 </script>
 <template>
+    <line :x1="circleObj.svgSquareWidth / 2" :y1="circleObj.svgSquareWidth / 2" :x2="circleObj.cx" :y2="circleObj.cy"
+        stroke="black" stroke-width="2" />
     <circle :cx="circleObj.cx" :cy="circleObj.cy" :r="10" :fill="circleObj.rgb" stroke="black" stroke-width="2"
         @mousedown="$emit('drag-start', $event)" />
 </template>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import chroma from 'chroma-js';
-import { reactive, ref, useTemplateRef } from 'vue';
+import { reactive, useTemplateRef } from 'vue';
 import CircleInput, { circleObject } from './CircleInput.vue';
 import { Color } from './myTypes';
 
@@ -11,37 +11,37 @@ const bgChroma = defineModel<number>('bgChroma', { required: true });
 
 const svgSquareWidth = 500;
 
-const circle1 = reactive(new circleObject(accent.value ?? new Color(40, { c: 0, h: 0 }), svgSquareWidth));
+const accentCircle = reactive(new circleObject(accent.value ?? new Color(40, { c: 0, h: 0 }), svgSquareWidth));
 
 
-const draggedCircle = ref<typeof circle1>();
+let draggedCircle: typeof accentCircle | undefined = undefined;
 let startX = 0;
 let startY = 0;
 let initialCircleX = 0;
 let initialCircleY = 0;
 
 
-function dragstart(element: typeof circle1, event: MouseEvent) {
-    draggedCircle.value = element;
+function dragstart(element: typeof accentCircle, event: MouseEvent) {
+    draggedCircle = element;
     startX = event.clientX;
     startY = event.clientY;
-    initialCircleX = draggedCircle.value.cx;
-    initialCircleY = draggedCircle.value.cy;
+    initialCircleX = draggedCircle.cx;
+    initialCircleY = draggedCircle.cy;
 };
 
 function mousemove(event: MouseEvent) {
-    if (!draggedCircle.value) return;
+    if (!draggedCircle) return;
     const deltaX = event.clientX - startX;
     const deltaY = event.clientY - startY;
-    draggedCircle.value.cx = initialCircleX + deltaX;
-    draggedCircle.value.cy = initialCircleY + deltaY;
-    draggedCircle.value.calculateColorCoords();
-    draggedCircle.value.color.c = 20;
-    draggedCircle.value.calculateCoords();
+    draggedCircle.cx = initialCircleX + deltaX;
+    draggedCircle.cy = initialCircleY + deltaY;
+    draggedCircle.calculateColorCoords();
+    draggedCircle.color.c = 20;
+    draggedCircle.calculateCoords();
 
 };
 function dragend() {
-    draggedCircle.value = undefined;
+    draggedCircle = undefined;
 }
 
 
@@ -88,7 +88,7 @@ function drawOklchModel() {
         <canvas ref="drawing" :width="svgSquareWidth" :height="svgSquareWidth"></canvas>
         <svg version="1.1" :width="svgSquareWidth" :height="svgSquareWidth" ref="svg" xmlns="http://www.w3.org/2000/svg"
             style="border:1px solid black" @mousemove="mousemove" @mouseup="dragend" @mouseleave="dragend">
-            <CircleInput :circle-obj="circle1" @drag-start="(e) => dragstart(circle1, e)" />
+            <CircleInput :circle-obj="accentCircle" @drag-start="(e) => dragstart(accentCircle, e)" />
             <circle :r="accentChroma * svgSquareWidth / 100" :cx="svgSquareWidth / 2" :cy="svgSquareWidth / 2" fill="none"
                 stroke="black" stroke-width="2" />
             <circle :r="bgChroma * svgSquareWidth / 100" :cx="svgSquareWidth / 2" :cy="svgSquareWidth / 2" fill="none"

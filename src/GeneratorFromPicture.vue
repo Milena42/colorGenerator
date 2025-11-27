@@ -8,7 +8,7 @@ import ArrayOfPlots from './ArrayOfPlots.vue';
 import DropBox from './DropBox.vue';
 import MapPlot3d from './MapPlot3d.vue';
 import MockUp from './MockUp.vue';
-import { cartesianFromPolar, polarFromCartesian } from './math';
+import { cartesianFromPolar, hInRange, polarFromCartesian } from './math';
 import { Color, accentColorRoles, bgColorRoles, colorRoles, type MockupColors, type Theme } from './myTypes';
 import { darkTheme, darkThemeHighContrast, lightTheme, lightThemeHighContrast } from './themes.ts';
 
@@ -319,13 +319,7 @@ function hRangeOfMap(mapOfColors: Map<string, Color>) {
     }
     return maxGapRangeReversed;
 }
-function hInRange(h: number, hRange: [number, number]) {
-    const [hStart, hEnd] = hRange;
-    if (hStart <= hEnd) {
-        return (hStart <= h && h <= hEnd);
-    }
-    return (hStart <= h || h <= hEnd);
-}
+
 
 function unitedMaps<T>(m1: Map<string, T>, m2: Map<string, T>) {
     return new Map(Array.from(m1).concat(Array.from(m2)));

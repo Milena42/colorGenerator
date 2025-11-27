@@ -11,3 +11,10 @@ export function cartesianFromPolar(r: number, deg: number): [x: number, y: numbe
     const y = r * Math.sin(rad);
     return [x, y];
 }
+export function hInRange(h: number, hRange: [number, number]) {
+    const [hStart, hEnd] = hRange;
+    if (hStart <= hEnd) {
+        return hStart <= h && h <= hEnd;
+    }
+    return hStart <= h || h <= hEnd;
+}

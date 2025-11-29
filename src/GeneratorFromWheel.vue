@@ -3,30 +3,29 @@ import { reactive, ref, watch, type Ref } from 'vue';
 import ColorWheel from './ColorWheel.vue';
 //import MapPlot3d from './MapPlot3d.vue';
 import MockUp from './MockUp.vue';
-import { Color, accentColorRoles, bgColorRoles, type MockupColors, type Theme } from './myTypes';
+import { hMinus } from './math';
+import { Color, accentColorRoles, bgColorRoles, schemeTypes, type MockupColors, type Theme, type schemeType } from './myTypes';
 import { darkTheme, darkThemeHighContrast, lightTheme, lightThemeHighContrast, maxCAccent, maxCBg } from './themes';
 
 const generatedMap: Ref<Map<string, Color>> = ref<Map<string, Color>>(new Map<string, Color>());
 
-const schemeTypes = ["mono", "complementary", "analog", "triad"];
-type schemeType = (typeof schemeTypes)[number];
 
-type HDifferenceFromL = (l: number) => number;
 
-const schemeRules = new Map<string, HDifferenceFromL>([
-    ["mono", (l) => { return 0; }],
+type HFromL = (l: number) => number;
+const schemeRulesFromInputs = new Map<schemeType, HFromL>([
+    ["mono", (l) => { return inputAccent.h; }],
     ["complementary", (l) => {
         if (30 <= l && l <= 80)
-            return 0;
-        return 180;
+            return inputAccent.h;
+        return inputBg.h;
     }],
     ["analog", (l) => {
-        return 180 * (l - 50) / 100;
+        return (2 * hMinus(inputSecondary.h, inputAccent.h) * (l - 50) / 100 + inputAccent.h + 360) % 360;
     }],
     ["triad", (l) => {
-        if (l <= 30) return -120;
-        if (l <= 80) return 0;
-        return 120;
+        if (l <= 30) return inputBg.h;
+        if (l <= 80) return inputAccent.h;
+        return inputSecondary.h;
     }]
 ]);
 
@@ -47,6 +46,8 @@ const themes: [Theme, MockupColors][] = [
 
 
 const inputAccent = reactive(new Color(50, { c: 20, h: 0 }));
+const inputSecondary = reactive(new Color(50, { c: 20, h: 0 }));
+const inputBg = reactive(new Color(50, { c: 20, h: 0 }));
 
 const typeOfScheme = ref<schemeType>(schemeTypes[0]);
 
@@ -60,8 +61,8 @@ function generateGrayAndAccents() {
             const { l, cMax } = themeRules[key];
 
 
-            const hDifference = schemeRules.get(typeOfScheme.value)!(l);
-            const h = inputAccent.h + hDifference;
+
+            const h = schemeRulesFromInputs.get(typeOfScheme.value)!(l);
 
             const c = cMax * inputCAccent.value / maxCAccent;
 
@@ -76,8 +77,7 @@ function generateGrayAndAccents() {
             const { l, cMax } = themeRules[key];
 
 
-            const hDifference = schemeRules.get(typeOfScheme.value)!(l);
-            const h = inputAccent.h + hDifference;
+            const h = schemeRulesFromInputs.get(typeOfScheme.value)!(l);
 
 
             const c = cMax * inputCBg.value / maxCBg;
@@ -100,7 +100,7 @@ function generate() {
 
 }
 
-watch(inputAccent, generate);
+watch([inputAccent, inputBg, inputSecondary], generate);
 
 function changeCBg() {
     if (inputCBg.value > inputCAccent.value) inputCAccent.value = inputCBg.value;
@@ -114,16 +114,32 @@ function changeCAccent() {
     generate();
 }
 
-/*
-    менять количество акцентных кругов в зависимости от фигуры
-    мб показывать все полученные цвета на круге? но их много, большинство не управляемые (контуры?)
-    фича поменять местами акценты (который тон на которую роль)
-*/
+function changeTypeOfScheme() {
+    const accentH = inputAccent.h;
+    switch (typeOfScheme.value) {
+        case "mono":
+            break;
+        case "complementary":
+            inputBg.h = (accentH + 180) % 360;
+            break;
+        case "analog":
+            inputBg.h = (accentH + 60) % 360;
+            inputSecondary.h = (accentH - 60 + 360) % 360;
+            break;
+        case "triad":
+            inputBg.h = (accentH + 120) % 360;
+            inputSecondary.h = (accentH - 120 + 360) % 360;
+            break;
+        default: break;
+    }
+    //TODO положение кругов тоже надо обновлять - видимо, придется объединить компоненты
+    generate();
+}
 </script>
 <template>
     <div class="row">
         <div>
-            <select v-model="typeOfScheme" @change="generate">
+            <select v-model="typeOfScheme" @change="changeTypeOfScheme">
                 <option v-for="t in schemeTypes" :value="t">{{ t }}</option>
             </select>
             <div class="col">
@@ -140,7 +156,8 @@ function changeCAccent() {
                     :style="{ width: maxCBg + 'rem' }" list="values" />
                 <label>макс. насыщенность фона</label>
             </div>
-            <ColorWheel v-model:accent="inputAccent" v-model:accentChroma="inputCAccent" v-model:bgChroma="inputCBg" />
+            <ColorWheel v-model:accent="inputAccent" v-model:secondary="inputSecondary" v-model:bg="inputBg"
+                v-model:accentChroma="inputCAccent" v-model:bgChroma="inputCBg" :typeOfScheme="typeOfScheme" />
         </div>
 
         <div class="m1">

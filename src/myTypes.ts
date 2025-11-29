@@ -101,3 +101,6 @@ export interface ColorRule {
 }
 
 export type Theme = Record<ColorRole, ColorRule>;
+
+export const schemeTypes = ['mono', 'complementary', 'analog', 'triad'];
+export type schemeType = (typeof schemeTypes)[number];

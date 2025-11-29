@@ -35,17 +35,25 @@ export class circleObject {
 
 
 <script setup lang="ts">
+import { computed } from 'vue';
 import { Color } from './myTypes';
 
 defineEmits(['drag-start']);
-defineProps<{
-    circleObj: circleObject;
+const props = defineProps<{
+    circleObj: circleObject,
+    accent?: boolean,
 }>();
+
+const lineColor = computed(() => {
+    return props.accent ? "rgba(0,0,0,1)" : "rgba(0,0,0,0.5)";
+})
 
 </script>
 <template>
-    <line :x1="circleObj.svgSquareWidth / 2" :y1="circleObj.svgSquareWidth / 2" :x2="circleObj.cx" :y2="circleObj.cy"
-        stroke="black" stroke-width="2" />
-    <circle :cx="circleObj.cx" :cy="circleObj.cy" :r="10" :fill="circleObj.rgb" stroke="black" stroke-width="2"
-        @mousedown="$emit('drag-start', $event)" />
+    <g>
+        <line :x1="circleObj.svgSquareWidth / 2" :y1="circleObj.svgSquareWidth / 2" :x2="circleObj.cx" :y2="circleObj.cy"
+            :stroke="lineColor" stroke-width="2" />
+        <circle :cx="circleObj.cx" :cy="circleObj.cy" :r="10" :fill="circleObj.rgb" :stroke="lineColor" stroke-width="2"
+            @mousedown="$emit('drag-start', $event)" />
+    </g>
 </template>

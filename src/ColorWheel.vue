@@ -1,18 +1,27 @@
 <script setup lang="ts">
 import chroma from 'chroma-js';
-import { reactive, useTemplateRef } from 'vue';
+import { computed, reactive, useTemplateRef } from 'vue';
 import CircleInput, { circleObject } from './CircleInput.vue';
-import { Color } from './myTypes';
+import { Color, type schemeType } from './myTypes';
+
+const props = defineProps<{
+    typeOfScheme: schemeType,
+}>();
 
 
-const accent = defineModel<Color>('accent');
+const accent = defineModel<Color>('accent', { required: true });
 const accentChroma = defineModel<number>('accentChroma', { required: true });
 const bgChroma = defineModel<number>('bgChroma', { required: true });
 
+const secondary = defineModel<Color>('secondary', { required: true });
+const bg = defineModel<Color>('bg', { required: true });
+
+
 const svgSquareWidth = 500;
 
-const accentCircle = reactive(new circleObject(accent.value ?? new Color(40, { c: 0, h: 0 }), svgSquareWidth));
-
+const accentCircle = reactive(new circleObject(accent.value, svgSquareWidth));
+const secondaryCircle = reactive(new circleObject(secondary.value, svgSquareWidth));
+const bgCircle = reactive(new circleObject(bg.value, svgSquareWidth));
 
 let draggedCircle: typeof accentCircle | undefined = undefined;
 let startX = 0;
@@ -29,17 +38,45 @@ function dragstart(element: typeof accentCircle, event: MouseEvent) {
     initialCircleY = draggedCircle.cy;
 };
 
+const hRangeBg = computed<[number, number]>(() => {
+    return [(accentCircle.color.h + 120) % 360, (accentCircle.color.h + 120 + 120) % 360];
+});//TODO  типа этого проверка вдруг диапазон подходит при переключении селекта
+
 function mousemove(event: MouseEvent) {
     if (!draggedCircle) return;
     const deltaX = event.clientX - startX;
     const deltaY = event.clientY - startY;
     draggedCircle.cx = initialCircleX + deltaX;
     draggedCircle.cy = initialCircleY + deltaY;
+
+    const oldH = draggedCircle.color.h;
     draggedCircle.calculateColorCoords();
+
+    const currentH = draggedCircle.color.h;
+    const accentH = accentCircle.color.h;
+    if (draggedCircle === accentCircle) {
+        const dH = currentH - oldH;
+        bgCircle.color.h = (bgCircle.color.h + dH + 360) % 360;
+        bgCircle.calculateCoords();
+        secondaryCircle.color.h = (secondaryCircle.color.h + dH + 360) % 360;
+        secondaryCircle.calculateCoords();
+    } else if (draggedCircle === bgCircle) {
+        if (props.typeOfScheme == "complementary") {
+            draggedCircle.color.h = oldH;
+        }
+        else {
+            secondaryCircle.color.h = (2 * accentH - currentH + 360) % 360;
+            secondaryCircle.calculateCoords();
+        }
+    } else if (draggedCircle === secondaryCircle) {
+        bgCircle.color.h = (2 * accentH - currentH + 360) % 360;
+        bgCircle.calculateCoords();
+    }
+
     draggedCircle.color.c = 20;
     draggedCircle.calculateCoords();
-
 };
+
 function dragend() {
     draggedCircle = undefined;
 }
@@ -81,6 +118,13 @@ function drawOklchModel() {
     }
 }
 
+const show2Circles = computed(() => {
+    return props.typeOfScheme != "mono";
+});
+const show3Circles = computed(() => {
+    return props.typeOfScheme != "mono" && props.typeOfScheme != "complementary";
+})
+
 </script>
 <template>
     <button @click="drawOklchModel">нарисовать фон</button>
@@ -88,7 +132,10 @@ function drawOklchModel() {
         <canvas ref="drawing" :width="svgSquareWidth" :height="svgSquareWidth"></canvas>
         <svg version="1.1" :width="svgSquareWidth" :height="svgSquareWidth" ref="svg" xmlns="http://www.w3.org/2000/svg"
             style="border:1px solid black" @mousemove="mousemove" @mouseup="dragend" @mouseleave="dragend">
-            <CircleInput :circle-obj="accentCircle" @drag-start="(e) => dragstart(accentCircle, e)" />
+            <CircleInput :circle-obj="accentCircle" accent @drag-start="(e) => dragstart(accentCircle, e)" />
+            <CircleInput :circle-obj="secondaryCircle" @drag-start="(e) => dragstart(secondaryCircle, e)"
+                v-if="show3Circles" />
+            <CircleInput :circle-obj="bgCircle" @drag-start="(e) => dragstart(bgCircle, e)" v-if="show2Circles" />
             <circle :r="accentChroma * svgSquareWidth / 100" :cx="svgSquareWidth / 2" :cy="svgSquareWidth / 2" fill="none"
                 stroke="black" stroke-width="2" />
             <circle :r="bgChroma * svgSquareWidth / 100" :cx="svgSquareWidth / 2" :cy="svgSquareWidth / 2" fill="none"

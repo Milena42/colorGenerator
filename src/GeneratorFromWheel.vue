@@ -46,10 +46,10 @@ const themes: [Theme, MockupColors][] = [
 ];
 
 
-
-const inputAccent = reactive(new Color(50, { c: 20, h: 0 }));
-const inputSecondary = reactive(new Color(50, { c: 20, h: 0 }));
-const inputBg = reactive(new Color(50, { c: 20, h: 0 }));
+const R_SPECTRAL_CIRCLE = 37;
+const inputAccent = reactive(new Color(50, { c: R_SPECTRAL_CIRCLE, h: 0 }));
+const inputSecondary = reactive(new Color(50, { c: R_SPECTRAL_CIRCLE, h: 0 }));
+const inputBg = reactive(new Color(50, { c: R_SPECTRAL_CIRCLE, h: 0 }));
 
 const typeOfScheme = ref<schemeType>(schemeTypes[0]);
 
@@ -197,7 +197,7 @@ function mousemove(event: MouseEvent) {
         bgCircle.calculateCoords();
     }
 
-    draggedCircle.color.c = 20;
+    draggedCircle.color.c = R_SPECTRAL_CIRCLE;
     draggedCircle.calculateCoords();
 };
 
@@ -205,9 +205,10 @@ function dragend() {
     draggedCircle = undefined;
 }
 
-
+//////////////////////////////////////////////////////////////////////////////
+//// рисование фона, TODO выгрузить картинкой на фон и удалить
+/////////////////////////////////////////////////////////////////////////////
 const canvas = useTemplateRef<HTMLCanvasElement>("drawing");
-
 function drawOklchModel() {
     if (!canvas.value) {
         console.log("canvas отсутствует");
@@ -223,6 +224,30 @@ function drawOklchModel() {
     const brush = new circleObject(new Color(0, { x: 0, y: 0 }), svgSquareWidth);
 
     const pixel = 4; // задает гладкость изображения (1 - идеально, но медленно)
+
+    ///////////////////////////////////////////////
+    /// спектр
+
+    for (let i = 0; i < svgSquareWidth; i += pixel) {
+        for (let j = 0; j < svgSquareWidth; j += pixel) {
+            brush.cx = i;
+            brush.cy = j;
+            brush.calculateColorCoords();
+            const r = brush.color.c;
+            if (R_SPECTRAL_CIRCLE - 3 <= r && r <= R_SPECTRAL_CIRCLE + 3) {
+                const h = brush.color.h;
+                const pointToRgb = chroma.oklch(50 / 100, 5 / 100, h);
+                if (!pointToRgb.clipped()) {
+                    ctx.fillStyle = pointToRgb.set("hsl.s", 1).set("hsl.l", 0.5).hex();
+                    ctx.fillRect(i, j, pixel, pixel);
+                }
+            }
+        }
+    }
+
+    /////////////////////////////////////////////
+    /// меш oklch
+
     for (let l = 0; l < 100; l += pixel) {
         for (let i = 0; i < svgSquareWidth; i += pixel) {
             for (let j = 0; j < svgSquareWidth; j += pixel) {
@@ -236,11 +261,12 @@ function drawOklchModel() {
                     ctx.fillStyle = pointToRgb.hex();
                     ctx.fillRect(i, j, pixel, pixel);
                 }
-
             }
         }
     }
+
 }
+//////////////////////////////////////////////////////////////////////////
 
 const show2Circles = computed(() => {
     return typeOfScheme.value != "mono";

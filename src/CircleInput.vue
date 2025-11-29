@@ -53,7 +53,7 @@ const lineColor = computed(() => {
     <g>
         <line :x1="circleObj.svgSquareWidth / 2" :y1="circleObj.svgSquareWidth / 2" :x2="circleObj.cx" :y2="circleObj.cy"
             :stroke="lineColor" stroke-width="2" />
-        <circle :cx="circleObj.cx" :cy="circleObj.cy" :r="10" :fill="circleObj.rgb" :stroke="lineColor" stroke-width="2"
+        <circle :cx="circleObj.cx" :cy="circleObj.cy" :r="10" fill="rgba(0,0,0,0)" :stroke="lineColor" stroke-width="2"
             @mousedown="$emit('drag-start', $event)" />
     </g>
 </template>

@@ -20,6 +20,14 @@ export const darkTheme: Theme = {
         l: 78,
         cMax: 15,
     },
+    accentLargeOnOverlay: {
+        l: 50,
+        cMax: 15,
+    },
+    accentSmallOnOverlay: {
+        l: 78,
+        cMax: 15,
+    },
     text: {
         l: 96,
         cMax: 2,
@@ -43,6 +51,14 @@ export const darkThemeHighContrast: Theme = {
         cMax: 15,
     },
     accentSmall: {
+        l: 80,
+        cMax: 15,
+    },
+    accentLargeOnOverlay: {
+        l: 80,
+        cMax: 15,
+    },
+    accentSmallOnOverlay: {
         l: 80,
         cMax: 15,
     },
@@ -72,6 +88,14 @@ export const lightTheme: Theme = {
         l: 45,
         cMax: 15,
     },
+    accentLargeOnOverlay: {
+        l: 75,
+        cMax: 15,
+    },
+    accentSmallOnOverlay: {
+        l: 45,
+        cMax: 15,
+    },
     text: {
         l: 20,
         cMax: 2,
@@ -96,6 +120,14 @@ export const lightThemeHighContrast: Theme = {
         cMax: 15,
     },
     accentSmall: {
+        l: 35,
+        cMax: 15,
+    },
+    accentLargeOnOverlay: {
+        l: 40,
+        cMax: 15,
+    },
+    accentSmallOnOverlay: {
         l: 35,
         cMax: 15,
     },

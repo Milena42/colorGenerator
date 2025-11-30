@@ -88,9 +88,19 @@ export class Color {
 }
 
 //TODO naming
-export const colorRoles = ['bg', 'overlay', 'accentLarge', 'accentSmall', 'text', 'textOnAccent'];
-export const accentColorRoles = ['accentLarge', 'accentSmall'];
-export const bgColorRoles = ['bg', 'overlay', 'text', 'textOnAccent'];
+export const colorRoles = [
+    'bg',
+    'overlay',
+    'accentLarge',
+    'accentSmall',
+    'text',
+    'textOnAccent',
+    'accentLargeOnOverlay',
+    'accentSmallOnOverlay',
+];
+export const secondaryColorRoles = ['accentLarge', 'accentSmall', 'textOnAccent'];
+export const bgColorRoles = ['bg', 'text'];
+export const accentColorRoles = ['overlay', 'accentLargeOnOverlay', 'accentSmallOnOverlay'];
 export type ColorRole = (typeof colorRoles)[number];
 
 export type MockupColors = Record<ColorRole, string>;

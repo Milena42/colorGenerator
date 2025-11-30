@@ -16,6 +16,8 @@ const cssColors = computed(() => {
         '--accentSmall': props.colors.accentSmall,
         '--text': props.colors.text,
         '--textOnAccent': props.colors.textOnAccent,
+        '--accentLargeOnOverlay': props.colors.accentLargeOnOverlay,
+        '--accentSmallOnOverlay': props.colors.accentSmallOnOverlay,
     };
 })
 
@@ -46,6 +48,14 @@ const cssColors = computed(() => {
 
     .overlay {
         background-color: var(--overlay);
+
+        button {
+            background-color: var(--accentLargeOnOverlay);
+        }
+
+        a {
+            color: var(--accentSmallOnOverlay)
+        }
     }
 
     button {

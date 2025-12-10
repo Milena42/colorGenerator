@@ -95,12 +95,15 @@ export const colorRoles = [
     'accentSmall',
     'text',
     'textOnAccent',
-    'accentLargeOnOverlay',
-    'accentSmallOnOverlay',
+    'card1',
+    'card2',
+    'card3',
+    'accent2',
+    'accent3',
 ];
-export const secondaryColorRoles = ['accentLarge', 'accentSmall', 'textOnAccent'];
-export const bgColorRoles = ['bg', 'text'];
-export const accentColorRoles = ['overlay', 'accentLargeOnOverlay', 'accentSmallOnOverlay'];
+export const accentColorRoles = ['accentLarge', 'accentSmall', 'textOnAccent', 'card1'];
+export const bgColorRoles = ['bg', 'text', 'overlay'];
+export const secondaryColorRoles = ['accent2', 'card2', 'accent3', 'card3'];
 export type ColorRole = (typeof colorRoles)[number];
 
 export type MockupColors = Record<ColorRole, string>;

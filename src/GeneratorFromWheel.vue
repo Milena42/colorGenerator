@@ -6,7 +6,7 @@ import CircleInput, { circleObject } from './CircleInput.vue';
 import chroma from 'chroma-js';
 import MockUp from './MockUp.vue';
 import { hMinus } from './math';
-import { Color, accentColorRoles, bgColorRoles, schemeTypes, secondaryColorRoles, type MockupColors, type Theme, type schemeType } from './myTypes';
+import { Color, accentColorRoles, bgColorRoles, schemeTypes, secondaryColorRoles, type ColorRole, type MockupColors, type Theme, type schemeType } from './myTypes';
 import { darkTheme, darkThemeHighContrast, lightTheme, lightThemeHighContrast, maxCAccent, maxCBg } from './themes';
 
 const generatedMap: Ref<Map<string, Color>> = ref<Map<string, Color>>(new Map<string, Color>());
@@ -56,6 +56,8 @@ const typeOfScheme = ref<schemeType>(schemeTypes[0]);
 const inputCBg = ref<number>(maxCBg);
 const inputCAccent = ref<number>(maxCAccent);
 
+const secondaryRules: Record<ColorRole, typeof inputAccent> = { 'accent2': inputSecondary, 'card2': inputSecondary, 'accent3': inputBg, 'card3': inputBg };
+
 function generateGrayAndAccents() {
     const newGeneratedMap: Map<string, Color> = new Map();
     themes.forEach(([themeRules, generatedTheme]) => {
@@ -80,7 +82,7 @@ function generateGrayAndAccents() {
 
             let h;
             if (typeOfScheme.value == "triad" || typeOfScheme.value == "analog") {
-                h = inputSecondary.h;
+                h = secondaryRules[key].h;
             }
             else if (typeOfScheme.value == "complementary") {
                 h = inputBg.h;
@@ -100,8 +102,9 @@ function generateGrayAndAccents() {
         bgColorRoles.forEach((key) => {
             const { l, cMax } = themeRules[key];
 
-
-            const h = inputBg.h;
+            let h;
+            if (typeOfScheme.value == "mono") h = inputAccent.h;
+            else h = inputBg.h;
 
 
             const c = cMax * inputCBg.value / maxCBg;

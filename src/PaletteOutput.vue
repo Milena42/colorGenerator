@@ -22,6 +22,7 @@ defineProps<{
     display: flex;
     flex-flow: column nowrap;
     justify-content: space-between;
+    gap: 0.2rem;
     padding: 1rem;
 }
 
@@ -33,6 +34,10 @@ defineProps<{
     div {
         width: 3rem;
         height: 2rem;
+    }
+
+    p {
+        margin: 0px;
     }
 }
 </style>

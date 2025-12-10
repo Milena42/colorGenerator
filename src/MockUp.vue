@@ -11,13 +11,30 @@ const props = defineProps<{
 const cssColors = computed(() => {
     return {
         '--bg': props.colors.bg,
-        '--overlay': props.colors.overlay,
+        '--overlayBg': props.colors.overlay,
         '--accentLarge': props.colors.accentLarge,
         '--accentSmall': props.colors.accentSmall,
         '--text': props.colors.text,
         '--textOnAccent': props.colors.textOnAccent,
-        '--accentLargeOnOverlay': props.colors.accentLargeOnOverlay,
-        '--accentSmallOnOverlay': props.colors.accentSmallOnOverlay,
+    };
+});
+
+const card1Colors = computed(() => {
+    return {
+        '--card': props.colors.card1,
+        '--accentLarge': props.colors.accentLarge,
+    };
+});
+const card2Colors = computed(() => {
+    return {
+        '--card': props.colors.card2,
+        '--accentLarge': props.colors.accent2,
+    };
+});
+const card3Colors = computed(() => {
+    return {
+        '--card': props.colors.card3,
+        '--accentLarge': props.colors.accent3,
     };
 })
 
@@ -26,16 +43,34 @@ const cssColors = computed(() => {
     <div class="row">
         <div class="mockup" :style="cssColors">
             <div>
-                <h2>Заголовок</h2>
-                <p>Пример текста. <a href="#">Много текста</a>, чтобы посмотреть контрастность. Еще текст, чтобы строки
-                    переносились...</p>
-                <button>Кнопка</button>
-            </div>
+                <div>
 
-            <div class="overlay">
-                <p>Пример текста. <a href="#">Много текста</a>, чтобы посмотреть контрастность. Еще текст, чтобы строки
-                    переносились...</p>
-                <button>Кнопка</button>
+                    <h2>Заголовок</h2>
+
+                    <p>Пример текста. <a href="#">Много текста</a>, чтобы посмотреть контрастность. Еще текст, чтобы строки
+                        переносились...</p>
+                    <button>Кнопка</button>
+                </div>
+
+                <div class="overlay">
+                    <p>Пример текста. <a href="#">Много текста</a>, чтобы посмотреть контрастность. Еще текст, чтобы строки
+                        переносились...</p>
+                    <button>Кнопка</button>
+                </div>
+            </div>
+            <div class="variants">
+                <div class="card" :style="card2Colors">
+                    <p>Вариант для сравнения</p>
+                    <button>Кнопка</button>
+                </div>
+                <div class="card" :style="card1Colors">
+                    <p>Вариант для сравнения</p>
+                    <button>Кнопка</button>
+                </div>
+                <div class="card" :style="card3Colors">
+                    <p>Вариант для сравнения</p>
+                    <button>Кнопка</button>
+                </div>
             </div>
         </div>
         <PaletteOutput :colors="colors" />
@@ -47,15 +82,7 @@ const cssColors = computed(() => {
     color: var(--text);
 
     .overlay {
-        background-color: var(--overlay);
-
-        button {
-            background-color: var(--accentLargeOnOverlay);
-        }
-
-        a {
-            color: var(--accentSmallOnOverlay)
-        }
+        background-color: var(--overlayBg);
     }
 
     button {
@@ -66,31 +93,62 @@ const cssColors = computed(() => {
     a {
         color: var(--accentSmall);
     }
+
+    .card {
+        background-color: var(--card);
+
+        button {
+            background-color: var(--accentLarge);
+        }
+    }
 }
 
 .mockup {
-    border-radius: 20px;
+    --radius: 1rem;
+    border-radius: 2rem;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 30px;
-    padding: 50px;
-    width: 300px;
+    justify-content: center;
+    align-items: stretch;
+    gap: 1.5rem;
+    padding: 1.8rem 2.2rem;
+
     font-family: sans-serif;
     font-size: 12pt;
 
     .overlay {
-        border-radius: 15px;
-        padding: 30px;
+        border-radius: var(--radius);
+        padding: 1.5rem;
+    }
+
+    .card {
+        border-radius: var(--radius);
+        padding: 1.3rem 1rem 1rem;
+        display: flex;
+        flex-flow: column nowrap;
+        align-items: center;
+        text-align: center;
+
+        gap: 1rem;
+
+        p {
+            margin: 0px;
+        }
     }
 
     button {
         padding: 10px 15px;
-        border-radius: 7px;
+        border-radius: 0.5rem;
         border: none;
         box-shadow: none;
         font: inherit;
+    }
+
+    &>div {
+        display: flex;
+        flex-flow: row nowrap;
+        gap: 1rem;
+        align-items: center;
     }
 }
 </style>

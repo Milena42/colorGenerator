@@ -88,8 +88,16 @@ export class Color {
 }
 
 //TODO naming
-export const colorRoles = ['bg', 'overlay', 'accentLarge', 'accentSmall', 'text', 'textOnAccent'];
-export const accentColorRoles = ['accentLarge', 'accentSmall'];
+export const colorRoles = [
+    'bg',
+    'overlay',
+    'accentLarge',
+    'accentSmall',
+    'text',
+    'textOnAccent',
+    'accentOnOverlay',
+];
+export const accentColorRoles = ['accentLarge', 'accentSmall', 'accentOnOverlay'];
 export const bgColorRoles = ['bg', 'overlay', 'text', 'textOnAccent'];
 export type ColorRole = (typeof colorRoles)[number];
 

@@ -5,24 +5,37 @@ import type { MockupColors } from './myTypes';
 
 
 const props = defineProps<{
-    colors: MockupColors,
+    colorsLight: MockupColors,
+    colorsDark: MockupColors,
 }>();
 
-const cssColors = computed(() => {
+const cssColorsDark = computed(() => {
     return {
-        '--bg': props.colors.bg,
-        '--overlay': props.colors.overlay,
-        '--accentLarge': props.colors.accentLarge,
-        '--accentSmall': props.colors.accentSmall,
-        '--text': props.colors.text,
-        '--textOnAccent': props.colors.textOnAccent,
+        '--bg': props.colorsDark.bg,
+        '--overlay': props.colorsDark.overlay,
+        '--accentLarge': props.colorsDark.accentLarge,
+        '--accentSmall': props.colorsDark.accentSmall,
+        '--accentOnOverlay': props.colorsDark.accentOnOverlay,
+        '--text': props.colorsDark.text,
+        '--textOnAccent': props.colorsDark.textOnAccent,
     };
-})
-
+});
+const cssColorsLight = computed(() => {
+    return {
+        '--bg': props.colorsLight.bg,
+        '--overlay': props.colorsLight.overlay,
+        '--accentLarge': props.colorsLight.accentLarge,
+        '--accentSmall': props.colorsLight.accentSmall,
+        '--accentOnOverlay': props.colorsLight.accentOnOverlay,
+        '--text': props.colorsLight.text,
+        '--textOnAccent': props.colorsLight.textOnAccent,
+    };
+});
 </script>
 <template>
     <div class="row">
-        <div class="mockup" :style="cssColors">
+        <PaletteOutput :colors="colorsDark" />
+        <div class="mockup" :style="cssColorsDark">
             <div>
                 <h2>Заголовок</h2>
                 <p>Пример текста. <a href="#">Много текста</a>, чтобы посмотреть контрастность. Еще текст, чтобы строки
@@ -36,7 +49,21 @@ const cssColors = computed(() => {
                 <button>Кнопка</button>
             </div>
         </div>
-        <PaletteOutput :colors="colors" />
+        <div class="mockup" :style="cssColorsLight">
+            <div>
+                <h2>Заголовок</h2>
+                <p>Пример текста. <a href="#">Много текста</a>, чтобы посмотреть контрастность. Еще текст, чтобы строки
+                    переносились...</p>
+                <button>Кнопка</button>
+            </div>
+
+            <div class="overlay">
+                <p>Пример текста. <a href="#">Много текста</a>, чтобы посмотреть контрастность. Еще текст, чтобы строки
+                    переносились...</p>
+                <button>Кнопка</button>
+            </div>
+        </div>
+        <PaletteOutput :colors="colorsLight" />
     </div>
 </template>
 <style scoped>
@@ -46,6 +73,10 @@ const cssColors = computed(() => {
 
     .overlay {
         background-color: var(--overlay);
+
+        button {
+            background-color: var(--accentOnOverlay);
+        }
     }
 
     button {

@@ -7,7 +7,7 @@ import chroma from 'chroma-js';
 import MockUp from './MockUp.vue';
 import { hMinus } from './math';
 import { Color, accentColorRoles, bgColorRoles, schemeTypes, type MockupColors, type Theme, type schemeType } from './myTypes';
-import { darkTheme, darkThemeHighContrast, lightTheme, lightThemeHighContrast, maxCAccent, maxCBg } from './themes';
+import { maxCAccent, maxCBg, newDarkTheme, newLightTheme } from './themes';
 
 const generatedMap: Ref<Map<string, Color>> = ref<Map<string, Color>>(new Map<string, Color>());
 
@@ -17,7 +17,7 @@ type HFromL = (l: number) => number;
 const schemeRulesFromInputs = new Map<schemeType, HFromL>([
     ["mono", (l) => { return inputAccent.h; }],
     ["complementary", (l) => {
-        if (30 <= l && l <= 80)
+        if (40 <= l && l <= 80)
             return inputAccent.h;
         return inputBg.h;
     }],
@@ -25,24 +25,19 @@ const schemeRulesFromInputs = new Map<schemeType, HFromL>([
         return (2 * hMinus(inputSecondary.h, inputAccent.h) * (l - 50) / 100 + inputAccent.h + 360) % 360;
     }],
     ["triad", (l) => {
-        if (l <= 30) return inputBg.h;
+        if (l <= 40) return inputBg.h;
         if (l <= 80) return inputAccent.h;
         return inputSecondary.h;
     }]
 ]);
 
 
-
-const generatedDark: MockupColors = reactive({});
-const generatedLight: MockupColors = reactive({});
-const generatedLightHighContrast: MockupColors = reactive({});
-const generatedDarkHighContrast: MockupColors = reactive({});
+const generatedNewLight: MockupColors = reactive({});
+const generatedNewDark: MockupColors = reactive({});
 
 const themes: [Theme, MockupColors][] = [
-    [darkTheme, generatedDark],
-    [lightTheme, generatedLight],
-    [lightThemeHighContrast, generatedLightHighContrast],
-    [darkThemeHighContrast, generatedDarkHighContrast],
+    [newLightTheme, generatedNewLight],
+    [newDarkTheme, generatedNewDark],
 ];
 
 
@@ -318,11 +313,11 @@ const show3Circles = computed(() => {
 
         <div class="m1">
             <!--<MapPlot3d :k="30" :data="generatedMap" :totalQ="generatedMap.size" /> --><!--TODO оно зависает-->
-            <div class="mockups">
-                <MockUp :colors="generatedDark"></Mockup>
-                <MockUp :colors="generatedLight"></Mockup>
-                <MockUp :colors="generatedDarkHighContrast"></Mockup>
-                <MockUp :colors="generatedLightHighContrast"></Mockup>
+            <div>
+                <div style="padding: 2rem;">
+                    <MockUp :colorsLight="generatedNewLight" :colorsDark="generatedNewDark" />
+                </div>
+
             </div>
         </div>
     </div>

@@ -85,30 +85,29 @@ const themes: [Theme, MockupColors][] = [
 
 
 const mapsClustered: Ref<Map<string, Color>[]> = ref([]);
-function makeClusters(mapOfColors: Map<string, Color>, numberOfClusters: number) {
-    //const coords = Array.from(mapOfColors.values(), (v) => [v.x, v.y]);
-    const coords = Array.from(mapOfColors.values(), (v) => cartesianFromPolar(1, v.h));
+const minQToUsePoint = 0.01 * totalPixels / 100;
+
+function makeClusters(mapOfColors: Map<string, Color>, numberOfClusters = 3) {
+
+    const filteredPoints = Array.from(mapOfColors).filter(([k, v]) => (v.q > minQToUsePoint));
+    debugMap.value = new Map(filteredPoints);
+    const coords = filteredPoints.map(([k, v]) => cartesianFromPolar(1, v.h));
 
     const clusterIndexesForPoints = kmeans(coords, numberOfClusters, { initialization: "mostDistant" }).clusters;
+
+
     const clusters: Map<string, Color>[] = [];
     for (let i = 0; i < numberOfClusters; i++) {
         clusters.push(new Map());
     }
-
-    let i = 0;
-    mapOfColors.forEach((v, k) => {
+    filteredPoints.forEach(([k, v], i) => {
         const cluster = clusterIndexesForPoints[i];
         clusters[cluster].set(k, v);
-        i++;
     });
     return clusters;
 }
-function makeClustersUnknownNumber(mapOfColors: Map<string, Color>) {
-    //TODO мб kmeans
-    // попробовать делить широкие кластеры в зависимости от диапазона h
-    if (mapOfColors.size == 1) return [mapOfColors];
 
-    const minQToUsePoint = 0.01 * totalPixels / 100;
+function makeClustersUnknownNumber(mapOfColors: Map<string, Color>) {
 
     const filteredPoints = Array.from(mapOfColors).filter(([k, v]) => (v.q > minQToUsePoint));
     debugMap.value = new Map(filteredPoints);
@@ -116,7 +115,7 @@ function makeClustersUnknownNumber(mapOfColors: Map<string, Color>) {
     const coords = filteredPoints.map(([k, v]) => cartesianFromPolar(v.c, v.h));
 
     const dbscan = new clustering.DBSCAN();
-    const pointsInClusters = dbscan.run(coords, 3, 2);
+    const pointsInClusters = dbscan.run(coords, 5, 1);
 
     const clusters = pointsInClusters.map((indexesInCluster) => {
         const clusterMap: Map<string, Color> = new Map();

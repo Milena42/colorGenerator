@@ -3,14 +3,14 @@ import chroma from 'chroma-js';
 import clustering from "density-clustering";
 import { kmeans } from 'ml-kmeans';
 import { PolynomialRegression } from 'ml-regression';
-import { reactive, ref, shallowRef, watch, type ShallowRef } from 'vue';
+import { reactive, ref, shallowRef, watch, type Ref, type ShallowRef } from 'vue';
 import ArrayOfPlots from './ArrayOfPlots.vue';
 import DropBox from './DropBox.vue';
 import MapPlot3d from './MapPlot3d.vue';
 import MockUp from './MockUp.vue';
 import { cartesianFromPolar, hInRange, polarFromCartesian } from './math';
 import { Color, accentColorRoles, bgColorRoles, colorRoles, type MockupColors, type Theme } from './myTypes';
-import { darkTheme, darkThemeHighContrast, lightTheme, lightThemeHighContrast } from './themes.ts';
+import { newDarkTheme, newLightTheme } from './themes.ts';
 
 const userImg = ref<Uint8ClampedArray>();
 let totalPixels = 1;
@@ -77,18 +77,14 @@ function fillMapFromImg() {
 
 const generatedDark: MockupColors = reactive({});
 const generatedLight: MockupColors = reactive({});
-const generatedLightHighContrast: MockupColors = reactive({});
-const generatedDarkHighContrast: MockupColors = reactive({});
 
 const themes: [Theme, MockupColors][] = [
-    [darkTheme, generatedDark],
-    [lightTheme, generatedLight],
-    [lightThemeHighContrast, generatedLightHighContrast],
-    [darkThemeHighContrast, generatedDarkHighContrast],
+    [newDarkTheme, generatedDark],
+    [newLightTheme, generatedLight],
 ];
 
 
-const mapsClustered = ref([new Map()]);
+const mapsClustered: Ref<Map<string, Color>[]> = ref([]);
 function makeClusters(mapOfColors: Map<string, Color>, numberOfClusters: number) {
     //const coords = Array.from(mapOfColors.values(), (v) => [v.x, v.y]);
     const coords = Array.from(mapOfColors.values(), (v) => cartesianFromPolar(1, v.h));
@@ -110,6 +106,7 @@ function makeClusters(mapOfColors: Map<string, Color>, numberOfClusters: number)
 function makeClustersUnknownNumber(mapOfColors: Map<string, Color>) {
     //TODO мб kmeans
     // попробовать делить широкие кластеры в зависимости от диапазона h
+    if (mapOfColors.size == 1) return [mapOfColors];
 
     const minQToUsePoint = 0.01 * totalPixels / 100;
 
@@ -238,7 +235,25 @@ function arraysForRegression(m: Map<string, Color>) {
     return [lArray, xArray, yArray];
 }
 
-function generateRegressionFromMap(mapOfColors: Map<string, Color>, roles: string) {
+enum LRange { light, middle, dark, all, lightMiddle, darkMiddle };
+function lInLRange(l: number, lRange: LRange) {
+    switch (lRange) {
+        case LRange.light:
+            return (70 <= l);
+        case LRange.middle:
+            return (30 <= l && l <= 70);
+        case LRange.dark:
+            return (l <= 30);
+        case LRange.lightMiddle:
+            return (30 <= l);
+        case LRange.darkMiddle:
+            return (l <= 70);
+        case LRange.all:
+            return true;
+    }
+}
+
+function generateRegressionFromMap(mapOfColors: Map<string, Color>, roles: string, lRange = LRange.all) {
 
     let currentColorRoles = colorRoles;
     switch (roles) {
@@ -263,8 +278,31 @@ function generateRegressionFromMap(mapOfColors: Map<string, Color>, roles: strin
         themes.forEach(([themeRules, generatedTheme]) => {
             currentColorRoles.forEach((key) => {
                 const { l, cMax } = themeRules[key];
+                if (lInLRange(l, lRange)) {
+                    let { c, h } = Array.from(mapOfColors)[0][1];
+                    if (c > cMax) c = cMax;
 
-                let { c, h } = Array.from(mapOfColors)[0][1];
+                    const elem = new Color(l, { c, h });
+                    const rgbString = elem.adjustForRGB();
+
+                    newGeneratedMap.set(rgbString, elem);
+
+                    generatedTheme[key] = rgbString;
+                }
+            });
+        });
+        return newGeneratedMap;
+    }
+
+    const { xFromL, yFromL } = regrFunction(mapOfColors);
+
+    themes.forEach(([themeRules, generatedTheme]) => {
+        currentColorRoles.forEach((key) => {
+            const { l, cMax } = themeRules[key];
+            if (lInLRange(l, lRange)) {
+                const x = xFromL.predict(l);
+                const y = yFromL.predict(l);
+                let [c, h] = polarFromCartesian(x, y);
                 if (c > cMax) c = cMax;
 
                 const elem = new Color(l, { c, h });
@@ -273,34 +311,19 @@ function generateRegressionFromMap(mapOfColors: Map<string, Color>, roles: strin
                 newGeneratedMap.set(rgbString, elem);
 
                 generatedTheme[key] = rgbString;
-            });
-        });
-        return newGeneratedMap;
-    }
-
-    const [l, x, y] = arraysForRegression(mapOfColors);
-    const xFromL = new PolynomialRegression(l, x, 2);
-    const yFromL = new PolynomialRegression(l, y, 2);
-
-    themes.forEach(([themeRules, generatedTheme]) => {
-        currentColorRoles.forEach((key) => {
-            const { l, cMax } = themeRules[key];
-
-            const x = xFromL.predict(l);
-            const y = yFromL.predict(l);
-            let [c, h] = polarFromCartesian(x, y);
-            if (c > cMax) c = cMax;
-
-            const elem = new Color(l, { c, h });
-            const rgbString = elem.adjustForRGB();
-
-            newGeneratedMap.set(rgbString, elem);
-
-            generatedTheme[key] = rgbString;
+            }
         });
     });
     return newGeneratedMap;
 }
+
+function regrFunction(mapOfColors: Map<string, Color>) {
+    const [l, x, y] = arraysForRegression(mapOfColors);
+    const xFromL = new PolynomialRegression(l, x, 2);
+    const yFromL = new PolynomialRegression(l, y, 2);
+    return { xFromL, yFromL };
+}
+
 
 function hRangeOfMap(mapOfColors: Map<string, Color>) {
     const allH = Array.from(mapOfColors.values(), (v) => v.h).sort((a, b) => (a - b));
@@ -325,29 +348,34 @@ function unitedMaps<T>(m1: Map<string, T>, m2: Map<string, T>) {
     return new Map(Array.from(m1).concat(Array.from(m2)));
 }
 
-function generateLogical() {
+function addBlack(map: Map<string, Color>) {
+    map.set("#000000", new Color(0, { c: 0, h: 0 }));
+    map.set("#010101", new Color(1, { c: 0, h: 0 }));
+    map.set("#020202", new Color(2, { c: 0, h: 0 }));
+}
+function addWhite(map: Map<string, Color>) {
+    map.set("#ffffff", new Color(100, { c: 0, h: 0 }));
+    map.set("#fefefe", new Color(99, { c: 0, h: 0 }));
+    map.set("#fdfdfd", new Color(98, { c: 0, h: 0 }));
+}
 
-    const black = { k: "#000000", v: new Color(0, { c: 0, h: 0 }) };
-    const black1 = { k: "#010101", v: new Color(1, { c: 0, h: 0 }) };
-    const white = { k: "#ffffff", v: new Color(100, { c: 0, h: 0 }) };
-    const white1 = { k: "#fefefe", v: new Color(99, { c: 0, h: 0 }) };
+function arrIsLargeEnough(arr: [string, Color][], enough: number) {
+    if (arr.length == 0) return false;
+    const q = arr.map(([k, v]) => v.q).reduce((e1, e2) => (e1 + e2));
+    return q > enough;
+}
+
+function generateLogical() {
 
     const chromaLimit = 8;
     const upperLimit = 70;
     const lowerLimit = 40;
     const sufficientNumber = 0.01 * totalPixels;
-    console.log("chromaN", sufficientNumber);
 
-    function arrIsLargeEnough(arr: [string, Color][], enough: number) {
-        if (arr.length == 0) return false;
-        const q = arr.map(([k, v]) => v.q).reduce((e1, e2) => (e1 + e2));
-        console.log("q", q);
-        return q > enough;
-    }
+
 
     const upperCylinderContainsChroma = arrIsLargeEnough(Array.from(imgMap.value).filter(([k, v]) => (v.l > upperLimit && v.c > 0.5)), sufficientNumber);
     const lowerCylinderContainsChroma = arrIsLargeEnough(Array.from(imgMap.value).filter(([k, v]) => (v.l < lowerLimit && v.c > 0.5)), sufficientNumber);
-    console.log("grayN", 0.2 * totalPixels);
     const theresALotOfGray = arrIsLargeEnough(Array.from(imgMap.value).filter(([k, v]) => (v.l > 30 && v.l < 80 && v.c < chromaLimit)), 0.2 * totalPixels);
     const centralChromaTorus = new Map(Array.from(imgMap.value).filter(([k, v]) => (v.c > chromaLimit)));
 
@@ -359,13 +387,11 @@ function generateLogical() {
 
         const newMap = new Map(imgMap.value);
         if (!upperCylinderContainsChroma) {
-            newMap.set(white.k, white.v);
-            newMap.set(white1.k, white1.v);
+            addWhite(newMap);
         }
 
         if (!lowerCylinderContainsChroma) {
-            newMap.set(black.k, black.v);
-            newMap.set(black1.k, black1.v);
+            addBlack(newMap);
         }
 
         return generateRegressionFromMap(newMap, "all");
@@ -387,8 +413,8 @@ function generateLogical() {
         if (upperCylinderContainsChroma && lowerCylinderContainsChroma && !theresALotOfGray) {
             // не придумываем цвета, они были изначально
             console.log("simple regr");
-            return generateRegressionFromMap(imgMap.value, "all");
-
+            const notGray = new Map(Array.from(imgMap.value).filter(([k, v]) => !(v.l > 30 && v.l < 80 && v.c < chromaLimit)));
+            return generateRegressionFromMap(notGray, "all");
         }
 
         // решаем проблему желтого квадрата и золотого картона:
@@ -407,13 +433,11 @@ function generateLogical() {
         //debugMap.value = centralChromaTorus;
 
         if (!upperCylinderContainsChroma) {//TODO надо отдельно мб проверять оставшееся, потому что желтый очень светлый и в итоге точек нет, падает регрессия
-            otherPart.set(white.k, white.v);
-            otherPart.set(white1.k, white1.v);
+            addWhite(otherPart);
         }
 
         if (!lowerCylinderContainsChroma) {
-            otherPart.set(black.k, black.v);
-            otherPart.set(black1.k, black1.v);
+            addBlack(otherPart);
         }
 
         newGeneratedMap = unitedMaps(newGeneratedMap, generateRegressionFromMap(otherPart, "bg"));
@@ -440,13 +464,11 @@ function generateLogical() {
 
         const otherPart = new Map(Array.from(imgMap.value).filter(([k, v]) => !hInRange(v.h, accentHRange)));//TODO? мб убрать второй акцент оттуда тоже
         if (!upperCylinderContainsChroma) {
-            otherPart.set(white.k, white.v);
-            otherPart.set(white1.k, white1.v);
+            addWhite(otherPart);
         }
 
         if (!lowerCylinderContainsChroma) {
-            otherPart.set(black.k, black.v);
-            otherPart.set(black1.k, black1.v);
+            addBlack(otherPart);
         }
 
         newGeneratedMap = unitedMaps(newGeneratedMap, generateRegressionFromMap(otherPart, "bg"));
@@ -463,12 +485,142 @@ function generateLogical() {
 
 }
 
+
+type rangeL = {
+    start: number,
+    end: number,
+    function: {
+        xFromL: PolynomialRegression;
+        yFromL: PolynomialRegression;
+    } | null;
+};
+
+const lRanges: rangeL[] = [
+    {
+        start: 0,
+        end: 30,
+        function: null
+    },
+    {
+        start: 30,
+        end: 40,
+        function: null
+    },
+    {
+        start: 40,
+        end: 70,
+        function: null
+    },
+    {
+        start: 70,
+        end: 80,
+        function: null
+    },
+    {
+        start: 80,
+        end: 100,
+        function: null
+    },
+];
+function lInRange(l: number, lRange: typeof lRanges[0]) {
+    return (lRange.start <= l && l <= lRange.end);
+}
+function getLFunction(l: number) {
+    const range = lRanges.find((r) => (lInRange(l, r)));
+    if (!range) console.error("lRanges не покрывает весь диапазон");
+    return range!.function!;
+}
+
+function generateLRangeBased() {
+
+    const chromaLimit = 8;
+
+    const sufficientNumber = 0.005 * totalPixels;
+    //console.log("sN", sufficientNumber);
+
+    const chromaTorus = new Map(Array.from(imgMap.value).filter(([k, v]) => (v.c > chromaLimit)));
+    const grays = new Map(Array.from(imgMap.value).filter(([k, v]) => (v.c < chromaLimit)));
+
+    addWhite(grays);
+    addBlack(grays);
+    const grayFunction = regrFunction(grays);
+    const sectors: typeof grayFunction[] = [];
+
+
+    if (!chromaTorus.size) {
+        // видимо, это нечто серое
+        console.log("gray");
+        mapsClustered.value = [];
+    } else {
+        mapsClustered.value = makeClustersUnknownNumber(chromaTorus);
+        mapsClustered.value.forEach((mapOfColors) => {
+            const newMap = new Map(mapOfColors);
+            addBlack(newMap);
+            addWhite(newMap);
+            sectors.push(regrFunction(newMap));
+        });
+    }
+    //console.log(chromaTorus);
+    //console.log(sectors);
+    lRanges.forEach((lRange) => {
+        const { i } = mapsClustered.value.reduce((best, currentMap, i) => {
+
+            const arr = Array.from(currentMap).filter(([k, v]) => lInRange(v.l, lRange));
+            let q, c;
+            if (arr.length == 0) {
+                q = 0;
+                c = 0;
+            }
+            else {
+                q = arr.map(([k, v]) => v.q).reduce((e1, e2) => (e1 + e2));
+                c = Math.max(...arr.map(([k, v]) => v.c));
+            }
+            //console.log("q", q);
+            //console.log(lRange);
+            if (c > best.c && (q + 0.1 * sufficientNumber) > best.q)
+                return { i, q, c };
+            return best;
+        },
+            { i: -1, q: sufficientNumber, c: 0 }
+        );
+        if (i == -1) {
+            lRange.function = grayFunction;
+        } else lRange.function = sectors[i];
+        //console.log("i", i);
+    });
+
+    const newGeneratedMap: Map<string, Color> = new Map();
+
+    themes.forEach(([themeRules, generatedTheme]) => {
+        colorRoles.forEach((key) => {
+            const { l, cMax } = themeRules[key];
+
+            const { xFromL, yFromL } = getLFunction(l);
+            const x = xFromL.predict(l);
+            const y = yFromL.predict(l);
+
+            let [c, h] = polarFromCartesian(x, y);
+            if (c > cMax) c = cMax;
+
+            const elem = new Color(l, { c, h });
+            const rgbString = elem.adjustForRGB();
+
+            newGeneratedMap.set(rgbString, elem);
+
+            generatedTheme[key] = rgbString;
+
+        });
+    });
+    return newGeneratedMap;
+
+}
+
 watch(userImg, () => {
     imgMap.value = fillMapFromImg();
 
     //generateRegressionSimple();
-    mapsClustered.value = [];
-    generatedMap.value = generateLogical();
+
+    generatedMap.value = generateLRangeBased();
 
 });
 
@@ -477,20 +629,19 @@ watch(userImg, () => {
 </script>
 
 <template>
-    <div class="row userUpload">
-        <DropBox v-model:pixels="userImg">Загрузите изображение сюда
-        </DropBox>
-        <MapPlot3d :k="500" :data="imgMap" :totalQ="totalPixels" />
-        <MapPlot3d :k="500" :data="debugMap" :totalQ="totalPixels" style="border: 1px solid red;" />
-    </div>
-    <ArrayOfPlots :maps="mapsClustered" :totalQ="totalPixels" />
-    <div class="m1">
-        <MapPlot3d :k="30" :data="generatedMap" :totalQ="generatedMap.size" />
-        <div class="mockups">
-            <MockUp :colors="generatedDark" />
-            <MockUp :colors="generatedLight" />
-            <MockUp :colors="generatedDarkHighContrast" />
-            <MockUp :colors="generatedLightHighContrast" />
+    <div>
+        <div class="row userUpload">
+            <DropBox v-model:pixels="userImg">Загрузите изображение сюда
+            </DropBox>
+            <MapPlot3d :k="500" :data="imgMap" :totalQ="totalPixels" />
+            <MapPlot3d :k="500" :data="debugMap" :totalQ="totalPixels" style="border: 1px solid red;" />
+        </div>
+        <ArrayOfPlots :maps="mapsClustered" :totalQ="totalPixels" />
+        <div class="m1">
+            <MapPlot3d :k="30" :data="generatedMap" :totalQ="generatedMap.size" />
+            <div>
+                <MockUp :colorsDark="generatedDark" :colorsLight="generatedLight" />
+            </div>
         </div>
     </div>
 </template>

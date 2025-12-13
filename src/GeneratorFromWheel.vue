@@ -17,7 +17,7 @@ type HFromL = (l: number) => number;
 const schemeRulesFromInputs = new Map<schemeType, HFromL>([
     ["mono", (l) => { return inputAccent.h; }],
     ["complementary", (l) => {
-        if (40 <= l && l <= 80)
+        if (35 <= l && l <= 80)
             return inputAccent.h;
         return inputBg.h;
     }],
@@ -25,7 +25,7 @@ const schemeRulesFromInputs = new Map<schemeType, HFromL>([
         return (2 * hMinus(inputSecondary.h, inputAccent.h) * (l - 50) / 100 + inputAccent.h + 360) % 360;
     }],
     ["triad", (l) => {
-        if (l <= 40) return inputBg.h;
+        if (l < 35) return inputBg.h;
         if (l <= 80) return inputAccent.h;
         return inputSecondary.h;
     }]

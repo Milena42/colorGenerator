@@ -1,12 +1,9 @@
 <script setup lang="ts">
 import type { MockupColors } from './myTypes';
 
-
 defineProps<{
-    colors: MockupColors,
+    colors: MockupColors;
 }>();
-
-
 </script>
 <template>
     <div class="palette">

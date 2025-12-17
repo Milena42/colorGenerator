@@ -12,10 +12,9 @@ const canvas = ref<HTMLCanvasElement>();
 const ctx = ref<CanvasRenderingContext2D>();
 
 onMounted(() => {
-    canvas.value = document.createElement("canvas");
-    ctx.value = canvas.value.getContext("2d") ?? undefined;
+    canvas.value = document.createElement('canvas');
+    ctx.value = canvas.value.getContext('2d') ?? undefined;
 });
-
 
 function dragenter(e: DragEvent) {
     e.stopPropagation();
@@ -53,7 +52,7 @@ function loadImgData(e: Event) {
     if (resizeImage) {
         const newSize = img1.naturalWidth * 0.8;
         theWidth = Math.round(newSize);
-        theHeight = Math.round(newSize * img1.naturalHeight / img1.naturalWidth);
+        theHeight = Math.round((newSize * img1.naturalHeight) / img1.naturalWidth);
     } else {
         theWidth = img1.naturalWidth;
         theHeight = img1.naturalHeight;
@@ -61,7 +60,7 @@ function loadImgData(e: Event) {
     ////////////////
 
     if (!ctx.value || !canvas.value) {
-        console.log("no canvas?");
+        console.log('no canvas?');
         return;
     }
 
@@ -73,7 +72,6 @@ function loadImgData(e: Event) {
 
     pixels.value = imgData.data; /// одномерный массив rgbargbargba
 }
-
 </script>
 <template>
     <div class="dropbox" @dragenter="dragenter" @dragover="dragover" @drop="drop">
@@ -90,7 +88,7 @@ function loadImgData(e: Event) {
     justify-content: center;
     border: #dadada solid 2px;
 
-    &>* {
+    & > * {
         max-height: 100%;
     }
 

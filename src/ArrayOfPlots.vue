@@ -2,10 +2,9 @@
 import MapPlot3d from './MapPlot3d.vue';
 import type { Color } from './myTypes';
 const props = defineProps<{
-    maps: Map<string, Color>[] | undefined,
-    totalQ: number,
+    maps: Map<string, Color>[] | undefined;
+    totalQ: number;
 }>();
-
 </script>
 <template>
     <div v-if="maps">

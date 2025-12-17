@@ -3,10 +3,9 @@ import { computed } from 'vue';
 import PaletteOutput from './PaletteOutput.vue';
 import type { MockupColors } from './myTypes';
 
-
 const props = defineProps<{
-    colorsLight: MockupColors,
-    colorsDark: MockupColors,
+    colorsLight: MockupColors;
+    colorsDark: MockupColors;
 }>();
 
 const cssColorsDark = computed(() => {
@@ -20,6 +19,7 @@ const cssColorsDark = computed(() => {
         '--textOnAccent': props.colorsDark.textOnAccent,
     };
 });
+
 const cssColorsLight = computed(() => {
     return {
         '--bg': props.colorsLight.bg,
@@ -38,28 +38,36 @@ const cssColorsLight = computed(() => {
         <div class="mockup" :style="cssColorsDark">
             <div>
                 <h2>Заголовок</h2>
-                <p>Пример текста. <a href="#">Много текста</a>, чтобы посмотреть контрастность. Еще текст, чтобы строки
-                    переносились...</p>
+                <p>
+                    Пример текста. <a href="#">Много текста</a>, чтобы посмотреть контрастность. Еще
+                    текст, чтобы строки переносились...
+                </p>
                 <button>Кнопка</button>
             </div>
 
             <div class="overlay">
-                <p>Пример текста. <a href="#">Много текста</a>, чтобы посмотреть контрастность. Еще текст, чтобы строки
-                    переносились...</p>
+                <p>
+                    Пример текста. <a href="#">Много текста</a>, чтобы посмотреть контрастность. Еще
+                    текст, чтобы строки переносились...
+                </p>
                 <button>Кнопка</button>
             </div>
         </div>
         <div class="mockup" :style="cssColorsLight">
             <div>
                 <h2>Заголовок</h2>
-                <p>Пример текста. <a href="#">Много текста</a>, чтобы посмотреть контрастность. Еще текст, чтобы строки
-                    переносились...</p>
+                <p>
+                    Пример текста. <a href="#">Много текста</a>, чтобы посмотреть контрастность. Еще
+                    текст, чтобы строки переносились...
+                </p>
                 <button>Кнопка</button>
             </div>
 
             <div class="overlay">
-                <p>Пример текста. <a href="#">Много текста</a>, чтобы посмотреть контрастность. Еще текст, чтобы строки
-                    переносились...</p>
+                <p>
+                    Пример текста. <a href="#">Много текста</a>, чтобы посмотреть контрастность. Еще
+                    текст, чтобы строки переносились...
+                </p>
                 <button>Кнопка</button>
             </div>
         </div>

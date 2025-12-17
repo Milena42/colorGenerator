@@ -4,16 +4,16 @@ import Plotly from 'plotly.js-dist';
 import { onMounted, useTemplateRef, watch } from 'vue';
 
 const props = defineProps<{
-    data: number[],
-    circle: number,
-    borders: number[],
+    data: number[];
+    circle: number;
+    borders: number[];
 }>();
 
-const graphDiv = useTemplateRef<HTMLElement>("graphDiv");
+const graphDiv = useTemplateRef<HTMLElement>('graphDiv');
 
 function draw() {
-
     if (!graphDiv.value) return;
+
     const values = props.data;
     const degrees = values.map((v, i) => i);
     const maxValue = Math.max(...values);
@@ -24,7 +24,6 @@ function draw() {
             r: values,
             theta: degrees,
             width: 1,
-
         },
         {
             type: 'scatterpolar',
@@ -34,7 +33,7 @@ function draw() {
             mode: 'lines',
             line: {
                 color: 'red',
-                width: 1
+                width: 1,
             },
         },
         {
@@ -53,10 +52,10 @@ function draw() {
                 autorange: 'reversed',
             },
             angularaxis: {
-                direction: 'counterclockwise'
-            }
+                direction: 'counterclockwise',
+            },
         },
-        showlegend: false
+        showlegend: false,
     };
 
     Plotly.newPlot(graphDiv.value, traces, layout);
@@ -64,8 +63,7 @@ function draw() {
 
 onMounted(draw);
 
-watch([() => props.borders], draw, { flush: "post" });
-
+watch([() => props.borders], draw, { flush: 'post' });
 </script>
 <template>
     <div ref="graphDiv" class="plot"></div>

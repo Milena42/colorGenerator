@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { type Data, type Layout } from 'plotly.js';
+import type { Data, Layout } from 'plotly.js';
 import Plotly from 'plotly.js-dist';
 import { onMounted, useTemplateRef, watch } from 'vue';
 

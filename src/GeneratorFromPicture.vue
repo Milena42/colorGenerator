@@ -8,6 +8,7 @@ import ArrayOfPlots from './ArrayOfPlots.vue';
 import DropBox from './DropBox.vue';
 import MapPlot3d from './MapPlot3d.vue';
 import MockUp from './MockUp.vue';
+import PolarHistogram from './PolarHistogram.vue';
 import { cartesianFromPolar, polarFromCartesian } from './math';
 import { Color, colorRoles, type MockupColors, type Theme } from './myTypes';
 import { newDarkTheme, newLightTheme } from './themes.ts';
@@ -123,6 +124,100 @@ function makeClustersUnknownNumber(mapOfColors: Map<string, Color>) {
             clusterMap.set(initialKeys[i], mapOfColors.get(initialKeys[i])!);
         });
         return clusterMap;
+    });
+    return clusters;
+}
+
+const polarHistogramData1 = ref<number[]>([]);
+const polarHistogramData2 = ref<number[]>([]);
+const polarHistogramCircle = ref(0);
+const polarHistogramBorders = ref<number[]>([]);
+function makeClustersNew(mapOfColors: Map<string, Color>) {
+    const filteredPoints = Array.from(mapOfColors).filter(([k, v]) => (v.q > minQToUsePoint));
+    debugMap.value = new Map(filteredPoints);
+    const points = filteredPoints.map(([k, v]) => ({ h: v.h, q: v.q }));
+
+    const circularHistogram: number[] = new Array(360).fill(0);
+    points.forEach(point => {
+        const h = Math.round(point.h) % 360;
+        circularHistogram[h] += point.q;
+    });
+    polarHistogramData1.value = circularHistogram;
+
+    const smoothedCircularHistogram: number[] = new Array(360).fill(0);
+    const smoothingRadius = 10;
+    for (let i = 0; i < 360; i++) {
+        let sum = 0;
+        for (let j = -smoothingRadius; j <= smoothingRadius; j++) {
+            const index = (i + j + 360) % 360;
+            sum += circularHistogram[index];
+        }
+        smoothedCircularHistogram[i] = sum / (2 * smoothingRadius);
+    }
+    polarHistogramData2.value = smoothedCircularHistogram;
+
+    type Gap = { start: number, end: number; center: number; };
+    const gaps: Gap[] = [];
+    let currentGapStart: number | undefined = undefined;
+    const minQForHistogram = minQToUsePoint * 20000;
+    polarHistogramCircle.value = minQForHistogram;
+    smoothedCircularHistogram.forEach((value, h) => {
+        if (currentGapStart != undefined) {
+            if (value >= minQForHistogram) {
+                const gap = {
+                    start: currentGapStart,
+                    end: h - 1,
+                    center: (h - 1 - currentGapStart) / 2 + currentGapStart
+                };
+                gaps.push(gap);
+                currentGapStart = undefined;
+            }
+        } else if (value < minQForHistogram) {
+            currentGapStart = h;
+        }
+    });
+    if (currentGapStart != undefined) {
+        if (gaps[0].start == 0) {
+            const gap = {
+                start: currentGapStart,
+                end: gaps[0].end,
+                center: ((360 + gaps[0].end - currentGapStart) / 2 + currentGapStart) % 360
+            };
+            gaps[0] = gap;
+        } else {
+            const gap = {
+                start: currentGapStart,
+                end: 359,
+                center: (359 - currentGapStart) / 2 + currentGapStart
+            };
+            gaps.push(gap);
+        }
+    }
+
+    let borders: number[];
+    if (gaps.length == 0) {
+        borders = [0, 120, 240];
+    } else {
+        borders = gaps.map((g) => g.center).sort((a, b) => (a - b));
+    }
+    polarHistogramBorders.value = borders;
+    const clusters: Map<string, Color>[] = [];
+    for (let i = 0; i < borders.length; i++) {
+        clusters.push(new Map());
+    }
+
+    const numberOfClusters = clusters.length;
+    filteredPoints.forEach(([k, v]) => {
+        let i = 0;
+        while (i < numberOfClusters) {
+            if (v.h <= borders[i]) {
+                break;
+            }
+            i++;
+        }
+        i %= numberOfClusters;
+
+        clusters[i].set(k, v);
     });
     return clusters;
 }
@@ -258,7 +353,7 @@ function generateLRangeBased() {
         console.log("gray");
         mapsClustered.value = [];
     } else {
-        mapsClustered.value = makeClustersUnknownNumber(chromaTorus);
+        mapsClustered.value = makeClustersNew(chromaTorus);
         mapsClustered.value.forEach((mapOfColors) => {
             const newMap = new Map(mapOfColors);
             addBlack(newMap);
@@ -332,6 +427,11 @@ watch(userImg, () => {
             <MapPlot3d :k="500" :data="imgMap" :totalQ="totalPixels" />
             <MapPlot3d :k="500" :data="debugMap" :totalQ="totalPixels" style="border: 1px solid red;" />
         </div>
+        <div class="row">
+            <PolarHistogram :data="polarHistogramData1" :circle="polarHistogramCircle" :borders="polarHistogramBorders" />
+            <PolarHistogram :data="polarHistogramData2" :circle="polarHistogramCircle" :borders="polarHistogramBorders" />
+        </div>
+
         <ArrayOfPlots :maps="mapsClustered" :totalQ="totalPixels" />
         <div class="m1">
             <MapPlot3d :k="30" :data="generatedMap" :totalQ="generatedMap.size" />

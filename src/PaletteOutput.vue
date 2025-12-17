@@ -34,5 +34,10 @@ defineProps<{
         width: 3rem;
         height: 2rem;
     }
+
+    p {
+        font-family: monospace;
+        text-transform: uppercase;
+    }
 }
 </style>

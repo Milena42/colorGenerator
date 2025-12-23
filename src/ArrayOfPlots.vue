@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import MapPlot3d from './MapPlot3d.vue';
+import MapPlotPolar from './MapPlotPolar.vue';
 import type { Color } from './myTypes';
 const props = defineProps<{
     maps: Map<string, Color>[] | undefined;
@@ -9,7 +9,7 @@ const props = defineProps<{
 <template>
     <div v-if="maps">
         <div class="row" v-if="maps.length < 6">
-            <MapPlot3d v-for="map of props.maps" :k="500" :data="map" :totalQ="totalQ" />
+            <MapPlotPolar v-for="map of props.maps" :k="500" :data="map" :totalQ="totalQ" />
         </div>
         <div v-else>Оперативки может не хватить, кол-во графиков: {{ maps.length }}</div>
     </div>

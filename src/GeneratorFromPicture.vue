@@ -4,7 +4,7 @@ import { PolynomialRegression } from 'ml-regression';
 import { reactive, ref, shallowRef, watch, type Ref, type ShallowRef } from 'vue';
 import ArrayOfPlots from './ArrayOfPlots.vue';
 import DropBox from './DropBox.vue';
-import MapPlot3d from './MapPlot3d.vue';
+import MapPlotPolar from './MapPlotPolar.vue';
 import MockUp from './MockUp.vue';
 import PolarHistogram from './PolarHistogram.vue';
 import { polarFromCartesian } from './math';
@@ -255,6 +255,8 @@ function getLFunction(l: number) {
     return range!.function!;
 }
 
+const graysMap: ShallowRef<Map<string, Color>> = shallowRef(new Map<string, Color>());
+
 function generateLRangeBased() {
     const chromaLimit = 8;
 
@@ -266,6 +268,7 @@ function generateLRangeBased() {
 
     addWhite(grays);
     addBlack(grays);
+    graysMap.value = grays;
     const grayFunction = regrFunction(grays);
     const sectors: (typeof grayFunction)[] = [];
 
@@ -341,8 +344,8 @@ watch(userImg, () => {
     <div>
         <div class="row userUpload">
             <DropBox v-model:pixels="userImg">Загрузите изображение сюда </DropBox>
-            <MapPlot3d :k="500" :data="imgMap" :totalQ="totalPixels" />
-            <MapPlot3d
+            <MapPlotPolar :k="500" :data="imgMap" :totalQ="totalPixels" />
+            <MapPlotPolar
                 :k="500"
                 :data="debugMap"
                 :totalQ="totalPixels"
@@ -363,8 +366,9 @@ watch(userImg, () => {
         </div>
 
         <ArrayOfPlots :maps="mapsClustered" :totalQ="totalPixels" />
+        <MapPlotPolar :k="500" :data="graysMap" :totalQ="totalPixels" />
         <div class="m1">
-            <MapPlot3d :k="30" :data="generatedMap" :totalQ="generatedMap.size" />
+            <MapPlotPolar :k="30" :data="generatedMap" :totalQ="generatedMap.size" />
             <div>
                 <MockUp :colorsDark="generatedDark" :colorsLight="generatedLight" />
             </div>

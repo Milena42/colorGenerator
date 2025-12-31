@@ -76,8 +76,12 @@ export class Color {
             rgb = chroma.oklch(this.l / 100, this._c / 100, this._h);
             if (rgb.clipped()) {
                 exist = false;
-                this._c--;
-                if (this._c < 0) this._c = 0;
+                if (this._c == 0) {
+                    this.l--;
+                } else {
+                    this._c--;
+                    if (this._c < 0) this._c = 0;
+                }
             } else exist = true;
         } while (!exist);
         /* т.к. меняется С, меняются х и у, зависящие от С */

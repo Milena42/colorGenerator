@@ -2,6 +2,11 @@
 import { computed, reactive, ref, useTemplateRef, watch, type Ref } from 'vue';
 import CircleInput, { circleObject } from './CircleInput.vue';
 
+import IconAnalog from './icons/IconAnalog.vue';
+import IconComplementary from './icons/IconComplementary.vue';
+import IconMono from './icons/IconMono.vue';
+import IconTriad from './icons/IconTriad.vue';
+
 //import MapPlot3d from './MapPlot3d.vue';
 import chroma from 'chroma-js';
 import MockUp from './MockUp.vue';
@@ -288,6 +293,12 @@ const show3Circles = computed(() => {
             <select v-model="typeOfScheme" @change="changeTypeOfScheme">
                 <option v-for="t in schemeTypes" :value="t">{{ t }}</option>
             </select>
+            <div class="row">
+                <IconMono />
+                <IconComplementary />
+                <IconAnalog />
+                <IconTriad />
+            </div>
             <div class="col">
                 <label>макс. насыщенность акцента</label>
                 <input

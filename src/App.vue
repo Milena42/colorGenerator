@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { provide, ref } from 'vue';
+import chroma from 'chroma-js';
+import { computed, provide, ref } from 'vue';
 import GeneratorFromPicture from './GeneratorFromPicture.vue';
 import GeneratorFromWheel from './GeneratorFromWheel.vue';
 
@@ -11,15 +12,22 @@ const enum tabs {
     colorWheel,
 }
 const currentTab = ref(tabs.picture);
+const bgColor = ref('#ffffff');
+const themeIsLight = computed(() => {
+    const c = chroma(bgColor.value);
+    const l = c.get('oklch.l');
+    return l > 0.5;
+});
 </script>
-
 <template>
-    <div class="col page">
+    <div class="col page" :class="themeIsLight ? 'light' : 'dark'" :style="{ background: bgColor }">
         <div>
             <input type="checkbox" v-model="showQuantityOnPlots" id="showQ" />
             <label for="showQ">показывать количество на графиках</label>
         </div>
-
+        <div>
+            <input type="color" v-model="bgColor" />
+        </div>
         <div>
             <button @click="currentTab = tabs.picture">С картинки</button>
             <button @click="currentTab = tabs.colorWheel">По кругу</button>
@@ -33,9 +41,30 @@ const currentTab = ref(tabs.picture);
     </div>
 </template>
 <style>
+html,
+body,
+#app {
+    margin: 0px;
+    width: 100%;
+    height: 100%;
+}
 .page {
     padding: 1rem;
     gap: 1rem;
+    min-height: 100%;
+    width: 100%;
+}
+.page.light {
+    color: black;
+    .icon {
+        --primary: black;
+    }
+}
+.page.dark {
+    color: white;
+    .icon {
+        --primary: white;
+    }
 }
 
 .userUpload {

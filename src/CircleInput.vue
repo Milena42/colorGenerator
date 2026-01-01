@@ -14,13 +14,17 @@ export class circleObject {
 
     color: Color;
 
+    SCALE = 1.22;
+
     calculateCoords() {
-        this.cx = (this.color.x * this.svgSquareWidth) / 100 + this.svgSquareWidth / 2;
-        this.cy = (this.color.y * this.svgSquareWidth) / 100 + this.svgSquareWidth / 2;
+        this.cx = (this.color.x * this.svgSquareWidth * this.SCALE) / 100 + this.svgSquareWidth / 2;
+        this.cy = (this.color.y * this.svgSquareWidth * this.SCALE) / 100 + this.svgSquareWidth / 2;
     }
     calculateColorCoords() {
-        this.color.x = ((this.cx - this.svgSquareWidth / 2) * 100) / this.svgSquareWidth;
-        this.color.y = ((this.cy - this.svgSquareWidth / 2) * 100) / this.svgSquareWidth;
+        this.color.x =
+            ((this.cx - this.svgSquareWidth / 2) * 100) / this.svgSquareWidth / this.SCALE;
+        this.color.y =
+            ((this.cy - this.svgSquareWidth / 2) * 100) / this.svgSquareWidth / this.SCALE;
     }
     calculateColor() {
         this.calculateColorCoords();

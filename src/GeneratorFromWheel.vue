@@ -156,7 +156,7 @@ function changeTypeOfScheme() {
     generate();
 }
 
-const svgSquareWidth = 500;
+const svgSquareWidth = 450;
 
 const accentCircle = reactive(new circleObject(inputAccent, svgSquareWidth));
 const secondaryCircle = reactive(new circleObject(inputSecondary, svgSquareWidth));

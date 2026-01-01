@@ -288,7 +288,7 @@ const show3Circles = computed(() => {
 });
 </script>
 <template>
-    <div class="row">
+    <div class="generator-wheel">
         <div>
             <select v-model="typeOfScheme" @change="changeTypeOfScheme">
                 <option v-for="t in schemeTypes" :value="t">{{ t }}</option>
@@ -379,14 +379,9 @@ const show3Circles = computed(() => {
             </div>
         </div>
 
-        <div class="m1">
-            <!--<MapPlot3d :k="30" :data="generatedMap" :totalQ="generatedMap.size" /> --><!--TODO оно зависает-->
-            <div>
-                <div style="padding: 2rem">
-                    <MockUp :colorsLight="generatedNewLight" :colorsDark="generatedNewDark" />
-                </div>
-            </div>
-        </div>
+        <!--<MapPlot3d :k="30" :data="generatedMap" :totalQ="generatedMap.size" /> --><!--TODO оно зависает-->
+
+        <MockUp :colorsLight="generatedNewLight" :colorsDark="generatedNewDark" />
     </div>
 </template>
 <style scoped>
@@ -398,5 +393,12 @@ const show3Circles = computed(() => {
         top: 0px;
         left: 0px;
     }
+}
+
+.generator-wheel {
+    display: flex;
+    flex-flow: row wrap;
+    align-items: center;
+    justify-content: space-evenly;
 }
 </style>

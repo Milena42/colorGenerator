@@ -21,30 +21,35 @@ const themeIsLight = computed(() => {
 </script>
 <template>
     <div class="col page" :class="themeIsLight ? 'light' : 'dark'" :style="{ background: bgColor }">
-        <div>
-            <input type="checkbox" v-model="showQuantityOnPlots" id="showQ" />
-            <label for="showQ">показывать количество на графиках</label>
+        <div class="row">
+            <div>
+                <button @click="currentTab = tabs.picture">С картинки</button>
+                <button @click="currentTab = tabs.colorWheel">По кругу</button>
+            </div>
+            <div>
+                <input type="checkbox" v-model="showQuantityOnPlots" id="showQ" />
+                <label for="showQ">показывать количество на графиках</label>
+            </div>
+            <div>
+                <input type="color" v-model="bgColor" />
+            </div>
         </div>
-        <div>
-            <input type="color" v-model="bgColor" />
-        </div>
-        <div>
-            <button @click="currentTab = tabs.picture">С картинки</button>
-            <button @click="currentTab = tabs.colorWheel">По кругу</button>
-        </div>
-        <div v-show="currentTab == tabs.picture">
-            <GeneratorFromPicture />
-        </div>
-        <div v-show="currentTab == tabs.colorWheel">
-            <GeneratorFromWheel />
-        </div>
+        <GeneratorFromPicture v-show="currentTab == tabs.picture" class="grow w-full" />
+        <GeneratorFromWheel v-show="currentTab == tabs.colorWheel" class="grow w-full" />
     </div>
 </template>
 <style>
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
 html,
 body,
 #app {
     margin: 0px;
+    padding: 0px;
     width: 100%;
     height: 100%;
 }
@@ -84,12 +89,6 @@ body,
     grid-template-columns: 1fr 1fr;
 }
 
-.m1 {
-    display: grid;
-    gap: 2rem;
-    grid-template-columns: 1fr 2fr;
-}
-
 .row {
     display: flex;
     flex-flow: row nowrap;
@@ -98,5 +97,13 @@ body,
 .col {
     display: flex;
     flex-flow: column nowrap;
+}
+
+.grow {
+    flex-grow: 1;
+}
+
+.w-full {
+    width: 100%;
 }
 </style>

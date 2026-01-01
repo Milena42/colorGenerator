@@ -367,11 +367,9 @@ watch(userImg, () => {
 
         <ArrayOfPlots :maps="mapsClustered" :totalQ="totalPixels" />
         <MapPlotPolar :k="500" :data="graysMap" :totalQ="totalPixels" />
-        <div class="m1">
-            <MapPlotPolar :k="30" :data="generatedMap" :totalQ="generatedMap.size" />
-            <div>
-                <MockUp :colorsDark="generatedDark" :colorsLight="generatedLight" />
-            </div>
-        </div>
+
+        <MapPlotPolar :k="30" :data="generatedMap" :totalQ="generatedMap.size" />
+
+        <MockUp :colorsDark="generatedDark" :colorsLight="generatedLight" />
     </div>
 </template>

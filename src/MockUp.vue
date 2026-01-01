@@ -33,45 +33,49 @@ const cssColorsLight = computed(() => {
 });
 </script>
 <template>
-    <div class="row">
-        <PaletteOutput :colors="colorsDark" />
-        <div class="mockup" :style="cssColorsDark">
-            <div>
-                <h2>Заголовок</h2>
-                <p>
-                    Пример текста. <a href="#">Много текста</a>, чтобы посмотреть контрастность. Еще
-                    текст, чтобы строки переносились...
-                </p>
-                <button>Кнопка</button>
-            </div>
+    <div class="mockups">
+        <div class="row">
+            <PaletteOutput :colors="colorsDark" />
+            <div class="mockup" :style="cssColorsDark">
+                <div>
+                    <h2>Заголовок</h2>
+                    <p>
+                        Пример текста. <a href="#">Много текста</a>, чтобы посмотреть контрастность.
+                        Еще текст, чтобы строки переносились...
+                    </p>
+                    <button>Кнопка</button>
+                </div>
 
-            <div class="overlay">
-                <p>
-                    Пример текста. <a href="#">Много текста</a>, чтобы посмотреть контрастность. Еще
-                    текст, чтобы строки переносились...
-                </p>
-                <button>Кнопка</button>
+                <div class="overlay">
+                    <p>
+                        Пример текста. <a href="#">Много текста</a>, чтобы посмотреть контрастность.
+                        Еще текст, чтобы строки переносились...
+                    </p>
+                    <button>Кнопка</button>
+                </div>
             </div>
         </div>
-        <div class="mockup" :style="cssColorsLight">
-            <div>
-                <h2>Заголовок</h2>
-                <p>
-                    Пример текста. <a href="#">Много текста</a>, чтобы посмотреть контрастность. Еще
-                    текст, чтобы строки переносились...
-                </p>
-                <button>Кнопка</button>
-            </div>
+        <div class="row">
+            <div class="mockup" :style="cssColorsLight">
+                <div>
+                    <h2>Заголовок</h2>
+                    <p>
+                        Пример текста. <a href="#">Много текста</a>, чтобы посмотреть контрастность.
+                        Еще текст, чтобы строки переносились...
+                    </p>
+                    <button>Кнопка</button>
+                </div>
 
-            <div class="overlay">
-                <p>
-                    Пример текста. <a href="#">Много текста</a>, чтобы посмотреть контрастность. Еще
-                    текст, чтобы строки переносились...
-                </p>
-                <button>Кнопка</button>
+                <div class="overlay">
+                    <p>
+                        Пример текста. <a href="#">Много текста</a>, чтобы посмотреть контрастность.
+                        Еще текст, чтобы строки переносились...
+                    </p>
+                    <button>Кнопка</button>
+                </div>
             </div>
+            <PaletteOutput :colors="colorsLight" />
         </div>
-        <PaletteOutput :colors="colorsLight" />
     </div>
 </template>
 <style scoped>
@@ -101,11 +105,10 @@ const cssColorsLight = computed(() => {
     border-radius: 20px;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
     align-items: flex-start;
     gap: 30px;
     padding: 50px;
-    width: 300px;
+    width: 380px;
     font-family: sans-serif;
     font-size: 12pt;
 
@@ -121,5 +124,13 @@ const cssColorsLight = computed(() => {
         box-shadow: none;
         font: inherit;
     }
+}
+
+.mockups {
+    display: flex;
+    flex-flow: row wrap;
+    gap: 0px;
+    align-items: center;
+    justify-content: center;
 }
 </style>

@@ -1,17 +1,10 @@
 <script setup lang="ts">
 import chroma from 'chroma-js';
 import { computed, provide, ref } from 'vue';
-import GeneratorFromPicture from './GeneratorFromPicture.vue';
-import GeneratorFromWheel from './GeneratorFromWheel.vue';
 
 const showQuantityOnPlots = ref(true);
 provide('showQuantityOnPlots', showQuantityOnPlots);
 
-const enum tabs {
-    picture,
-    colorWheel,
-}
-const currentTab = ref(tabs.picture);
 const bgColor = ref('#ffffff');
 const themeIsLight = computed(() => {
     const c = chroma(bgColor.value);
@@ -23,8 +16,12 @@ const themeIsLight = computed(() => {
     <div class="col page" :class="themeIsLight ? 'light' : 'dark'" :style="{ background: bgColor }">
         <div class="row">
             <div>
-                <button @click="currentTab = tabs.picture">С картинки</button>
-                <button @click="currentTab = tabs.colorWheel">По кругу</button>
+                <RouterLink class="tab-button" activeClass="active" to="/picture"
+                    >С картинки</RouterLink
+                >
+                <RouterLink class="tab-button" activeClass="active" to="/wheel"
+                    >По кругу</RouterLink
+                >
             </div>
             <div>
                 <input type="checkbox" v-model="showQuantityOnPlots" id="showQ" />
@@ -34,8 +31,7 @@ const themeIsLight = computed(() => {
                 <input type="color" v-model="bgColor" />
             </div>
         </div>
-        <GeneratorFromPicture v-show="currentTab == tabs.picture" class="grow w-full" />
-        <GeneratorFromWheel v-show="currentTab == tabs.colorWheel" class="grow w-full" />
+        <RouterView class="grow w-full" />
     </div>
 </template>
 <style>
@@ -105,5 +101,15 @@ body,
 
 .w-full {
     width: 100%;
+}
+.tab-button {
+    background: rgb(212, 212, 235);
+    padding: 0.5rem 2rem;
+    border-radius: 1rem;
+    text-decoration: none;
+    color: inherit;
+}
+.tab-button.active {
+    border: 1px solid red;
 }
 </style>

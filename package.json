@@ -22,7 +22,8 @@
     "ml-kmeans": "^6.0.0",
     "ml-regression": "^6.3.0",
     "plotly.js-dist": "^3.1.0",
-    "vue": "^3.5.18"
+    "vue": "^3.5.18",
+    "vue-router": "^4.6.4"
   },
   "devDependencies": {
     "@tsconfig/node22": "^22.0.2",

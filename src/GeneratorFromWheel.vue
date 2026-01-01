@@ -15,10 +15,9 @@ import {
     Color,
     accentColorRoles,
     bgColorRoles,
-    schemeTypes,
+    schemeType,
     type MockupColors,
     type Theme,
-    type schemeType,
 } from './myTypes';
 import { darkTheme, lightTheme, maxCAccent, maxCBg } from './themes';
 
@@ -27,20 +26,20 @@ const generatedMap: Ref<Map<string, Color>> = ref<Map<string, Color>>(new Map<st
 type HFromL = (l: number) => number;
 const schemeRulesFromInputs = new Map<schemeType, HFromL>([
     [
-        'mono',
+        schemeType.mono,
         (l) => {
             return inputAccent.h;
         },
     ],
     [
-        'complementary',
+        schemeType.complementary,
         (l) => {
             if (35 <= l && l <= 80) return inputAccent.h;
             return inputBg.h;
         },
     ],
     [
-        'analog',
+        schemeType.analog,
         (l) => {
             return (
                 ((2 * hMinus(inputSecondary.h, inputAccent.h) * (l - 50)) / 100 +
@@ -51,7 +50,7 @@ const schemeRulesFromInputs = new Map<schemeType, HFromL>([
         },
     ],
     [
-        'triad',
+        schemeType.triad,
         (l) => {
             if (l < 35) return inputBg.h;
             if (l <= 80) return inputAccent.h;
@@ -73,7 +72,7 @@ const inputAccent = reactive(new Color(50, { c: R_SPECTRAL_CIRCLE, h: 0 }));
 const inputSecondary = reactive(new Color(50, { c: R_SPECTRAL_CIRCLE, h: 0 }));
 const inputBg = reactive(new Color(50, { c: R_SPECTRAL_CIRCLE, h: 0 }));
 
-const typeOfScheme = ref<schemeType>(schemeTypes[0]);
+const typeOfScheme = ref<schemeType>(schemeType.mono);
 
 const inputCBg = ref<number>(maxCBg);
 const inputCAccent = ref<number>(maxCAccent);
@@ -155,6 +154,8 @@ function changeTypeOfScheme() {
     secondaryCircle.calculateCoords();
     generate();
 }
+
+watch(typeOfScheme, changeTypeOfScheme);
 
 const svgSquareWidth = 450;
 
@@ -290,14 +291,35 @@ const show3Circles = computed(() => {
 <template>
     <div class="generator-wheel">
         <div>
-            <select v-model="typeOfScheme" @change="changeTypeOfScheme">
-                <option v-for="t in schemeTypes" :value="t">{{ t }}</option>
-            </select>
             <div class="row">
-                <IconMono />
-                <IconComplementary />
-                <IconAnalog />
-                <IconTriad />
+                <div
+                    class="harmony-type-button"
+                    :class="{ active: typeOfScheme == schemeType.mono }"
+                    @click="typeOfScheme = schemeType.mono"
+                >
+                    <IconMono />
+                </div>
+                <div
+                    class="harmony-type-button"
+                    :class="{ active: typeOfScheme == schemeType.complementary }"
+                    @click="typeOfScheme = schemeType.complementary"
+                >
+                    <IconComplementary />
+                </div>
+                <div
+                    class="harmony-type-button"
+                    :class="{ active: typeOfScheme == schemeType.analog }"
+                    @click="typeOfScheme = schemeType.analog"
+                >
+                    <IconAnalog />
+                </div>
+                <div
+                    class="harmony-type-button"
+                    :class="{ active: typeOfScheme == schemeType.triad }"
+                    @click="typeOfScheme = schemeType.triad"
+                >
+                    <IconTriad />
+                </div>
             </div>
             <div class="col">
                 <label>макс. насыщенность акцента</label>
@@ -400,5 +422,14 @@ const show3Circles = computed(() => {
     flex-flow: row wrap;
     align-items: center;
     justify-content: space-evenly;
+}
+
+.harmony-type-button {
+    border: 1px solid gray;
+    padding: 0.2rem;
+    border-radius: 0.5rem;
+}
+.harmony-type-button.active {
+    border-color: blue;
 }
 </style>

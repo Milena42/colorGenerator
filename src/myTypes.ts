@@ -114,5 +114,9 @@ export interface ColorRule {
 
 export type Theme = Record<ColorRole, ColorRule>;
 
-export const schemeTypes = ['mono', 'complementary', 'analog', 'triad'];
-export type schemeType = (typeof schemeTypes)[number];
+export enum schemeType {
+    mono = 'mono',
+    complementary = 'complementary',
+    analog = 'analog',
+    triad = 'triad',
+}

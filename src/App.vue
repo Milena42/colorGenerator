@@ -49,23 +49,21 @@ body,
     width: 100%;
     height: 100%;
 }
+
 .page {
     padding: 1rem;
     gap: 1rem;
     min-height: 100%;
     width: 100%;
+    color: var(--text-color);
 }
+
 .page.light {
-    color: black;
-    .icon {
-        --primary: black;
-    }
+    --text-color: black;
 }
+
 .page.dark {
-    color: white;
-    .icon {
-        --primary: white;
-    }
+    --text-color: white;
 }
 
 .userUpload {

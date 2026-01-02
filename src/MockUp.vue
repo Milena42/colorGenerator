@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import PaletteOutput from './PaletteOutput.vue';
-import type { MockupColors } from './myTypes';
+import type { MockupColors } from './model/myTypes';
 
 const props = defineProps<{
     colorsLight: MockupColors;

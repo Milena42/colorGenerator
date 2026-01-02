@@ -10,7 +10,6 @@ import IconTriad from './icons/IconTriad.vue';
 //import MapPlot3d from './MapPlot3d.vue';
 import chroma from 'chroma-js';
 import MockUp from './MockUp.vue';
-import { hMinus } from './math';
 import {
     Color,
     accentColorRoles,
@@ -18,8 +17,9 @@ import {
     schemeType,
     type MockupColors,
     type Theme,
-} from './myTypes';
-import { darkTheme, lightTheme, maxCAccent, maxCBg } from './themes';
+} from './model/myTypes';
+import { darkTheme, lightTheme, maxCAccent, maxCBg } from './model/themes';
+import { hMinus } from './utilities/math';
 
 const generatedMap: Ref<Map<string, Color>> = ref<Map<string, Color>>(new Map<string, Color>());
 

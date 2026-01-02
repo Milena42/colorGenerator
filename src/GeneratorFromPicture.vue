@@ -2,14 +2,14 @@
 import chroma from 'chroma-js';
 import { PolynomialRegression } from 'ml-regression';
 import { inject, reactive, ref, shallowRef, watch, type Ref, type ShallowRef } from 'vue';
-import ArrayOfPlots from './ArrayOfPlots.vue';
 import DropBox from './DropBox.vue';
-import MapPlotPolar from './MapPlotPolar.vue';
 import MockUp from './MockUp.vue';
-import PolarHistogram from './PolarHistogram.vue';
-import { polarFromCartesian } from './math';
-import { Color, colorRoles, type MockupColors, type Theme } from './myTypes';
-import { darkTheme, lightTheme } from './themes.ts';
+import { Color, colorRoles, type MockupColors, type Theme } from './model/myTypes.ts';
+import { darkTheme, lightTheme } from './model/themes.ts';
+import ArrayOfPlots from './plots/ArrayOfPlots.vue';
+import MapPlotPolar from './plots/MapPlotPolar.vue';
+import PolarHistogram from './plots/PolarHistogram.vue';
+import { polarFromCartesian } from './utilities/math.ts';
 
 const userImg = ref<Uint8ClampedArray>();
 let totalPixels = 1;

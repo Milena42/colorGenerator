@@ -38,7 +38,7 @@ export class circleObject {
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { Color } from './myTypes';
+import { Color } from './model/myTypes';
 
 defineEmits(['drag-start']);
 const props = defineProps<{

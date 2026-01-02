@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { MockupColors } from './myTypes';
+import type { MockupColors } from './model/myTypes';
 
 defineProps<{
     colors: MockupColors;

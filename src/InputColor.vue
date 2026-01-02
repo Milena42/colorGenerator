@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, type ModelRef } from 'vue';
-import type { Color } from './myTypes';
+import type { Color } from './model/myTypes';
 
 const color: ModelRef<Color> = defineModel({ required: true });
 

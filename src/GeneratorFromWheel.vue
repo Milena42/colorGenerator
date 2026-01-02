@@ -119,15 +119,23 @@ function generate() {
 
 watch([inputAccent, inputBg, inputSecondary], generate);
 
+const CHROMA_DIFFERENCE = 5;
+const accentHasGreaterChroma = computed(
+    () => inputCBg.value + CHROMA_DIFFERENCE < inputCAccent.value,
+);
+
 function changeCBg() {
-    if (inputCBg.value > inputCAccent.value) inputCAccent.value = inputCBg.value;
-    inputAccent.c = inputCAccent.value;
+    if (!accentHasGreaterChroma.value) {
+        inputCAccent.value = inputCBg.value + CHROMA_DIFFERENCE;
+    }
     generate();
 }
 
 function changeCAccent() {
-    if (inputCBg.value > inputCAccent.value) inputCBg.value = inputCAccent.value;
-    inputAccent.c = inputCAccent.value;
+    if (!accentHasGreaterChroma.value) {
+        const c = inputCAccent.value - CHROMA_DIFFERENCE;
+        inputCBg.value = c > 0 ? c : 0;
+    }
     generate();
 }
 

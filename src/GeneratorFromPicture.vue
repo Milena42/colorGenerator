@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import chroma from 'chroma-js';
 import { PolynomialRegression } from 'ml-regression';
-import { reactive, ref, shallowRef, watch, type Ref, type ShallowRef } from 'vue';
+import { inject, reactive, ref, shallowRef, watch, type Ref, type ShallowRef } from 'vue';
 import ArrayOfPlots from './ArrayOfPlots.vue';
 import DropBox from './DropBox.vue';
 import MapPlotPolar from './MapPlotPolar.vue';
@@ -339,13 +339,16 @@ watch(userImg, () => {
     imgMap.value = fillMapFromImg();
     generatedMap.value = generateLRangeBased();
 });
+
+const showPlots: Ref<boolean> = inject('showPlots') ?? ref(false);
 </script>
 <template>
     <div>
         <div class="row userUpload">
             <DropBox v-model:pixels="userImg">Загрузите изображение сюда </DropBox>
-            <MapPlotPolar :k="500" :data="imgMap" :totalQ="totalPixels" />
+            <MapPlotPolar v-if="showPlots" :k="500" :data="imgMap" :totalQ="totalPixels" />
             <MapPlotPolar
+                v-if="showPlots"
                 :k="500"
                 :data="debugMap"
                 :totalQ="totalPixels"
@@ -354,21 +357,23 @@ watch(userImg, () => {
         </div>
         <div class="row">
             <PolarHistogram
+                v-if="showPlots"
                 :data="polarHistogramData1"
                 :circle="polarHistogramCircle"
                 :borders="polarHistogramBorders"
             />
             <PolarHistogram
+                v-if="showPlots"
                 :data="polarHistogramData2"
                 :circle="polarHistogramCircle"
                 :borders="polarHistogramBorders"
             />
         </div>
 
-        <ArrayOfPlots :maps="mapsClustered" :totalQ="totalPixels" />
-        <MapPlotPolar :k="500" :data="graysMap" :totalQ="totalPixels" />
+        <ArrayOfPlots :maps="mapsClustered" :totalQ="totalPixels" v-if="showPlots" />
+        <MapPlotPolar :k="500" :data="graysMap" :totalQ="totalPixels" v-if="showPlots" />
 
-        <MapPlotPolar :k="30" :data="generatedMap" :totalQ="generatedMap.size" />
+        <MapPlotPolar :k="30" :data="generatedMap" :totalQ="generatedMap.size" v-if="showPlots" />
 
         <MockUp :colorsDark="generatedDark" :colorsLight="generatedLight" />
     </div>

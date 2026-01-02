@@ -5,6 +5,9 @@ import { computed, provide, ref } from 'vue';
 const showQuantityOnPlots = ref(true);
 provide('showQuantityOnPlots', showQuantityOnPlots);
 
+const showPlots = ref(false);
+provide('showPlots', showPlots);
+
 const bgColor = ref('#ffffff');
 const themeIsLight = computed(() => {
     const c = chroma(bgColor.value);
@@ -22,6 +25,10 @@ const themeIsLight = computed(() => {
                 <RouterLink class="tab-button" activeClass="active" to="/wheel"
                     >По кругу</RouterLink
                 >
+            </div>
+            <div>
+                <input type="checkbox" v-model="showPlots" id="showPlots" />
+                <label for="showPlots">показывать графики</label>
             </div>
             <div>
                 <input type="checkbox" v-model="showQuantityOnPlots" id="showQ" />

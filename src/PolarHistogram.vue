@@ -68,10 +68,3 @@ watch([() => props.borders], draw, { flush: 'post' });
 <template>
     <div ref="graphDiv" class="plot"></div>
 </template>
-
-<style scoped>
-.plot {
-    min-width: 500px;
-    min-height: 500px;
-}
-</style>

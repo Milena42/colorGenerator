@@ -289,33 +289,33 @@ const show3Circles = computed(() => {
 });
 </script>
 <template>
-    <div class="generator-wheel">
+    <div class="generator-wheel-page">
         <div>
             <div class="row">
                 <div
                     class="harmony-type-button"
-                    :class="{ active: typeOfScheme == schemeType.mono }"
+                    :class="{ current: typeOfScheme == schemeType.mono }"
                     @click="typeOfScheme = schemeType.mono"
                 >
                     <IconMono />
                 </div>
                 <div
                     class="harmony-type-button"
-                    :class="{ active: typeOfScheme == schemeType.complementary }"
+                    :class="{ current: typeOfScheme == schemeType.complementary }"
                     @click="typeOfScheme = schemeType.complementary"
                 >
                     <IconComplementary />
                 </div>
                 <div
                     class="harmony-type-button"
-                    :class="{ active: typeOfScheme == schemeType.analog }"
+                    :class="{ current: typeOfScheme == schemeType.analog }"
                     @click="typeOfScheme = schemeType.analog"
                 >
                     <IconAnalog />
                 </div>
                 <div
                     class="harmony-type-button"
-                    :class="{ active: typeOfScheme == schemeType.triad }"
+                    :class="{ current: typeOfScheme == schemeType.triad }"
                     @click="typeOfScheme = schemeType.triad"
                 >
                     <IconTriad />
@@ -417,7 +417,7 @@ const show3Circles = computed(() => {
     }
 }
 
-.generator-wheel {
+.generator-wheel-page {
     display: flex;
     flex-flow: row wrap;
     align-items: center;
@@ -429,7 +429,8 @@ const show3Circles = computed(() => {
     padding: 0.2rem;
     border-radius: 0.5rem;
 }
-.harmony-type-button.active {
+
+.harmony-type-button.current {
     border-color: blue;
 }
 </style>

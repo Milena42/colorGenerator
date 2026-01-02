@@ -19,10 +19,10 @@ const themeIsLight = computed(() => {
     <div class="col page" :class="themeIsLight ? 'light' : 'dark'" :style="{ background: bgColor }">
         <div class="row">
             <div>
-                <RouterLink class="tab-button" activeClass="active" to="/picture"
+                <RouterLink class="tab-button" activeClass="current" to="/picture"
                     >С картинки</RouterLink
                 >
-                <RouterLink class="tab-button" activeClass="active" to="/wheel"
+                <RouterLink class="tab-button" activeClass="current" to="/wheel"
                     >По кругу</RouterLink
                 >
             </div>
@@ -41,22 +41,7 @@ const themeIsLight = computed(() => {
         <RouterView class="grow w-full" />
     </div>
 </template>
-<style>
-*,
-*::before,
-*::after {
-    box-sizing: border-box;
-}
-
-html,
-body,
-#app {
-    margin: 0px;
-    padding: 0px;
-    width: 100%;
-    height: 100%;
-}
-
+<style scoped>
 .page {
     padding: 1rem;
     gap: 1rem;
@@ -73,40 +58,6 @@ body,
     --text-color: white;
 }
 
-.userUpload {
-    gap: 2rem;
-    align-items: stretch;
-
-    & > * {
-        flex-grow: 1;
-        flex-shrink: 1;
-        max-height: max(40vh, 200px);
-    }
-}
-
-.mockups {
-    display: grid;
-    gap: 2rem;
-    grid-template-columns: 1fr 1fr;
-}
-
-.row {
-    display: flex;
-    flex-flow: row nowrap;
-}
-
-.col {
-    display: flex;
-    flex-flow: column nowrap;
-}
-
-.grow {
-    flex-grow: 1;
-}
-
-.w-full {
-    width: 100%;
-}
 .tab-button {
     background: rgb(212, 212, 235);
     padding: 0.5rem 2rem;
@@ -114,7 +65,7 @@ body,
     text-decoration: none;
     color: inherit;
 }
-.tab-button.active {
+.tab-button.current {
     border: 1px solid red;
 }
 </style>

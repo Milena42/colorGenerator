@@ -344,7 +344,7 @@ const showPlots: Ref<boolean> = inject('showPlots') ?? ref(false);
 </script>
 <template>
     <div>
-        <div class="row userUpload">
+        <div class="row">
             <DropBox v-model:pixels="userImg">Загрузите изображение сюда </DropBox>
             <MapPlotPolar v-if="showPlots" :k="500" :data="imgMap" :totalQ="totalPixels" />
             <MapPlotPolar

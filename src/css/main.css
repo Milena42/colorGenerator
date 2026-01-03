@@ -17,3 +17,54 @@ body,
     min-width: 500px;
     min-height: 500px;
 }
+
+:root {
+    --fill-color: #808080;
+}
+body {
+    font-family: sans-serif;
+    font-size: 16px;
+}
+
+.input-range {
+    -webkit-appearance: none;
+    appearance: none;
+
+    background: rgba(from var(--text-color) r g b / 0.2);
+    border: none;
+
+    --height: 4px;
+    --height-thumb: 20px;
+    height: var(--height);
+    border-radius: calc(var(--height) / 2);
+    margin: 10px 0px;
+
+    cursor: pointer;
+
+    &::-moz-range-thumb {
+        width: var(--height-thumb);
+        height: var(--height-thumb);
+        border-radius: calc(var(--height-thumb) / 2);
+        background: var(--fill-color);
+        border: none;
+        cursor: pointer;
+    }
+
+    &::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+
+        /* намеренное дублирование: chrome игнорирует, если объединить */
+
+        width: var(--height-thumb);
+        height: var(--height-thumb);
+        border-radius: calc(var(--height-thumb) / 2);
+        background: var(--fill-color);
+        border: none;
+        cursor: pointer;
+    }
+
+    &::-webkit-slider-thumb {
+        margin-top: calc(var(--height) - var(--height-thumb));
+    }
+}

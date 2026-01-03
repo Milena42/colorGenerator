@@ -340,6 +340,7 @@ const show3Circles = computed(() => {
                     :step="0.1"
                     :style="{ width: maxCAccent + 'rem' }"
                     list="values"
+                    class="input-range"
                 />
                 <datalist id="values">
                     <option value="0" label="0"></option>
@@ -356,6 +357,7 @@ const show3Circles = computed(() => {
                     :step="0.1"
                     :style="{ width: maxCBg + 'rem' }"
                     list="values"
+                    class="input-range"
                 />
                 <label>макс. насыщенность фона</label>
             </div>

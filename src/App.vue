@@ -18,11 +18,11 @@ const themeIsLight = computed(() => {
 <template>
     <div class="col page" :class="themeIsLight ? 'light' : 'dark'" :style="{ background: bgColor }">
         <div class="row">
-            <div>
-                <RouterLink class="tab-button" activeClass="current" to="/picture"
+            <div class="choice-chips">
+                <RouterLink class="choice-chip" activeClass="current" to="/picture"
                     >С картинки</RouterLink
                 >
-                <RouterLink class="tab-button" activeClass="current" to="/wheel"
+                <RouterLink class="choice-chip" activeClass="current" to="/wheel"
                     >По кругу</RouterLink
                 >
             </div>
@@ -56,16 +56,5 @@ const themeIsLight = computed(() => {
 
 .page.dark {
     --text-color: white;
-}
-
-.tab-button {
-    background: rgb(212, 212, 235);
-    padding: 0.5rem 2rem;
-    border-radius: 1rem;
-    text-decoration: none;
-    color: inherit;
-}
-.tab-button.current {
-    border: 1px solid red;
 }
 </style>

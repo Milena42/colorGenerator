@@ -299,59 +299,68 @@ const show3Circles = computed(() => {
 <template>
     <div class="generator-wheel-page">
         <div>
-            <div class="row">
+            <div class="choice-chips">
                 <div
-                    class="harmony-type-button"
+                    class="harmony-type-button choice-chip"
                     :class="{ current: typeOfScheme == schemeType.mono }"
                     @click="typeOfScheme = schemeType.mono"
                 >
                     <IconMono />
+                    <p>монохромная</p>
                 </div>
                 <div
-                    class="harmony-type-button"
+                    class="harmony-type-button choice-chip"
                     :class="{ current: typeOfScheme == schemeType.complementary }"
                     @click="typeOfScheme = schemeType.complementary"
                 >
                     <IconComplementary />
+                    <p>комплементарная</p>
                 </div>
                 <div
-                    class="harmony-type-button"
+                    class="harmony-type-button choice-chip"
                     :class="{ current: typeOfScheme == schemeType.analog }"
                     @click="typeOfScheme = schemeType.analog"
                 >
                     <IconAnalog />
+                    <p>аналоговая</p>
                 </div>
                 <div
-                    class="harmony-type-button"
+                    class="harmony-type-button choice-chip"
                     :class="{ current: typeOfScheme == schemeType.triad }"
                     @click="typeOfScheme = schemeType.triad"
                 >
                     <IconTriad />
+                    <p>триада</p>
                 </div>
             </div>
-            <div class="col">
-                <label>макс. насыщенность акцента</label>
-                <input
-                    v-model.number="inputCAccent"
-                    @change="changeCAccent"
-                    type="range"
-                    :min="0"
-                    :max="maxCAccent"
-                    :step="0.1"
-                    :style="{ width: maxCAccent + 'rem' }"
-                    class="input-range"
-                />
-                <input
-                    v-model.number="inputCBg"
-                    @change="changeCBg"
-                    type="range"
-                    :min="0"
-                    :max="maxCBg"
-                    :step="0.1"
-                    :style="{ width: maxCBg + 'rem' }"
-                    class="input-range"
-                />
-                <label>макс. насыщенность фона</label>
+            <div class="col chroma-params">
+                <p>максимальная насыщенность:</p>
+                <div class="row">
+                    <label>акценты</label>
+                    <input
+                        v-model.number="inputCAccent"
+                        @change="changeCAccent"
+                        type="range"
+                        :min="0"
+                        :max="maxCAccent"
+                        :step="0.1"
+                        :style="{ width: maxCAccent + 'rem' }"
+                        class="input-range"
+                    />
+                </div>
+                <div class="row">
+                    <label>фоновые</label>
+                    <input
+                        v-model.number="inputCBg"
+                        @change="changeCBg"
+                        type="range"
+                        :min="0"
+                        :max="maxCBg"
+                        :step="0.1"
+                        :style="{ width: maxCBg + 'rem' }"
+                        class="input-range"
+                    />
+                </div>
             </div>
 
             <button @click="drawOklchModel">нарисовать фон</button>
@@ -427,12 +436,32 @@ const show3Circles = computed(() => {
 }
 
 .harmony-type-button {
-    border: 1px solid gray;
-    padding: 0.2rem;
-    border-radius: 0.5rem;
+    padding: 0.2rem 0.4rem 0.4rem;
+
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: center;
+
+    & > * {
+        margin: 0px;
+    }
+
+    p {
+        font-size: 0.8rem;
+        word-wrap: break-word;
+    }
 }
 
-.harmony-type-button.current {
-    border-color: blue;
+.chroma-params {
+    padding: 1.2rem 0px;
+    p {
+        margin: 0px 0px 0.6rem;
+    }
+    div {
+        align-items: center;
+    }
+    label {
+        width: 5.5rem;
+    }
 }
 </style>

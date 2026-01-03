@@ -18,7 +18,9 @@ body,
     min-height: 500px;
 }
 
-:root {
+.page {
+    --transparent-pale: rgba(from var(--text-color) r g b / 0.2);
+    --transparent-bright: rgba(from var(--text-color) r g b / 0.6);
     --fill-color: #808080;
 }
 body {
@@ -63,4 +65,30 @@ body {
         border: none;
         cursor: pointer;
     }
+}
+
+.choice-chips {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+    gap: 0.3rem;
+}
+
+.choice-chip {
+    flex: 1 1 0;
+    border: 2px solid var(--transparent-pale);
+    border-radius: 0.5rem;
+    padding: 0.5rem 0.8rem;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: var(--text-color);
+    text-decoration: none;
+    text-wrap: nowrap;
+}
+
+.choice-chip.current {
+    border-color: var(--transparent-bright);
 }

@@ -339,15 +339,8 @@ const show3Circles = computed(() => {
                     :max="maxCAccent"
                     :step="0.1"
                     :style="{ width: maxCAccent + 'rem' }"
-                    list="values"
                     class="input-range"
                 />
-                <datalist id="values">
-                    <option value="0" label="0"></option>
-                    <option value="1" label="1"></option>
-                    <option value="5" label="5"></option>
-                    <option value="15" label="15"></option>
-                </datalist>
                 <input
                     v-model.number="inputCBg"
                     @change="changeCBg"
@@ -356,7 +349,6 @@ const show3Circles = computed(() => {
                     :max="maxCBg"
                     :step="0.1"
                     :style="{ width: maxCBg + 'rem' }"
-                    list="values"
                     class="input-range"
                 />
                 <label>макс. насыщенность фона</label>

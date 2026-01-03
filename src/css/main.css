@@ -63,8 +63,4 @@ body {
         border: none;
         cursor: pointer;
     }
-
-    &::-webkit-slider-thumb {
-        margin-top: calc(var(--height) - var(--height-thumb));
-    }
 }

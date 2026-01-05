@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, reactive, ref, useTemplateRef, watch, type Ref } from 'vue';
+import { computed, reactive, ref, watch, type Ref } from 'vue';
 import CircleInput, { circleObject } from './CircleInput.vue';
 
 import IconAnalog from './icons/IconAnalog.vue';
@@ -8,7 +8,6 @@ import IconMono from './icons/IconMono.vue';
 import IconTriad from './icons/IconTriad.vue';
 
 //import MapPlot3d from './MapPlot3d.vue';
-import chroma from 'chroma-js';
 import MockUp from './MockUp.vue';
 import {
     Color,
@@ -227,68 +226,6 @@ function dragend() {
     draggedCircle = undefined;
 }
 
-//////////////////////////////////////////////////////////////////////////////
-//// рисование фона, TODO выгрузить картинкой на фон и удалить
-/////////////////////////////////////////////////////////////////////////////
-const canvas = useTemplateRef<HTMLCanvasElement>('drawing');
-function drawOklchModel() {
-    if (!canvas.value) {
-        console.log('canvas отсутствует');
-        return;
-    }
-    const ctx = canvas.value.getContext('2d');
-    if (!ctx) {
-        console.log('проблемы с контекстом canvas');
-        return;
-    }
-    ctx.clearRect(0, 0, canvas.value.width, canvas.value.height);
-
-    const brush = new circleObject(new Color(0, { x: 0, y: 0 }), svgSquareWidth);
-
-    const pixel = 4; // задает гладкость изображения (1 - идеально, но медленно)
-
-    ///////////////////////////////////////////////
-    /// спектр
-
-    for (let i = 0; i < svgSquareWidth; i += pixel) {
-        for (let j = 0; j < svgSquareWidth; j += pixel) {
-            brush.cx = i;
-            brush.cy = j;
-            brush.calculateColorCoords();
-            const r = brush.color.c;
-            if (R_SPECTRAL_CIRCLE - 3 <= r && r <= R_SPECTRAL_CIRCLE + 3) {
-                const h = brush.color.h;
-                const pointToRgb = chroma.oklch(50 / 100, 5 / 100, h);
-                if (!pointToRgb.clipped()) {
-                    ctx.fillStyle = pointToRgb.set('hsl.s', 1).set('hsl.l', 0.5).hex();
-                    ctx.fillRect(i, j, pixel, pixel);
-                }
-            }
-        }
-    }
-
-    /////////////////////////////////////////////
-    /// меш oklch
-
-    for (let l = 0; l < 100; l += pixel) {
-        for (let i = 0; i < svgSquareWidth; i += pixel) {
-            for (let j = 0; j < svgSquareWidth; j += pixel) {
-                brush.cx = i;
-                brush.cy = j;
-                brush.calculateColorCoords();
-                const c = brush.color.c;
-                const h = brush.color.h;
-                const pointToRgb = chroma.oklch(l / 100, c / 100, h);
-                if (!pointToRgb.clipped()) {
-                    ctx.fillStyle = pointToRgb.hex();
-                    ctx.fillRect(i, j, pixel, pixel);
-                }
-            }
-        }
-    }
-}
-//////////////////////////////////////////////////////////////////////////
-
 const show2Circles = computed(() => {
     return typeOfScheme.value != 'mono';
 });
@@ -363,53 +300,49 @@ const show3Circles = computed(() => {
                 </div>
             </div>
 
-            <button @click="drawOklchModel">нарисовать фон</button>
-            <div class="temp">
-                <canvas ref="drawing" :width="svgSquareWidth" :height="svgSquareWidth"></canvas>
-                <svg
-                    version="1.1"
-                    :width="svgSquareWidth"
-                    :height="svgSquareWidth"
-                    ref="svg"
-                    xmlns="http://www.w3.org/2000/svg"
-                    style="border: 1px solid black"
-                    @mousemove="mousemove"
-                    @mouseup="dragend"
-                    @mouseleave="dragend"
-                >
-                    <CircleInput
-                        :circle-obj="accentCircle"
-                        accent
-                        @drag-start="(e) => dragstart(accentCircle, e)"
-                    />
-                    <CircleInput
-                        :circle-obj="secondaryCircle"
-                        @drag-start="(e) => dragstart(secondaryCircle, e)"
-                        v-if="show3Circles"
-                    />
-                    <CircleInput
-                        :circle-obj="bgCircle"
-                        @drag-start="(e) => dragstart(bgCircle, e)"
-                        v-if="show2Circles"
-                    />
-                    <circle
-                        :r="(inputCAccent * svgSquareWidth) / 100"
-                        :cx="svgSquareWidth / 2"
-                        :cy="svgSquareWidth / 2"
-                        fill="none"
-                        stroke="black"
-                        stroke-width="2"
-                    />
-                    <circle
-                        :r="(inputCBg * svgSquareWidth) / 100"
-                        :cx="svgSquareWidth / 2"
-                        :cy="svgSquareWidth / 2"
-                        fill="none"
-                        stroke="black"
-                        stroke-width="2"
-                    />
-                </svg>
-            </div>
+            <svg
+                version="1.1"
+                :width="svgSquareWidth"
+                :height="svgSquareWidth"
+                class="color-wheel-svg"
+                ref="svg"
+                xmlns="http://www.w3.org/2000/svg"
+                @mousemove="mousemove"
+                @mouseup="dragend"
+                @mouseleave="dragend"
+            >
+                <CircleInput
+                    :circle-obj="accentCircle"
+                    accent
+                    @drag-start="(e) => dragstart(accentCircle, e)"
+                />
+                <CircleInput
+                    :circle-obj="secondaryCircle"
+                    @drag-start="(e) => dragstart(secondaryCircle, e)"
+                    v-if="show3Circles"
+                />
+                <CircleInput
+                    :circle-obj="bgCircle"
+                    @drag-start="(e) => dragstart(bgCircle, e)"
+                    v-if="show2Circles"
+                />
+                <circle
+                    :r="(inputCAccent * svgSquareWidth) / 100"
+                    :cx="svgSquareWidth / 2"
+                    :cy="svgSquareWidth / 2"
+                    fill="none"
+                    stroke="black"
+                    stroke-width="2"
+                />
+                <circle
+                    :r="(inputCBg * svgSquareWidth) / 100"
+                    :cx="svgSquareWidth / 2"
+                    :cy="svgSquareWidth / 2"
+                    fill="none"
+                    stroke="black"
+                    stroke-width="2"
+                />
+            </svg>
         </div>
 
         <!--<MapPlot3d :k="30" :data="generatedMap" :totalQ="generatedMap.size" /> --><!--TODO оно зависает-->
@@ -418,14 +351,9 @@ const show3Circles = computed(() => {
     </div>
 </template>
 <style scoped>
-.temp {
-    position: relative;
-
-    svg {
-        position: absolute;
-        top: 0px;
-        left: 0px;
-    }
+.color-wheel-svg {
+    background-image: url('./assets/color-wheel.png');
+    background-position: cover;
 }
 
 .generator-wheel-page {

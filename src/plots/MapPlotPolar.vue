@@ -1,8 +1,8 @@
 <script setup lang="ts">
+import type { Color } from '@/model/myTypes';
 import type { Data } from 'plotly.js';
 import Plotly from 'plotly.js-dist';
 import { inject, onMounted, ref, useTemplateRef, watch, type Ref } from 'vue';
-import type { Color } from './myTypes';
 
 const props = defineProps<{
     k: number;

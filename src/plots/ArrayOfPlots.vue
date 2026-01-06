@@ -1,6 +1,6 @@
 <script setup lang="ts">
+import type { Color } from '@/model/myTypes';
 import MapPlotPolar from './MapPlotPolar.vue';
-import type { Color } from './myTypes';
 const props = defineProps<{
     maps: Map<string, Color>[] | undefined;
     totalQ: number;

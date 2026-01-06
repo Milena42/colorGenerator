@@ -85,9 +85,9 @@ const polarHistogramData2 = ref<number[]>([]);
 const polarHistogramCircle = ref(0);
 const polarHistogramBorders = ref<number[]>([]);
 function makeClustersNew(mapOfColors: Map<string, Color>) {
-    const filteredPoints = Array.from(mapOfColors).filter(([k, v]) => v.q > minQToUsePoint);
+    const filteredPoints = Array.from(mapOfColors).filter(([, v]) => v.q > minQToUsePoint);
     debugMap.value = new Map(filteredPoints);
-    const points = filteredPoints.map(([k, v]) => ({ h: v.h, q: v.q }));
+    const points = filteredPoints.map(([, v]) => ({ h: v.h, q: v.q }));
 
     const circularHistogram: number[] = new Array(360).fill(0);
     points.forEach((point) => {
@@ -178,7 +178,7 @@ function arraysForRegression(m: Map<string, Color>) {
     const lArray: number[] = [];
     const xArray: number[] = [];
     const yArray: number[] = [];
-    const arr = Array.from(m.values(), (v, k) => ({ l: v.l, x: v.x, y: v.y, q: v.q }));
+    const arr = Array.from(m.values(), (v) => ({ l: v.l, x: v.x, y: v.y, q: v.q }));
     arr.forEach(({ l, x, y, q }) => {
         for (let i = 0; i < q; i++) {
             lArray.push(l);
@@ -263,8 +263,8 @@ function generateLRangeBased() {
     const sufficientNumber = 0.005 * totalPixels;
     //console.log("sN", sufficientNumber);
 
-    const chromaTorus = new Map(Array.from(imgMap.value).filter(([k, v]) => v.c > chromaLimit));
-    const grays = new Map(Array.from(imgMap.value).filter(([k, v]) => v.c < chromaLimit));
+    const chromaTorus = new Map(Array.from(imgMap.value).filter(([, v]) => v.c > chromaLimit));
+    const grays = new Map(Array.from(imgMap.value).filter(([, v]) => v.c < chromaLimit));
 
     addWhite(grays);
     addBlack(grays);
@@ -289,14 +289,14 @@ function generateLRangeBased() {
     lRanges.forEach((lRange) => {
         const { i } = mapsClustered.value.reduce(
             (best, currentMap, i) => {
-                const arr = Array.from(currentMap).filter(([k, v]) => lInRange(v.l, lRange));
+                const arr = Array.from(currentMap).filter(([, v]) => lInRange(v.l, lRange));
                 let q, c;
                 if (arr.length == 0) {
                     q = 0;
                     c = 0;
                 } else {
-                    q = arr.map(([k, v]) => v.q).reduce((e1, e2) => e1 + e2);
-                    c = Math.max(...arr.map(([k, v]) => v.c));
+                    q = arr.map(([, v]) => v.q).reduce((e1, e2) => e1 + e2);
+                    c = Math.max(...arr.map(([, v]) => v.c));
                 }
 
                 if (c > best.c && q + 0.1 * sufficientNumber > best.q) return { i, q, c };
@@ -320,8 +320,8 @@ function generateLRangeBased() {
             const x = xFromL.predict(l);
             const y = yFromL.predict(l);
 
-            let [c, h] = polarFromCartesian(x, y);
-            if (c > cMax) c = cMax;
+            const [cF, h] = polarFromCartesian(x, y);
+            const c = Math.min(cF, cMax);
 
             const elem = new Color(l, { c, h });
             const rgbString = elem.adjustForRGB();

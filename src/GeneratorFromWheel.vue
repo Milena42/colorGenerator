@@ -26,7 +26,7 @@ type HFromL = (l: number) => number;
 const schemeRulesFromInputs = new Map<schemeType, HFromL>([
     [
         schemeType.mono,
-        (l) => {
+        () => {
             return inputAccent.h;
         },
     ],

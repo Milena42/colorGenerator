@@ -52,6 +52,6 @@ function unitedMaps<T>(m1: Map<string, T>, m2: Map<string, T>) {
 
 function arrIsLargeEnough(arr: [string, Color][], enough: number) {
     if (arr.length == 0) return false;
-    const q = arr.map(([k, v]) => v.q).reduce((e1, e2) => e1 + e2);
+    const q = arr.map(([, v]) => v.q).reduce((e1, e2) => e1 + e2);
     return q > enough;
 }

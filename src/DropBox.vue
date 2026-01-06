@@ -39,20 +39,25 @@ function drop(e: DragEvent) {
     };
     reader.readAsDataURL(file);
 }
+
 function loadImgData(e: Event) {
     const img1: HTMLImageElement = e.target as HTMLImageElement;
 
-    //TODO надо уменьшать большие картинки, выяснить достаточный для генерации размер
+    ////////////////////////////////
+    // уменьшаем большие картинки: для скорости и борьбы с зернистостью
     // возможна проблема с размыванием векторных покрасов => возвращаясь к проблеме золотого картона
-
-    ////TODO борьба с зернистостью тут?
     let theWidth: number;
     let theHeight: number;
     const resizeImage = true;
     if (resizeImage) {
-        const newSize = img1.naturalWidth * 0.8;
-        theWidth = Math.round(newSize);
-        theHeight = Math.round((newSize * img1.naturalHeight) / img1.naturalWidth);
+        const maxSize = 1000;
+        const maxNatural = Math.max(img1.naturalHeight, img1.naturalWidth);
+        let k = 0.9;
+        if (maxNatural > maxSize) {
+            k = maxSize / maxNatural;
+        }
+        theWidth = Math.round(img1.naturalWidth * k);
+        theHeight = Math.round(img1.naturalHeight * k);
     } else {
         theWidth = img1.naturalWidth;
         theHeight = img1.naturalHeight;

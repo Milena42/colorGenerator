@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, reactive, ref, watch, type Ref } from 'vue';
-import CircleInput, { circleObject } from './CircleInput.vue';
+import CircleInput, { circleObject, SCALE, WHEEL_SVG_WIDTH } from './CircleInput.vue';
 
 import IconAnalog from './icons/IconAnalog.vue';
 import IconComplementary from './icons/IconComplementary.vue';
@@ -10,9 +10,9 @@ import IconTriad from './icons/IconTriad.vue';
 //import MapPlot3d from './MapPlot3d.vue';
 import MockUp from './MockUp.vue';
 import {
-    Color,
     accentColorRoles,
     bgColorRoles,
+    Color,
     schemeType,
     type MockupColors,
     type Theme,
@@ -116,7 +116,7 @@ function generate() {
     generatedMap.value = generateGrayAndAccents();
 }
 
-watch([inputAccent, inputBg, inputSecondary], generate);
+watch([inputAccent, inputBg, inputSecondary], generate, { immediate: true });
 
 const CHROMA_DIFFERENCE = 5;
 const accentHasGreaterChroma = computed(
@@ -164,11 +164,9 @@ function changeTypeOfScheme() {
 
 watch(typeOfScheme, changeTypeOfScheme);
 
-const svgSquareWidth = 450;
-
-const accentCircle = reactive(new circleObject(inputAccent, svgSquareWidth));
-const secondaryCircle = reactive(new circleObject(inputSecondary, svgSquareWidth));
-const bgCircle = reactive(new circleObject(inputBg, svgSquareWidth));
+const accentCircle = reactive(new circleObject(inputAccent));
+const secondaryCircle = reactive(new circleObject(inputSecondary));
+const bgCircle = reactive(new circleObject(inputBg));
 
 let draggedCircle: typeof accentCircle | undefined = undefined;
 let startX = 0;
@@ -302,8 +300,8 @@ const show3Circles = computed(() => {
 
             <svg
                 version="1.1"
-                :width="svgSquareWidth"
-                :height="svgSquareWidth"
+                :width="WHEEL_SVG_WIDTH"
+                :height="WHEEL_SVG_WIDTH"
                 class="color-wheel-svg"
                 ref="svg"
                 xmlns="http://www.w3.org/2000/svg"
@@ -327,17 +325,17 @@ const show3Circles = computed(() => {
                     v-if="show2Circles"
                 />
                 <circle
-                    :r="(inputCAccent * svgSquareWidth) / 100"
-                    :cx="svgSquareWidth / 2"
-                    :cy="svgSquareWidth / 2"
+                    :r="(inputCAccent * WHEEL_SVG_WIDTH * SCALE) / 100"
+                    :cx="WHEEL_SVG_WIDTH / 2"
+                    :cy="WHEEL_SVG_WIDTH / 2"
                     fill="none"
                     stroke="black"
                     stroke-width="2"
                 />
                 <circle
-                    :r="(inputCBg * svgSquareWidth) / 100"
-                    :cx="svgSquareWidth / 2"
-                    :cy="svgSquareWidth / 2"
+                    :r="(inputCBg * WHEEL_SVG_WIDTH * SCALE) / 100"
+                    :cx="WHEEL_SVG_WIDTH / 2"
+                    :cy="WHEEL_SVG_WIDTH / 2"
                     fill="none"
                     stroke="black"
                     stroke-width="2"

@@ -1,12 +1,12 @@
 <script lang="ts">
+export const WHEEL_SVG_WIDTH = 450;
+export const SCALE = 1.22;
 export class circleObject {
     cx = 0;
     cy = 0;
-    svgSquareWidth: number;
 
-    constructor(color: Color, svgSquareWidth: number) {
+    constructor(color: Color) {
         this.color = color;
-        this.svgSquareWidth = svgSquareWidth;
 
         //this.rgb = this.color.adjustForRGB();
         this.calculateCoords();
@@ -14,17 +14,13 @@ export class circleObject {
 
     color: Color;
 
-    SCALE = 1.22;
-
     calculateCoords() {
-        this.cx = (this.color.x * this.svgSquareWidth * this.SCALE) / 100 + this.svgSquareWidth / 2;
-        this.cy = (this.color.y * this.svgSquareWidth * this.SCALE) / 100 + this.svgSquareWidth / 2;
+        this.cx = (this.color.x * WHEEL_SVG_WIDTH * SCALE) / 100 + WHEEL_SVG_WIDTH / 2;
+        this.cy = (this.color.y * WHEEL_SVG_WIDTH * SCALE) / 100 + WHEEL_SVG_WIDTH / 2;
     }
     calculateColorCoords() {
-        this.color.x =
-            ((this.cx - this.svgSquareWidth / 2) * 100) / this.svgSquareWidth / this.SCALE;
-        this.color.y =
-            ((this.cy - this.svgSquareWidth / 2) * 100) / this.svgSquareWidth / this.SCALE;
+        this.color.x = ((this.cx - WHEEL_SVG_WIDTH / 2) * 100) / WHEEL_SVG_WIDTH / SCALE;
+        this.color.y = ((this.cy - WHEEL_SVG_WIDTH / 2) * 100) / WHEEL_SVG_WIDTH / SCALE;
     }
     calculateColor() {
         this.calculateColorCoords();
@@ -46,18 +42,19 @@ const props = defineProps<{
     accent?: boolean;
 }>();
 
-const lineColor = computed(() => {
-    return props.accent ? 'rgba(0,0,0,1)' : 'rgba(0,0,0,0.5)';
+const lineOpacity = computed(() => {
+    return props.accent ? 1 : 0.5;
 });
 </script>
 <template>
     <g>
         <line
-            :x1="circleObj.svgSquareWidth / 2"
-            :y1="circleObj.svgSquareWidth / 2"
+            :x1="WHEEL_SVG_WIDTH / 2"
+            :y1="WHEEL_SVG_WIDTH / 2"
             :x2="circleObj.cx"
             :y2="circleObj.cy"
-            :stroke="lineColor"
+            stroke="black"
+            :stroke-opacity="lineOpacity"
             stroke-width="2"
         />
         <circle
@@ -65,7 +62,8 @@ const lineColor = computed(() => {
             :cy="circleObj.cy"
             :r="10"
             fill="rgba(0,0,0,0)"
-            :stroke="lineColor"
+            stroke="black"
+            :stroke-opacity="lineOpacity"
             stroke-width="2"
             @mousedown="$emit('drag-start', $event)"
         />

@@ -2,10 +2,10 @@
 import { computed, reactive, ref, watch, type Ref } from 'vue';
 import CircleInput, { circleObject, SCALE, WHEEL_SVG_WIDTH } from './CircleInput.vue';
 
-import IconAnalog from './icons/IconAnalog.vue';
-import IconComplementary from './icons/IconComplementary.vue';
-import IconMono from './icons/IconMono.vue';
-import IconTriad from './icons/IconTriad.vue';
+import IconAnalog from './assets/icons/IconAnalog.vue';
+import IconComplementary from './assets/icons/IconComplementary.vue';
+import IconMono from './assets/icons/IconMono.vue';
+import IconTriad from './assets/icons/IconTriad.vue';
 
 //import MapPlot3d from './MapPlot3d.vue';
 import MockUp from './MockUp.vue';

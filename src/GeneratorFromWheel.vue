@@ -1,6 +1,11 @@
 <script setup lang="ts">
 import { computed, reactive, ref, watch, type Ref } from 'vue';
-import CircleInput, { circleObject, SCALE, WHEEL_SVG_WIDTH } from './CircleInput.vue';
+import CircleInput, {
+    circleObject,
+    R_SPECTRAL_CIRCLE,
+    SCALE,
+    WHEEL_SVG_WIDTH,
+} from './CircleInput.vue';
 
 import IconAnalog from './assets/icons/IconAnalog.vue';
 import IconComplementary from './assets/icons/IconComplementary.vue';
@@ -27,22 +32,22 @@ const schemeRulesFromInputs = new Map<schemeType, HFromL>([
     [
         schemeType.mono,
         () => {
-            return inputAccent.h;
+            return inputAccentH.value;
         },
     ],
     [
         schemeType.complementary,
         (l) => {
-            if (35 <= l && l <= 80) return inputAccent.h;
-            return inputBg.h;
+            if (35 <= l && l <= 80) return inputAccentH.value;
+            return inputBgH.value;
         },
     ],
     [
         schemeType.analog,
         (l) => {
             return (
-                ((2 * hMinus(inputSecondary.h, inputAccent.h) * (l - 50)) / 100 +
-                    inputAccent.h +
+                ((2 * hMinus(inputSecondaryH.value, inputAccentH.value) * (l - 50)) / 100 +
+                    inputAccentH.value +
                     360) %
                 360
             );
@@ -51,9 +56,9 @@ const schemeRulesFromInputs = new Map<schemeType, HFromL>([
     [
         schemeType.triad,
         (l) => {
-            if (l < 35) return inputBg.h;
-            if (l <= 80) return inputAccent.h;
-            return inputSecondary.h;
+            if (l < 35) return inputBgH.value;
+            if (l <= 80) return inputAccentH.value;
+            return inputSecondaryH.value;
         },
     ],
 ]);
@@ -66,15 +71,33 @@ const themes: [Theme, MockupColors][] = [
     [darkTheme, generatedNewDark],
 ];
 
-const R_SPECTRAL_CIRCLE = 37;
-const inputAccent = reactive(new Color(50, { c: R_SPECTRAL_CIRCLE, h: 0 }));
-const inputSecondary = reactive(new Color(50, { c: R_SPECTRAL_CIRCLE, h: 0 }));
-const inputBg = reactive(new Color(50, { c: R_SPECTRAL_CIRCLE, h: 0 }));
+const accentCircle = reactive(new circleObject(0));
+const secondaryCircle = reactive(new circleObject(0));
+const bgCircle = reactive(new circleObject(0));
+
+const inputAccentH = computed({
+    get: () => accentCircle.color.h,
+    set: (v) => {
+        accentCircle.color.h = v;
+    },
+});
+const inputSecondaryH = computed({
+    get: () => secondaryCircle.color.h,
+    set: (v) => {
+        secondaryCircle.color.h = v;
+    },
+});
+const inputBgH = computed({
+    get: () => bgCircle.color.h,
+    set: (v) => {
+        bgCircle.color.h = v;
+    },
+});
 
 const typeOfScheme = ref<schemeType>(schemeType.mono);
 
-const inputCBg = ref<number>(maxCBg);
-const inputCAccent = ref<number>(maxCAccent);
+const inputBgC = ref<number>(maxCBg);
+const inputAccentC = ref<number>(maxCAccent);
 
 function generateGrayAndAccents() {
     const newGeneratedMap: Map<string, Color> = new Map();
@@ -84,7 +107,7 @@ function generateGrayAndAccents() {
 
             const h = schemeRulesFromInputs.get(typeOfScheme.value)!(l);
 
-            const c = (cMax * inputCAccent.value) / maxCAccent;
+            const c = (cMax * inputAccentC.value) / maxCAccent;
 
             const elem = new Color(l, { c, h });
             const rgbString = elem.adjustForRGB();
@@ -98,7 +121,7 @@ function generateGrayAndAccents() {
 
             const h = schemeRulesFromInputs.get(typeOfScheme.value)!(l);
 
-            const c = (cMax * inputCBg.value) / maxCBg;
+            const c = (cMax * inputBgC.value) / maxCBg;
 
             const elem = new Color(l, { c, h });
             const rgbString = elem.adjustForRGB();
@@ -116,43 +139,43 @@ function generate() {
     generatedMap.value = generateGrayAndAccents();
 }
 
-watch([inputAccent, inputBg, inputSecondary], generate, { immediate: true });
+watch([inputAccentH, inputBgH, inputSecondaryH], generate, { immediate: true });
 
 const CHROMA_DIFFERENCE = 5;
 const accentHasGreaterChroma = computed(
-    () => inputCBg.value + CHROMA_DIFFERENCE < inputCAccent.value,
+    () => inputBgC.value + CHROMA_DIFFERENCE < inputAccentC.value,
 );
 
-watch(inputCBg, () => {
+watch(inputBgC, () => {
     if (!accentHasGreaterChroma.value) {
-        inputCAccent.value = inputCBg.value + CHROMA_DIFFERENCE;
+        inputAccentC.value = inputBgC.value + CHROMA_DIFFERENCE;
     }
     generate();
 });
 
-watch(inputCAccent, () => {
+watch(inputAccentC, () => {
     if (!accentHasGreaterChroma.value) {
-        const c = inputCAccent.value - CHROMA_DIFFERENCE;
-        inputCBg.value = c > 0 ? c : 0;
+        const c = inputAccentC.value - CHROMA_DIFFERENCE;
+        inputBgC.value = c > 0 ? c : 0;
     }
     generate();
 });
 
 function changeTypeOfScheme() {
-    const accentH = inputAccent.h;
+    const accentH = inputAccentH.value;
     switch (typeOfScheme.value) {
         case 'mono':
             break;
         case 'complementary':
-            inputBg.h = (accentH + 180) % 360;
+            inputBgH.value = (accentH + 180) % 360;
             break;
         case 'analog':
-            inputBg.h = (accentH + 60) % 360;
-            inputSecondary.h = (accentH - 60 + 360) % 360;
+            inputBgH.value = (accentH + 60) % 360;
+            inputSecondaryH.value = (accentH - 60 + 360) % 360;
             break;
         case 'triad':
-            inputBg.h = (accentH + 120) % 360;
-            inputSecondary.h = (accentH - 120 + 360) % 360;
+            inputBgH.value = (accentH + 120) % 360;
+            inputSecondaryH.value = (accentH - 120 + 360) % 360;
             break;
         default:
             break;
@@ -163,10 +186,6 @@ function changeTypeOfScheme() {
 }
 
 watch(typeOfScheme, changeTypeOfScheme);
-
-const accentCircle = reactive(new circleObject(inputAccent));
-const secondaryCircle = reactive(new circleObject(inputSecondary));
-const bgCircle = reactive(new circleObject(inputBg));
 
 let draggedCircle: typeof accentCircle | undefined = undefined;
 let startX = 0;
@@ -273,7 +292,7 @@ const show3Circles = computed(() => {
                 <div class="row">
                     <label>акценты</label>
                     <input
-                        v-model.number="inputCAccent"
+                        v-model.number="inputAccentC"
                         type="range"
                         :min="0"
                         :max="maxCAccent"
@@ -285,7 +304,7 @@ const show3Circles = computed(() => {
                 <div class="row">
                     <label>фоновые</label>
                     <input
-                        v-model.number="inputCBg"
+                        v-model.number="inputBgC"
                         type="range"
                         :min="0"
                         :max="maxCBg"
@@ -308,22 +327,22 @@ const show3Circles = computed(() => {
                 @mouseleave="dragend"
             >
                 <CircleInput
-                    :circle-obj="accentCircle"
+                    :coords="accentCircle"
                     accent
                     @drag-start="(e) => dragstart(accentCircle, e)"
                 />
                 <CircleInput
-                    :circle-obj="secondaryCircle"
+                    :coords="secondaryCircle"
                     @drag-start="(e) => dragstart(secondaryCircle, e)"
                     v-if="show3Circles"
                 />
                 <CircleInput
-                    :circle-obj="bgCircle"
+                    :coords="bgCircle"
                     @drag-start="(e) => dragstart(bgCircle, e)"
                     v-if="show2Circles"
                 />
                 <circle
-                    :r="(inputCAccent * WHEEL_SVG_WIDTH * SCALE) / 100"
+                    :r="(inputAccentC * WHEEL_SVG_WIDTH * SCALE) / 100"
                     :cx="WHEEL_SVG_WIDTH / 2"
                     :cy="WHEEL_SVG_WIDTH / 2"
                     fill="none"
@@ -331,7 +350,7 @@ const show3Circles = computed(() => {
                     stroke-width="2"
                 />
                 <circle
-                    :r="(inputCBg * WHEEL_SVG_WIDTH * SCALE) / 100"
+                    :r="(inputBgC * WHEEL_SVG_WIDTH * SCALE) / 100"
                     :cx="WHEEL_SVG_WIDTH / 2"
                     :cy="WHEEL_SVG_WIDTH / 2"
                     fill="none"

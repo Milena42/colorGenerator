@@ -123,20 +123,20 @@ const accentHasGreaterChroma = computed(
     () => inputCBg.value + CHROMA_DIFFERENCE < inputCAccent.value,
 );
 
-function changeCBg() {
+watch(inputCBg, () => {
     if (!accentHasGreaterChroma.value) {
         inputCAccent.value = inputCBg.value + CHROMA_DIFFERENCE;
     }
     generate();
-}
+});
 
-function changeCAccent() {
+watch(inputCAccent, () => {
     if (!accentHasGreaterChroma.value) {
         const c = inputCAccent.value - CHROMA_DIFFERENCE;
         inputCBg.value = c > 0 ? c : 0;
     }
     generate();
-}
+});
 
 function changeTypeOfScheme() {
     const accentH = inputAccent.h;
@@ -274,7 +274,6 @@ const show3Circles = computed(() => {
                     <label>акценты</label>
                     <input
                         v-model.number="inputCAccent"
-                        @change="changeCAccent"
                         type="range"
                         :min="0"
                         :max="maxCAccent"
@@ -287,7 +286,6 @@ const show3Circles = computed(() => {
                     <label>фоновые</label>
                     <input
                         v-model.number="inputCBg"
-                        @change="changeCBg"
                         type="range"
                         :min="0"
                         :max="maxCBg"

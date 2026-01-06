@@ -82,7 +82,8 @@ function loadImgData(e: Event) {
 <style scoped>
 .dropbox {
     min-height: 100px;
-    min-width: 100px;
+    min-width: 300px;
+    max-width: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -90,6 +91,7 @@ function loadImgData(e: Event) {
 
     & > * {
         max-height: 100%;
+        max-width: 100%;
     }
 
     &:-moz-drag-over {

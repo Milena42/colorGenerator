@@ -343,9 +343,18 @@ watch(userImg, () => {
 const showPlots: Ref<boolean> = inject('showPlots') ?? ref(false);
 </script>
 <template>
-    <div>
-        <div class="row">
+    <div class="col">
+        <div class="grow generator-picture-page-main">
             <DropBox v-model:pixels="userImg">Загрузите изображение сюда </DropBox>
+            <MockUp
+                class="grow"
+                :colorsDark="generatedDark"
+                :colorsLight="generatedLight"
+                v-if="userImg"
+            />
+        </div>
+
+        <div class="row">
             <MapPlotPolar v-if="showPlots" :k="500" :data="imgMap" :totalQ="totalPixels" />
             <MapPlotPolar
                 v-if="showPlots"
@@ -369,12 +378,29 @@ const showPlots: Ref<boolean> = inject('showPlots') ?? ref(false);
                 :borders="polarHistogramBorders"
             />
         </div>
-
         <ArrayOfPlots :maps="mapsClustered" :totalQ="totalPixels" v-if="showPlots" />
-        <MapPlotPolar :k="500" :data="graysMap" :totalQ="totalPixels" v-if="showPlots" />
-
-        <MapPlotPolar :k="30" :data="generatedMap" :totalQ="generatedMap.size" v-if="showPlots" />
-
-        <MockUp :colorsDark="generatedDark" :colorsLight="generatedLight" />
+        <div class="row">
+            <MapPlotPolar :k="500" :data="graysMap" :totalQ="totalPixels" v-if="showPlots" />
+            <MapPlotPolar
+                :k="30"
+                :data="generatedMap"
+                :totalQ="generatedMap.size"
+                v-if="showPlots"
+            />
+        </div>
     </div>
 </template>
+<style scoped>
+.generator-picture-page-main {
+    display: flex;
+    flex-flow: row wrap;
+    align-items: center;
+    justify-content: space-evenly;
+    gap: 1rem;
+
+    .dropbox {
+        flex: 5 1 0;
+        align-self: stretch;
+    }
+}
+</style>

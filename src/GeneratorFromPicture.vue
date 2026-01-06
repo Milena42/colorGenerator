@@ -84,9 +84,13 @@ const polarHistogramData1 = ref<number[]>([]);
 const polarHistogramData2 = ref<number[]>([]);
 const polarHistogramCircle = ref(0);
 const polarHistogramBorders = ref<number[]>([]);
+
 function makeClustersNew(mapOfColors: Map<string, Color>) {
     const filteredPoints = Array.from(mapOfColors).filter(([, v]) => v.q > minQToUsePoint);
     debugMap.value = new Map(filteredPoints);
+
+    if (filteredPoints.length == 0) return [];
+
     const points = filteredPoints.map(([, v]) => ({ h: v.h, q: v.q }));
 
     const circularHistogram: number[] = new Array(360).fill(0);
@@ -113,6 +117,7 @@ function makeClustersNew(mapOfColors: Map<string, Color>) {
     let currentGapStart: number | undefined = undefined;
     const minQForHistogram = minQToUsePoint * 20000;
     polarHistogramCircle.value = minQForHistogram;
+
     smoothedCircularHistogram.forEach((value, h) => {
         if (currentGapStart != undefined) {
             if (value >= minQForHistogram) {
@@ -128,8 +133,9 @@ function makeClustersNew(mapOfColors: Map<string, Color>) {
             currentGapStart = h;
         }
     });
+
     if (currentGapStart != undefined) {
-        if (gaps[0].start == 0) {
+        if (gaps.length != 0 && gaps[0].start == 0) {
             const gap = {
                 start: currentGapStart,
                 end: gaps[0].end,

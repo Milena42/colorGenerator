@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, reactive, ref, watch, type Ref } from 'vue';
+import { computed, reactive, ref, shallowRef, watch, type ShallowRef } from 'vue';
 import CircleInput, {
     circleObject,
     R_SPECTRAL_CIRCLE,
@@ -25,7 +25,7 @@ import {
 import { darkTheme, lightTheme, maxCAccent, maxCBg } from './model/themes';
 import { hMinus } from './utilities/math';
 
-const generatedMap: Ref<Map<string, Color>> = ref<Map<string, Color>>(new Map<string, Color>());
+const generatedMap: ShallowRef<Map<string, Color>> = shallowRef(new Map<string, Color>());
 
 type HFromL = (l: number) => number;
 const schemeRulesFromInputs = new Map<schemeType, HFromL>([

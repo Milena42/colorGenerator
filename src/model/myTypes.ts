@@ -91,7 +91,6 @@ export class Color {
     }
 }
 
-//TODO naming
 export const colorRoles = [
     'bg',
     'overlay',
@@ -107,12 +106,12 @@ export type ColorRole = (typeof colorRoles)[number];
 
 export type MockupColors = Record<ColorRole, string>;
 
-export interface ColorRule {
+export interface ColorRoleConstraints {
     l: number;
     cMax: number;
 }
 
-export type Theme = Record<ColorRole, ColorRule>;
+export type Theme = Record<ColorRole, ColorRoleConstraints>;
 
 export enum schemeType {
     mono = 'mono',

@@ -38,40 +38,40 @@ const cssColorsLight = computed(() => {
             <PaletteOutput :colors="colorsDark" />
             <div class="mockup" :style="cssColorsDark">
                 <div>
-                    <h2>Заголовок</h2>
+                    <p class="h">Заголовок</p>
                     <p>
-                        Пример текста. <a href="#">Много текста</a>, чтобы посмотреть контрастность.
-                        Еще текст, чтобы строки переносились...
+                        Пример текста. <span class="a">Много текста</span>, чтобы посмотреть
+                        контрастность. Еще текст, чтобы строки переносились...
                     </p>
-                    <button>Кнопка</button>
+                    <div class="button">Кнопка</div>
                 </div>
 
                 <div class="overlay">
                     <p>
-                        Пример текста. <a href="#">Много текста</a>, чтобы посмотреть контрастность.
-                        Еще текст, чтобы строки переносились...
+                        Пример текста. <span class="a">Много текста</span>, чтобы посмотреть
+                        контрастность. Еще текст, чтобы строки переносились...
                     </p>
-                    <button>Кнопка</button>
+                    <div class="button">Кнопка</div>
                 </div>
             </div>
         </div>
         <div class="row">
             <div class="mockup" :style="cssColorsLight">
                 <div>
-                    <h2>Заголовок</h2>
+                    <p class="h">Заголовок</p>
                     <p>
-                        Пример текста. <a href="#">Много текста</a>, чтобы посмотреть контрастность.
-                        Еще текст, чтобы строки переносились...
+                        Пример текста. <span class="a">Много текста</span>, чтобы посмотреть
+                        контрастность. Еще текст, чтобы строки переносились...
                     </p>
-                    <button>Кнопка</button>
+                    <div class="button">Кнопка</div>
                 </div>
 
                 <div class="overlay">
                     <p>
-                        Пример текста. <a href="#">Много текста</a>, чтобы посмотреть контрастность.
-                        Еще текст, чтобы строки переносились...
+                        Пример текста. <span class="a">Много текста</span>, чтобы посмотреть
+                        контрастность. Еще текст, чтобы строки переносились...
                     </p>
-                    <button>Кнопка</button>
+                    <div class="button">Кнопка</div>
                 </div>
             </div>
             <PaletteOutput :colors="colorsLight" />
@@ -86,17 +86,17 @@ const cssColorsLight = computed(() => {
     .overlay {
         background-color: var(--overlay);
 
-        button {
+        .button {
             background-color: var(--accentOnOverlay);
         }
     }
 
-    button {
+    .button {
         background-color: var(--accentLarge);
         color: var(--textOnAccent);
     }
 
-    a {
+    .a {
         color: var(--accentSmall);
     }
 }
@@ -117,12 +117,17 @@ const cssColorsLight = computed(() => {
         padding: 30px;
     }
 
-    button {
+    .button {
         padding: 10px 15px;
         border-radius: 7px;
-        border: none;
-        box-shadow: none;
-        font: inherit;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .h {
+        font-size: 20pt;
+        font-weight: bold;
     }
 }
 

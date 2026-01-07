@@ -254,38 +254,38 @@ const show3Circles = computed(() => {
     <div class="generator-wheel-page">
         <div>
             <div class="choice-chips">
-                <div
+                <button
                     class="harmony-type-button choice-chip"
                     :class="{ current: typeOfScheme == schemeType.mono }"
                     @click="typeOfScheme = schemeType.mono"
                 >
                     <IconMono />
                     <p>монохромная</p>
-                </div>
-                <div
+                </button>
+                <button
                     class="harmony-type-button choice-chip"
                     :class="{ current: typeOfScheme == schemeType.complementary }"
                     @click="typeOfScheme = schemeType.complementary"
                 >
                     <IconComplementary />
                     <p>комплементарная</p>
-                </div>
-                <div
+                </button>
+                <button
                     class="harmony-type-button choice-chip"
                     :class="{ current: typeOfScheme == schemeType.analog }"
                     @click="typeOfScheme = schemeType.analog"
                 >
                     <IconAnalog />
                     <p>аналоговая</p>
-                </div>
-                <div
+                </button>
+                <button
                     class="harmony-type-button choice-chip"
                     :class="{ current: typeOfScheme == schemeType.triad }"
                     @click="typeOfScheme = schemeType.triad"
                 >
                     <IconTriad />
                     <p>триада</p>
-                </div>
+                </button>
             </div>
             <div class="col chroma-params">
                 <p>максимальная насыщенность:</p>
@@ -380,6 +380,7 @@ const show3Circles = computed(() => {
 
 .harmony-type-button {
     padding: 0.2rem 0.4rem 0.4rem;
+    background: none;
 
     display: flex;
     flex-flow: column nowrap;

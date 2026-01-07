@@ -260,7 +260,7 @@ const show3Circles = computed(() => {
                     @click="typeOfScheme = schemeType.mono"
                 >
                     <IconMono />
-                    <p>монохромная</p>
+                    монохромная
                 </button>
                 <button
                     class="harmony-type-button choice-chip"
@@ -268,7 +268,7 @@ const show3Circles = computed(() => {
                     @click="typeOfScheme = schemeType.complementary"
                 >
                     <IconComplementary />
-                    <p>комплементарная</p>
+                    комплементарная
                 </button>
                 <button
                     class="harmony-type-button choice-chip"
@@ -276,7 +276,7 @@ const show3Circles = computed(() => {
                     @click="typeOfScheme = schemeType.analog"
                 >
                     <IconAnalog />
-                    <p>аналоговая</p>
+                    аналоговая
                 </button>
                 <button
                     class="harmony-type-button choice-chip"
@@ -284,13 +284,13 @@ const show3Circles = computed(() => {
                     @click="typeOfScheme = schemeType.triad"
                 >
                     <IconTriad />
-                    <p>триада</p>
+                    триада
                 </button>
             </div>
             <div class="col chroma-params">
                 <p>максимальная насыщенность:</p>
                 <div class="row">
-                    <label>акценты</label>
+                    <label for="accent-chroma">акценты</label>
                     <input
                         v-model.number="inputAccentC"
                         type="range"
@@ -299,10 +299,11 @@ const show3Circles = computed(() => {
                         :step="0.1"
                         :style="{ width: maxCAccent + 'rem' }"
                         class="input-range"
+                        id="accent-chroma"
                     />
                 </div>
                 <div class="row">
-                    <label>фоновые</label>
+                    <label for="bg-chroma">фоновые</label>
                     <input
                         v-model.number="inputBgC"
                         type="range"
@@ -311,6 +312,7 @@ const show3Circles = computed(() => {
                         :step="0.1"
                         :style="{ width: maxCBg + 'rem' }"
                         class="input-range"
+                        id="bg-chroma"
                     />
                 </div>
             </div>

@@ -13,6 +13,7 @@ import IconMono from './assets/icons/IconMono.vue';
 import IconTriad from './assets/icons/IconTriad.vue';
 
 //import MapPlot3d from './MapPlot3d.vue';
+import ArcShortest from './ArcShortest.vue';
 import MockUp from './MockUp.vue';
 import {
     accentColorRoles,
@@ -337,6 +338,16 @@ function reverseDependentHues() {
                     @mouseup="dragend"
                     @mouseleave="dragend"
                 >
+                    <ArcShortest
+                        v-if="typeOfScheme == schemeType.analog"
+                        :start="bgCircle.color.h"
+                        :end="accentCircle.color.h"
+                    />
+                    <ArcShortest
+                        v-if="typeOfScheme == schemeType.analog"
+                        :start="accentCircle.color.h"
+                        :end="secondaryCircle.color.h"
+                    />
                     <CircleInput
                         :coords="accentCircle"
                         accent

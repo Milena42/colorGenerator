@@ -7,14 +7,13 @@ import CircleInput, {
     WHEEL_SVG_WIDTH,
 } from './CircleInput.vue';
 
-import IconAnalog from './assets/icons/IconAnalog.vue';
-import IconComplementary from './assets/icons/IconComplementary.vue';
-import IconMono from './assets/icons/IconMono.vue';
-import IconTriad from './assets/icons/IconTriad.vue';
+import IconAnalog from '@/assets/icons/IconAnalog.vue';
+import IconComplementary from '@/assets/icons/IconComplementary.vue';
+import IconMono from '@/assets/icons/IconMono.vue';
+import IconTriad from '@/assets/icons/IconTriad.vue';
 
 //import MapPlot3d from './MapPlot3d.vue';
-import ArcShortest from './ArcShortest.vue';
-import MockUp from './MockUp.vue';
+import MockUp from '@/MockUp.vue';
 import {
     accentColorRoles,
     bgColorRoles,
@@ -22,9 +21,10 @@ import {
     schemeType,
     type MockupColors,
     type Theme,
-} from './model/myTypes';
-import { darkTheme, lightTheme, maxCAccent, maxCBg } from './model/themes';
-import { hMinus } from './utilities/math';
+} from '@/model/myTypes';
+import { darkTheme, lightTheme, maxCAccent, maxCBg } from '@/model/themes';
+import { hMinus } from '@/utilities/math';
+import ArcShortest from './ArcShortest.vue';
 
 const generatedMap: ShallowRef<Map<string, Color>> = shallowRef(new Map<string, Color>());
 
@@ -390,7 +390,7 @@ function reverseDependentHues() {
 </template>
 <style scoped>
 .color-wheel-svg {
-    background-image: url('./assets/color-wheel.png');
+    background-image: url('@/assets/color-wheel.png');
     background-position: cover;
 }
 

@@ -31,8 +31,8 @@ export interface circleDisplay {
 </script>
 
 <script setup lang="ts">
+import { Color } from '@/model/myTypes';
 import { computed } from 'vue';
-import { Color } from './model/myTypes';
 
 defineEmits(['drag-start']);
 const props = defineProps<{

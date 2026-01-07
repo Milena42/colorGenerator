@@ -1,15 +1,15 @@
 <script setup lang="ts">
+import MockUp from '@/MockUp.vue';
+import { Color, colorRoles, type MockupColors, type Theme } from '@/model/myTypes.ts';
+import { darkTheme, lightTheme } from '@/model/themes.ts';
+import ArrayOfPlots from '@/plots/ArrayOfPlots.vue';
+import MapPlotPolar from '@/plots/MapPlotPolar.vue';
+import PolarHistogram from '@/plots/PolarHistogram.vue';
+import { polarFromCartesian } from '@/utilities/math.ts';
 import chroma from 'chroma-js';
 import { PolynomialRegression } from 'ml-regression';
 import { inject, reactive, ref, shallowRef, watch, type Ref, type ShallowRef } from 'vue';
 import DropBox from './DropBox.vue';
-import MockUp from './MockUp.vue';
-import { Color, colorRoles, type MockupColors, type Theme } from './model/myTypes.ts';
-import { darkTheme, lightTheme } from './model/themes.ts';
-import ArrayOfPlots from './plots/ArrayOfPlots.vue';
-import MapPlotPolar from './plots/MapPlotPolar.vue';
-import PolarHistogram from './plots/PolarHistogram.vue';
-import { polarFromCartesian } from './utilities/math.ts';
 
 const userImg = ref<Uint8ClampedArray>();
 let totalPixels = 1;

@@ -1,7 +1,7 @@
 <script setup lang="ts">
+import { cartesianFromPolar } from '@/utilities/math';
 import { computed } from 'vue';
 import { R_SPECTRAL_CIRCLE, SCALE, WHEEL_SVG_WIDTH } from './CircleInput.vue';
-import { cartesianFromPolar } from './utilities/math';
 
 const props = defineProps<{
     start: number;

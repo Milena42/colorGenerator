@@ -13,7 +13,7 @@ export const darkTheme: Theme = {
         cMax: 5,
     },
     accentLarge: {
-        l: 70,
+        l: 53,
         cMax: 15,
     },
     accentSmall: {
@@ -44,7 +44,7 @@ export const lightTheme: Theme = {
         cMax: 5,
     },
     accentLarge: {
-        l: 60,
+        l: 65,
         cMax: 15,
     },
     accentSmall: {

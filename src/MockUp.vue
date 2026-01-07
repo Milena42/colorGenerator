@@ -88,12 +88,12 @@ const cssColorsLight = computed(() => {
 
         .button {
             background-color: var(--accentOnOverlay);
+            color: var(--textOnAccent);
         }
     }
 
     .button {
         background-color: var(--accentLarge);
-        color: var(--textOnAccent);
     }
 
     .a {
@@ -128,6 +128,9 @@ const cssColorsLight = computed(() => {
     .h {
         font-size: 20pt;
         font-weight: bold;
+    }
+    .a {
+        text-decoration: underline;
     }
 }
 

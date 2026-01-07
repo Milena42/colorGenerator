@@ -249,6 +249,10 @@ const show2Circles = computed(() => {
 const show3Circles = computed(() => {
     return typeOfScheme.value != 'mono' && typeOfScheme.value != 'complementary';
 });
+
+function reverseDependentHues() {
+    [inputBgH.value, inputSecondaryH.value] = [inputSecondaryH.value, inputBgH.value];
+}
 </script>
 <template>
     <div class="generator-wheel-page">
@@ -316,50 +320,56 @@ const show3Circles = computed(() => {
                     />
                 </div>
             </div>
-
-            <svg
-                version="1.1"
-                :width="WHEEL_SVG_WIDTH"
-                :height="WHEEL_SVG_WIDTH"
-                class="color-wheel-svg"
-                ref="svg"
-                xmlns="http://www.w3.org/2000/svg"
-                @mousemove="mousemove"
-                @mouseup="dragend"
-                @mouseleave="dragend"
-            >
-                <CircleInput
-                    :coords="accentCircle"
-                    accent
-                    @drag-start="(e) => dragstart(accentCircle, e)"
-                />
-                <CircleInput
-                    :coords="secondaryCircle"
-                    @drag-start="(e) => dragstart(secondaryCircle, e)"
-                    v-if="show3Circles"
-                />
-                <CircleInput
-                    :coords="bgCircle"
-                    @drag-start="(e) => dragstart(bgCircle, e)"
-                    v-if="show2Circles"
-                />
-                <circle
-                    :r="(inputAccentC * WHEEL_SVG_WIDTH * SCALE) / 100"
-                    :cx="WHEEL_SVG_WIDTH / 2"
-                    :cy="WHEEL_SVG_WIDTH / 2"
-                    fill="none"
-                    stroke="black"
-                    stroke-width="2"
-                />
-                <circle
-                    :r="(inputBgC * WHEEL_SVG_WIDTH * SCALE) / 100"
-                    :cx="WHEEL_SVG_WIDTH / 2"
-                    :cy="WHEEL_SVG_WIDTH / 2"
-                    fill="none"
-                    stroke="black"
-                    stroke-width="2"
-                />
-            </svg>
+            <div class="color-wheel-square">
+                <button
+                    @click="reverseDependentHues"
+                    class="color-wheel-square-reverse"
+                    :disabled="!show3Circles"
+                ></button>
+                <svg
+                    version="1.1"
+                    :width="WHEEL_SVG_WIDTH"
+                    :height="WHEEL_SVG_WIDTH"
+                    class="color-wheel-svg"
+                    ref="svg"
+                    xmlns="http://www.w3.org/2000/svg"
+                    @mousemove="mousemove"
+                    @mouseup="dragend"
+                    @mouseleave="dragend"
+                >
+                    <CircleInput
+                        :coords="accentCircle"
+                        accent
+                        @drag-start="(e) => dragstart(accentCircle, e)"
+                    />
+                    <CircleInput
+                        :coords="secondaryCircle"
+                        @drag-start="(e) => dragstart(secondaryCircle, e)"
+                        v-if="show3Circles"
+                    />
+                    <CircleInput
+                        :coords="bgCircle"
+                        @drag-start="(e) => dragstart(bgCircle, e)"
+                        v-if="show2Circles"
+                    />
+                    <circle
+                        :r="(inputAccentC * WHEEL_SVG_WIDTH * SCALE) / 100"
+                        :cx="WHEEL_SVG_WIDTH / 2"
+                        :cy="WHEEL_SVG_WIDTH / 2"
+                        fill="none"
+                        stroke="black"
+                        stroke-width="2"
+                    />
+                    <circle
+                        :r="(inputBgC * WHEEL_SVG_WIDTH * SCALE) / 100"
+                        :cx="WHEEL_SVG_WIDTH / 2"
+                        :cy="WHEEL_SVG_WIDTH / 2"
+                        fill="none"
+                        stroke="black"
+                        stroke-width="2"
+                    />
+                </svg>
+            </div>
         </div>
 
         <!--<MapPlot3d :k="30" :data="generatedMap" :totalQ="generatedMap.size" /> --><!--TODO оно зависает-->
@@ -409,5 +419,15 @@ const show3Circles = computed(() => {
     label {
         width: 5.5rem;
     }
+}
+
+.color-wheel-square {
+    position: relative;
+}
+
+.color-wheel-square-reverse {
+    position: absolute;
+    top: 0px;
+    right: 0px;
 }
 </style>

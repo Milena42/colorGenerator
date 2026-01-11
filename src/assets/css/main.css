@@ -2,6 +2,8 @@
 *::before,
 *::after {
     box-sizing: border-box;
+    font: inherit;
+    color: inherit;
 }
 
 html,
@@ -26,6 +28,9 @@ body,
 body {
     font-family: sans-serif;
     font-size: 16px;
+    line-height: 1.5;
+    font-weight: normal;
+    font-style: normal;
 }
 
 .input-range {
@@ -50,6 +55,7 @@ body {
         background: var(--fill-color);
         border: none;
         cursor: pointer;
+        box-sizing: content-box;
     }
 
     &::-webkit-slider-thumb {
@@ -64,7 +70,15 @@ body {
         background: var(--fill-color);
         border: none;
         cursor: pointer;
+        box-sizing: content-box;
     }
+}
+
+input[type='number'],
+input[type='text'] {
+    border-radius: 0.2rem;
+    border: 1px solid var(--transparent-pale);
+    background: inherit;
 }
 
 .choice-chips {

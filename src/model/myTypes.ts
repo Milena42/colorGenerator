@@ -79,7 +79,7 @@ export class Color {
                 if (this._c == 0) {
                     this.l--;
                 } else {
-                    this._c--;
+                    this._c--; //TODO мб уменьшить шаг, см производительность
                     if (this._c < 0) this._c = 0;
                 }
             } else exist = true;

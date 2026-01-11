@@ -1,32 +1,39 @@
+<script lang="ts">
+export function round(n: number) {
+    return parseFloat(n.toFixed(2));
+}
+</script>
 <script setup lang="ts">
-import { computed, type ModelRef } from 'vue';
+import chroma from 'chroma-js';
+import { computed } from 'vue';
+import InputColorHSB from './InputColorHSB.vue';
+import InputColorOKLCH from './InputColorOKLCH.vue';
 import type { Color } from './model/myTypes';
 
-const color: ModelRef<Color> = defineModel({ required: true });
+const color = defineModel<Color>({ required: true });
 
-const colorValue = computed(() => color.value.adjustForRGB());
+const colorHex = computed({
+    get: () => color.value.adjustForRGB(),
+    set: (v) => {
+        const [l, c, h] = chroma(v).oklch();
+        if (l) color.value.l = round(l * 100);
+        if (c) color.value.c = round(c * 100);
+        if (h) color.value.h = round(h);
+    },
+});
 </script>
 <template>
-    <div class="input-color" :style="{ backgroundColor: colorValue }"></div>
     <div>
-        <input type="range" min="0" max="100" v-model.number.lazy="color.l" />
-        <input type="number" v-model.number.lazy="color.l" />
-    </div>
-    <div>
-        <input type="range" min="0" max="35" v-model.number.lazy="color.c" />
-        <input type="number" v-model.number.lazy="color.c" />
-    </div>
-    <div>
-        <input type="range" min="0" max="359" v-model.number.lazy="color.h" />
-        <input type="number" v-model.number.lazy="color.h" />
+        <div class="input-color" :style="{ backgroundColor: colorHex }"></div>
+        <div class="row">
+            <InputColorHSB v-model="colorHex" />
+            <InputColorOKLCH v-model="color" />
+        </div>
     </div>
 </template>
 <style scoped>
 .input-color {
     height: 2rem;
-    width: 3rem;
-}
-input[type='number'] {
     width: 3rem;
 }
 </style>

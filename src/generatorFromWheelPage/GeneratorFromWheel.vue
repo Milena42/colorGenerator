@@ -253,6 +253,8 @@ const show3Circles = computed(() => {
 
 function reverseDependentHues() {
     [inputBgH.value, inputSecondaryH.value] = [inputSecondaryH.value, inputBgH.value];
+    bgCircle.calculateCoords();
+    secondaryCircle.calculateCoords();
 }
 </script>
 <template>

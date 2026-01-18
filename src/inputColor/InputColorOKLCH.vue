@@ -1,8 +1,8 @@
 <script setup lang="ts">
+import { Color } from '@/model/myTypes';
 import chroma from 'chroma-js';
 import { computed } from 'vue';
 import InputRangeColor from './InputRangeColor.vue';
-import { Color } from './model/myTypes';
 
 const color = defineModel<Color>({ required: true });
 

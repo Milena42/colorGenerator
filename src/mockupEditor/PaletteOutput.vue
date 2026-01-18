@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import InputColor from '@/InputColor.vue';
+import InputColor from '@/inputColor/InputColor.vue';
 import { type MockupColors } from '@/model/myTypes';
 
 const colors = defineModel<MockupColors>({ required: true });

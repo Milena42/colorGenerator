@@ -1,4 +1,4 @@
-import type { Color } from '../model/myTypes';
+import type { Color } from '@/model/myTypes';
 
 export function polarFromCartesian(x: number, y: number): [r: number, deg: number] {
     const r = Math.sqrt(x * x + y * y);

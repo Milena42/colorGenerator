@@ -8,6 +8,9 @@ provide('showQuantityOnPlots', showQuantityOnPlots);
 const showPlots = ref(false);
 provide('showPlots', showPlots);
 
+const alwaysShowColorStrings = ref(false);
+provide('alwaysShowColorStrings', alwaysShowColorStrings);
+
 const bgColor = ref('#ffffff');
 const themeIsLight = computed(() => {
     const c = chroma(bgColor.value);
@@ -37,6 +40,14 @@ const themeIsLight = computed(() => {
             <div>
                 <input type="color" v-model="bgColor" />
             </div>
+            <div>
+                <input
+                    type="checkbox"
+                    v-model="alwaysShowColorStrings"
+                    id="alwaysShowColorStrings"
+                />
+                <label for="alwaysShowColorStrings">показывать коды цветов</label>
+            </div>
         </div>
         <RouterView class="grow w-full" />
     </div>
@@ -52,9 +63,11 @@ const themeIsLight = computed(() => {
 
 .page.light {
     --text-color: black;
+    --transparent-overlay: rgba(255, 255, 255, 0.5);
 }
 
 .page.dark {
     --text-color: white;
+    --transparent-overlay: rgba(0, 0, 0, 0.5);
 }
 </style>

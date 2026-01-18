@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import MockUp from '@/MockUp.vue';
+import MockupEditor from '@/mockupEditor/MockupEditor.vue';
 import { Color, colorRoles, type MockupColors, type Theme } from '@/model/myTypes.ts';
 import { darkTheme, lightTheme } from '@/model/themes.ts';
 import ArrayOfPlots from '@/plots/ArrayOfPlots.vue';
@@ -334,7 +334,7 @@ function generateLRangeBased() {
 
             newGeneratedMap.set(rgbString, elem);
 
-            generatedTheme[key] = rgbString;
+            generatedTheme[key] = elem;
         });
     });
 
@@ -352,7 +352,7 @@ const showPlots: Ref<boolean> = inject('showPlots') ?? ref(false);
     <div class="col">
         <div class="grow generator-picture-page-main">
             <DropBox v-model:pixels="userImg">Загрузите изображение сюда </DropBox>
-            <MockUp
+            <MockupEditor
                 class="grow"
                 :colorsDark="generatedDark"
                 :colorsLight="generatedLight"

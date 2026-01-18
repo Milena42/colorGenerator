@@ -1,0 +1,147 @@
+<script setup lang="ts">
+import type { MockupColors } from '@/model/myTypes';
+import { computed } from 'vue';
+
+const props = defineProps<{
+    colors: MockupColors;
+}>();
+
+const cssColors = computed(() => {
+    return {
+        '--bg': props.colors.bg.adjustForRGB(),
+        '--overlay': props.colors.overlay.adjustForRGB(),
+        '--accentLarge': props.colors.accentLarge.adjustForRGB(),
+        '--accentSmall': props.colors.accentSmall.adjustForRGB(),
+        '--accentOnOverlay': props.colors.accentOnOverlay.adjustForRGB(),
+        '--text': props.colors.text.adjustForRGB(),
+        '--textOnAccent': props.colors.textOnAccent.adjustForRGB(),
+    };
+});
+</script>
+
+<template>
+    <div class="mockup" :style="cssColors">
+        <p class="h">Заголовок</p>
+        <div class="mockup-top">
+            <p>
+                Пример текста. <span class="a">Типа ссылка</span>, чтобы посмотреть контрастность.
+                Еще текст, чтобы строки переносились...
+            </p>
+            <div class="mockup-icons-row">
+                <div class="button">Кнопка</div>
+                <div class="fix-align" style="padding-top: 0.099em">
+                    <span class="material-symbols-rounded icon">favorite</span>
+                </div>
+                <span class="material-symbols-rounded icon">add</span>
+                <div class="fix-align" style="padding-bottom: 0.1em">
+                    <span class="material-symbols-rounded filled icon">star</span>
+                </div>
+                <span class="material-symbols-rounded icon">menu</span>
+            </div>
+        </div>
+        <div class="mockup-overlay">
+            <p>
+                Пример текста. <span class="a">Типа ссылка</span>, чтобы посмотреть контрастность.
+                Еще текст, чтобы строки переносились...
+            </p>
+            <div class="button">Кнопка</div>
+        </div>
+    </div>
+</template>
+
+<style scoped>
+.mockup {
+    background-color: var(--bg);
+    color: var(--text);
+
+    .mockup-overlay {
+        background-color: var(--overlay);
+
+        .button {
+            background-color: var(--accentOnOverlay);
+            color: var(--textOnAccent);
+        }
+    }
+
+    .button {
+        background-color: var(--accentLarge);
+    }
+
+    .a {
+        color: var(--accentSmall);
+    }
+
+    .icon {
+        color: var(--accentOnOverlay);
+    }
+}
+
+.mockup {
+    width: 24em;
+
+    font-size: 12pt;
+
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+
+    gap: 1.5em;
+    padding: 3.6em 2.8em 2.2em;
+    border-radius: 1.8em;
+
+    p {
+        margin: 0px;
+    }
+}
+
+.h {
+    font-size: 20pt;
+    font-weight: bold;
+    margin: 0px;
+}
+
+.icon {
+    font-size: 2rem;
+}
+
+.mockup-top {
+    display: flex;
+    flex-flow: column nowrap;
+    gap: 1em;
+}
+
+.mockup-overlay {
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: flex-start;
+
+    gap: 1em;
+    padding: 2em 1.8em 1.5em;
+    border-radius: 1.2em;
+}
+
+.mockup-icons-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0.5em 1em;
+    border-radius: 0.6em;
+}
+
+.a {
+    text-decoration: underline;
+}
+
+.fix-align {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+</style>

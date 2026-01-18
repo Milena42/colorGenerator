@@ -99,10 +99,41 @@ input[type='text'] {
     justify-content: center;
 
     color: var(--text-color);
+    background: none;
     text-decoration: none;
     text-wrap: nowrap;
 }
 
 .choice-chip.current {
     border-color: var(--transparent-bright);
+}
+
+.material-symbols-rounded.filled {
+    font-variation-settings: 'FILL' 1;
+}
+
+button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0.4rem;
+    border-radius: 0.5rem;
+    border: none;
+    background-color: var(--transparent-pale);
+    color: var(--color);
+}
+
+button,
+input {
+    &:hover {
+        cursor: pointer;
+    }
+    &:disabled:hover {
+        cursor: not-allowed;
+    }
+}
+
+.current:hover {
+    cursor: default;
 }

@@ -13,7 +13,7 @@ import IconMono from '@/assets/icons/IconMono.vue';
 import IconTriad from '@/assets/icons/IconTriad.vue';
 
 //import MapPlot3d from './MapPlot3d.vue';
-import MockUp from '@/MockUp.vue';
+import MockupEditor from '@/mockupEditor/MockupEditor.vue';
 import {
     accentColorRoles,
     bgColorRoles,
@@ -115,7 +115,7 @@ function generateGrayAndAccents() {
 
             newGeneratedMap.set(rgbString, elem);
 
-            generatedTheme[key] = rgbString;
+            generatedTheme[key] = elem;
         });
         bgColorRoles.forEach((key) => {
             const { l, cMax } = themeRules[key];
@@ -129,7 +129,7 @@ function generateGrayAndAccents() {
 
             newGeneratedMap.set(rgbString, elem);
 
-            generatedTheme[key] = rgbString;
+            generatedTheme[key] = elem;
         });
     });
     return newGeneratedMap;
@@ -328,7 +328,10 @@ function reverseDependentHues() {
                     @click="reverseDependentHues"
                     class="color-wheel-square-reverse"
                     :disabled="!show3Circles"
-                ></button>
+                    title="поменять местами зависимые тона"
+                >
+                    <span class="material-symbols-rounded">swap_vert</span>
+                </button>
                 <svg
                     version="1.1"
                     :width="WHEEL_SVG_WIDTH"
@@ -387,13 +390,13 @@ function reverseDependentHues() {
 
         <!--<MapPlot3d :k="30" :data="generatedMap" :totalQ="generatedMap.size" /> --><!--TODO оно зависает-->
 
-        <MockUp :colorsLight="generatedNewLight" :colorsDark="generatedNewDark" />
+        <MockupEditor :colorsLight="generatedNewLight" :colorsDark="generatedNewDark" />
     </div>
 </template>
 <style scoped>
 .color-wheel-svg {
     background-image: url('@/assets/color-wheel.png');
-    background-position: cover;
+    background-size: cover;
 }
 
 .generator-wheel-page {

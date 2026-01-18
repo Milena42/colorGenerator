@@ -104,7 +104,7 @@ export const accentColorRoles = ['accentLarge', 'accentSmall', 'accentOnOverlay'
 export const bgColorRoles = ['bg', 'overlay', 'text', 'textOnAccent'];
 export type ColorRole = (typeof colorRoles)[number];
 
-export type MockupColors = Record<ColorRole, string>;
+export type MockupColors = Record<ColorRole, Color>;
 
 export interface ColorRoleConstraints {
     l: number;
@@ -119,3 +119,5 @@ export enum schemeType {
     analog = 'analog',
     triad = 'triad',
 }
+
+export type ColorFormat = 'rgbHex' | 'hsb' | 'oklch';

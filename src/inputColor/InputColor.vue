@@ -44,7 +44,7 @@ const editing = ref(false);
 
 async function copy() {
     try {
-    await navigator.clipboard.writeText(colorString.value);
+        await navigator.clipboard.writeText(colorString.value);
     } catch (e) {
         if (e instanceof DOMException && e.name == 'NotAllowedError') {
             console.error('доступ к буферу обмена запрещен'); //TODO сообщение?
@@ -63,7 +63,7 @@ async function copy() {
                 <button @click="editing = !editing" title="редактировать цвет">
                     <span class="material-symbols-rounded">tune</span>
                 </button>
-                <button @click="copy" title="копировать цвет">
+                <button @click="copy" :title="`копировать цвет: ${colorString}`">
                     <span class="material-symbols-rounded">content_copy</span>
                 </button>
             </div>

@@ -21,7 +21,7 @@ const cssGradient = computed(() => {
     return '';
 });
 
-const widthCorrected = computed(() => (props.width ? props.width : 0));
+const widthCorrected = computed(() => (props.width ? props.width : 0.001));
 </script>
 
 <template>
@@ -36,7 +36,7 @@ const widthCorrected = computed(() => (props.width ? props.width : 0));
                 :step="0.01"
                 :id="id"
                 class="input-range-color"
-                :class="{ 'input-range-color-width': width }"
+                :class="{ 'input-range-color-width': width !== undefined }"
             />
         </div>
         <InputNumber v-model="model" :min="min" :max="max" :step="1" />

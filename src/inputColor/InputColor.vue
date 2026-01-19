@@ -80,7 +80,7 @@ async function copy() {
             <input v-if="editing" v-model.lazy="colorString" />
         </div>
         <div class="col" v-if="editing">
-            <InputColorHSB v-model="colorHex" v-if="colorFormatEdit == 'rgbHex'" />
+            <InputColorHSB v-model="colorHex" v-if="colorFormatEdit == 'hsb'" />
             <InputColorOKLCH v-model="color" v-if="colorFormatEdit == 'oklch'" />
         </div>
     </div>

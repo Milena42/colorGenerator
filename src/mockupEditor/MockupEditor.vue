@@ -25,6 +25,22 @@ provide('colorFormatEdit', colorFormatEdit);
             <div class="choice-chips">
                 <button
                     class="choice-chip"
+                    :class="{ current: colorFormatEdit == 'hsb' }"
+                    @click="colorFormatEdit = 'hsb'"
+                >
+                    HSB
+                </button>
+                <button
+                    class="choice-chip"
+                    :class="{ current: colorFormatEdit == 'oklch' }"
+                    @click="colorFormatEdit = 'oklch'"
+                >
+                    OKLCH
+                </button>
+            </div>
+            <div class="choice-chips">
+                <button
+                    class="choice-chip"
                     :class="{ current: colorFormatCopy == 'rgbHex' }"
                     @click="colorFormatCopy = 'rgbHex'"
                 >

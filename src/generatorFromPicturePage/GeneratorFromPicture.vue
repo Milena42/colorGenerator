@@ -302,7 +302,7 @@ function generateLRangeBased() {
                     c = 0;
                 } else {
                     q = arr.map(([, v]) => v.q).reduce((e1, e2) => e1 + e2);
-                    c = Math.max(...arr.map(([, v]) => v.c));
+                    c = arr.map(([, v]) => v.c).reduce((a, b) => Math.max(a, b));
                 }
 
                 if (c > best.c && q + 0.1 * sufficientNumber > best.q) return { i, q, c };

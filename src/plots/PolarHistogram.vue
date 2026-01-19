@@ -16,7 +16,7 @@ function draw() {
 
     const values = props.data;
     const degrees = values.map((v, i) => i);
-    const maxValue = Math.max(...values);
+    const maxValue = values.reduce((a, b) => Math.max(a, b));
 
     const traces: Data[] = [
         {

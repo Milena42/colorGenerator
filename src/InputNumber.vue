@@ -20,7 +20,7 @@ watch(
 );
 
 function change() {
-    const n = Number(valueInternal.value);
+    const n = parseFloat(valueInternal.value); //TODO мб регулярка на цифры?
     if (!Number.isNaN(n)) {
         model.value = n;
     } else {

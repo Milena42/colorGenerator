@@ -43,7 +43,16 @@ const colorString = computed(() => {
 const editing = ref(false);
 
 async function copy() {
+    try {
     await navigator.clipboard.writeText(colorString.value);
+    } catch (e) {
+        if (e instanceof DOMException && e.name == 'NotAllowedError') {
+            console.error('доступ к буферу обмена запрещен'); //TODO сообщение?
+        }
+        console.error(e);
+        return;
+    }
+    //alert('цвет скопирован');//TODO сообщение?
 }
 </script>
 

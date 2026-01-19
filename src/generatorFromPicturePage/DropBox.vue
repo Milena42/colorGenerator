@@ -34,9 +34,16 @@ function drop(e: DragEvent) {
     imageHere.value = true;
 
     const reader = new FileReader();
-    reader.onload = (e) => {
-        image.value = e.target?.result;
+
+    reader.onload = () => {
+        image.value = reader.result;
     };
+
+    reader.onerror = (e) => {
+        console.error(reader.error, e);
+        alert('ошибка при чтении файла'); //TODO
+    };
+
     reader.readAsDataURL(file);
 }
 
@@ -72,8 +79,8 @@ function loadImgData(e: Event) {
     canvas.value.width = theWidth;
     canvas.value.height = theHeight;
 
-    ctx.value.drawImage(img1, 0, 0, theWidth, theHeight);
-    const imgData = ctx.value.getImageData(0, 0, theWidth, theHeight);
+    ctx.value.drawImage(img1, 0, 0, theWidth, theHeight); // TODO InvalidStateError, TypeMismatchError
+    const imgData = ctx.value.getImageData(0, 0, theWidth, theHeight); // TODO IndexSizeError, SecurityError
 
     pixels.value = imgData.data; /// одномерный массив rgbargbargba
 }

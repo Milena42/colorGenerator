@@ -23,21 +23,30 @@ const colorHex = computed({
     get: () => color.value.adjustForRGB(),
     set: (v) => {
         const [l, c, h] = chroma(v).oklch();
-        if (l) color.value.l = round(l * 100);
-        if (c) color.value.c = round(c * 100);
-        if (h) color.value.h = round(h);
+        if (l || l == 0) color.value.l = round(l * 100);
+        if (c || c == 0) color.value.c = round(c * 100);
+        if (h || h == 0) color.value.h = round(h);
     },
 });
 
-const colorString = computed(() => {
-    switch (colorFormatCopy?.value) {
-        case 'oklch':
-            const { l, c, h } = color.value;
-            return `oklch(${l}% ${(c / 100).toFixed(2)} ${h.toFixed(2)})`;
-        case 'rgbHex':
-        default:
-            return colorHex.value;
-    }
+const colorString = computed({
+    get: () => {
+        switch (colorFormatCopy?.value) {
+            case 'oklch':
+                const { l, c, h } = color.value;
+                return `oklch(${l}% ${(c / 100).toFixed(2)} ${h.toFixed(2)})`;
+            case 'rgbHex':
+            default:
+                return colorHex.value;
+        }
+    },
+    set: (v) => {
+        try {
+            colorHex.value = chroma(v).hex('rgb');
+        } catch {
+            colorHex.value = '#000';
+        }
+    },
 });
 
 const editing = ref(false);
@@ -67,7 +76,8 @@ async function copy() {
                     <span class="material-symbols-rounded">content_copy</span>
                 </button>
             </div>
-            <p v-if="alwaysShowColorStrings">{{ colorString }}</p>
+            <p v-if="alwaysShowColorStrings && !editing">{{ colorString }}</p>
+            <input v-if="editing" v-model.lazy="colorString" />
         </div>
         <div class="col" v-if="editing">
             <InputColorHSB v-model="colorHex" v-if="colorFormatEdit == 'rgbHex'" />

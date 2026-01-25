@@ -5,6 +5,10 @@ import { onMounted, ref } from 'vue';
  * значение инпута - массив rgbargbargba и количество пикселей
  */
 const pixels = defineModel<Uint8ClampedArray>('pixels');
+const emit = defineEmits<{
+    change: [];
+}>();
+
 const imageHere = ref(false);
 const image = ref();
 
@@ -36,7 +40,11 @@ function drop(e: DragEvent) {
     const reader = new FileReader();
 
     reader.onload = () => {
-        image.value = reader.result;
+        if (reader.result == image.value) {
+            emit('change'); // чтобы было событие загрузки даже если картинка та же
+        } else {
+            image.value = reader.result;
+        }
     };
 
     reader.onerror = (e) => {
@@ -83,14 +91,32 @@ function loadImgData(e: Event) {
     const imgData = ctx.value.getImageData(0, 0, theWidth, theHeight); // TODO IndexSizeError, SecurityError
 
     pixels.value = imgData.data; /// одномерный массив rgbargbargba
+    emit('change');
+}
+
+function clear() {
+    imageHere.value = false;
+    image.value = '';
+}
+
+function inputFile() {
+    //TODO
 }
 </script>
+
 <template>
     <div class="dropbox" @dragenter="dragenter" @dragover="dragover" @drop="drop">
+        <button v-if="imageHere" @click="clear">
+            <span class="material-symbols-rounded">close</span>
+        </button>
         <img v-if="imageHere" :src="image" @load="loadImgData" />
-        <slot v-else></slot>
+        <div v-else class="col">
+            <input type="file" @change="inputFile" />
+            Загрузите изображение
+        </div>
     </div>
 </template>
+
 <style scoped>
 .dropbox {
     min-height: 100px;
@@ -100,6 +126,14 @@ function loadImgData(e: Event) {
     align-items: center;
     justify-content: center;
     border: #dadada solid 2px;
+
+    position: relative;
+
+    button {
+        position: absolute;
+        top: 0px;
+        right: 0px;
+    }
 
     & > * {
         max-height: 100%;

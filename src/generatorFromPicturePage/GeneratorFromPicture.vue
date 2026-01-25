@@ -8,7 +8,7 @@ import PolarHistogram from '@/plots/PolarHistogram.vue';
 import { polarFromCartesian } from '@/utilities/math.ts';
 import chroma from 'chroma-js';
 import { PolynomialRegression } from 'ml-regression';
-import { inject, reactive, ref, shallowRef, watch, type Ref, type ShallowRef } from 'vue';
+import { inject, reactive, ref, shallowRef, type Ref, type ShallowRef } from 'vue';
 import DropBox from './DropBox.vue';
 
 const userImg = ref<Uint8ClampedArray>();
@@ -341,17 +341,18 @@ function generateLRangeBased() {
     return newGeneratedMap;
 }
 
-watch(userImg, () => {
-    imgMap.value = fillMapFromImg();
+function generate() {
+    imgMap.value = fillMapFromImg(); //TODO мб перенести это в dropbox чтобы не повторять при загрузке той же картинки
     generatedMap.value = generateLRangeBased();
-});
+}
 
 const showPlots: Ref<boolean> = inject('showPlots') ?? ref(false);
 </script>
+
 <template>
     <div class="col">
         <div class="grow generator-picture-page-main">
-            <DropBox v-model:pixels="userImg">Загрузите изображение сюда </DropBox>
+            <DropBox v-model:pixels="userImg" @change="generate" />
             <MockupEditor
                 class="grow"
                 :colorsDark="generatedDark"
@@ -396,6 +397,7 @@ const showPlots: Ref<boolean> = inject('showPlots') ?? ref(false);
         </div>
     </div>
 </template>
+
 <style scoped>
 .generator-picture-page-main {
     display: flex;

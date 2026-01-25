@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { type ColorFormat, type MockupColors } from '@/model/myTypes';
 import { provide, ref } from 'vue';
-import MockupPreview from './MockupPreview.vue';
+import MockupPreview, { getCssColors } from './MockupPreview.vue';
 import PaletteOutput from './PaletteOutput.vue';
 
 const props = defineProps<{
@@ -17,6 +17,26 @@ provide('colorFormatCopy', colorFormatCopy);
 
 const colorFormatEdit = ref<ColorFormat>('oklch');
 provide('colorFormatEdit', colorFormatEdit);
+
+async function copyAll() {
+    const stylesToCopy = `.dark {
+${getCssColors(colorsDarkLocal.value, colorFormatCopy.value)}
+}
+.light {
+${getCssColors(colorsLightLocal.value, colorFormatCopy.value)}
+}`;
+
+    try {
+        await navigator.clipboard.writeText(stylesToCopy);
+    } catch (e) {
+        if (e instanceof DOMException && e.name == 'NotAllowedError') {
+            console.error('доступ к буферу обмена запрещен'); //TODO сообщение?
+        }
+        console.error(e);
+        return;
+    }
+    //alert('цвет скопирован');//TODO сообщение?
+}
 </script>
 
 <template>
@@ -54,7 +74,9 @@ provide('colorFormatEdit', colorFormatEdit);
                     OKLCH
                 </button>
             </div>
-            <button><span class="material-symbols-rounded">content_copy</span></button>
+            <button @click="copyAll">
+                <span class="material-symbols-rounded">content_copy</span>
+            </button>
         </div>
         <div class="mockup-editor">
             <div class="row">

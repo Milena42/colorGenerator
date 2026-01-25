@@ -2,6 +2,17 @@
 export function round(n: number) {
     return parseFloat(n.toFixed(2));
 }
+
+export function getColorString(color: Color, format: ColorFormat) {
+    switch (format) {
+        case 'oklch':
+            const { l, c, h } = color;
+            return `oklch(${l}% ${(c / 100).toFixed(2)} ${h.toFixed(2)})`;
+        case 'rgbHex':
+        default:
+            return color.adjustForRGB();
+    }
+}
 </script>
 
 <script setup lang="ts">
@@ -30,16 +41,7 @@ const colorHex = computed({
 });
 
 const colorString = computed({
-    get: () => {
-        switch (colorFormatCopy?.value) {
-            case 'oklch':
-                const { l, c, h } = color.value;
-                return `oklch(${l}% ${(c / 100).toFixed(2)} ${h.toFixed(2)})`;
-            case 'rgbHex':
-            default:
-                return colorHex.value;
-        }
-    },
+    get: () => getColorString(color.value, colorFormatCopy?.value ?? 'rgbHex'),
     set: (v) => {
         try {
             colorHex.value = chroma(v).hex('rgb');

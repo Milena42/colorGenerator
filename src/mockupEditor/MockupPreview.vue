@@ -1,22 +1,27 @@
+<script lang="ts">
+import { getColorString } from '@/inputColor/InputColor.vue';
+
+export function getCssColors(colors: MockupColors, format: ColorFormat) {
+    return (
+        Object.entries(colors)
+            .map(([role, color]) => {
+                const colorString = getColorString(color, format);
+                return `--${role}: ${colorString}`;
+            })
+            .join(';\n') + ';'
+    );
+}
+</script>
+
 <script setup lang="ts">
-import type { MockupColors } from '@/model/myTypes';
+import type { ColorFormat, MockupColors } from '@/model/myTypes';
 import { computed } from 'vue';
 
 const props = defineProps<{
     colors: MockupColors;
 }>();
 
-const cssColors = computed(() => {
-    return {
-        '--bg': props.colors.bg.adjustForRGB(),
-        '--overlay': props.colors.overlay.adjustForRGB(),
-        '--accentLarge': props.colors.accentLarge.adjustForRGB(),
-        '--accentSmall': props.colors.accentSmall.adjustForRGB(),
-        '--accentOnOverlay': props.colors.accentOnOverlay.adjustForRGB(),
-        '--text': props.colors.text.adjustForRGB(),
-        '--textOnAccent': props.colors.textOnAccent.adjustForRGB(),
-    };
-});
+const cssColors = computed(() => getCssColors(props.colors, 'rgbHex'));
 </script>
 
 <template>

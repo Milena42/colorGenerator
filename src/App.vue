@@ -11,6 +11,9 @@ provide('showPlots', showPlots);
 const alwaysShowColorStrings = ref(false);
 provide('alwaysShowColorStrings', alwaysShowColorStrings);
 
+const showLandings = ref(false);
+provide('showLandings', showLandings);
+
 const bgColor = ref('#ffffff');
 const themeIsLight = computed(() => {
     const c = chroma(bgColor.value);
@@ -47,6 +50,10 @@ const themeIsLight = computed(() => {
                     id="alwaysShowColorStrings"
                 />
                 <label for="alwaysShowColorStrings">показывать коды цветов</label>
+            </div>
+            <div>
+                <input type="checkbox" v-model="showLandings" id="showLandings" />
+                <label for="showLandings">показывать примеры лендингов</label>
             </div>
         </div>
         <RouterView class="grow w-full" />

@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { type ColorFormat, type MockupColors } from '@/model/myTypes';
-import { provide, ref } from 'vue';
+import { inject, provide, ref, type Ref } from 'vue';
 import MockupPreview, { getCssColors } from './MockupPreview.vue';
+import MockupPreviewLanding from './MockupPreviewLanding.vue';
 import PaletteOutput from './PaletteOutput.vue';
 
 const props = defineProps<{
@@ -37,6 +38,8 @@ ${getCssColors(colorsLightLocal.value, colorFormatCopy.value)}
     }
     //alert('цвет скопирован');//TODO сообщение?
 }
+
+const showLandings = inject<Ref<boolean>>('showLandings');
 </script>
 
 <template>
@@ -88,6 +91,28 @@ ${getCssColors(colorsLightLocal.value, colorFormatCopy.value)}
                 <PaletteOutput v-model="colorsLightLocal" />
             </div>
         </div>
+        <div v-if="showLandings" class="mockup-landings">
+            <MockupPreviewLanding
+                :colorsDark="colorsDarkLocal"
+                :colorsLight="colorsLightLocal"
+                theme="mixed-dark"
+            />
+            <MockupPreviewLanding
+                :colorsDark="colorsDarkLocal"
+                :colorsLight="colorsLightLocal"
+                theme="mixed-light"
+            />
+            <MockupPreviewLanding
+                :colorsDark="colorsDarkLocal"
+                :colorsLight="colorsLightLocal"
+                theme="dark"
+            />
+            <MockupPreviewLanding
+                :colorsDark="colorsDarkLocal"
+                :colorsLight="colorsLightLocal"
+                theme="light"
+            />
+        </div>
     </div>
 </template>
 
@@ -95,7 +120,7 @@ ${getCssColors(colorsLightLocal.value, colorFormatCopy.value)}
 .mockup-editor-wrapper {
     display: flex;
     flex-flow: column nowrap;
-    gap: 0px;
+    gap: 2rem;
     align-items: stretch;
 }
 
@@ -104,15 +129,18 @@ ${getCssColors(colorsLightLocal.value, colorFormatCopy.value)}
     justify-content: center;
     align-items: center;
 
-    padding: 2rem;
     gap: 1rem;
 }
 
-.mockup-editor {
+.mockup-editor,
+.mockup-landings {
     display: flex;
     flex-flow: row wrap;
     gap: 0px;
     align-items: center;
     justify-content: center;
+}
+.mockup-landings {
+    gap: 1rem;
 }
 </style>

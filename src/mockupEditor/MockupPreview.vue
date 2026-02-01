@@ -84,8 +84,6 @@ const cssColors = computed(() => getCssColors(props.colors, 'rgbHex'));
 .mockup {
     width: 24em;
 
-    font-size: 12pt;
-
     display: flex;
     flex-direction: column;
     align-items: flex-start;
@@ -100,13 +98,13 @@ const cssColors = computed(() => getCssColors(props.colors, 'rgbHex'));
 }
 
 .h {
-    font-size: 20pt;
+    font-size: 1.6em;
     font-weight: bold;
     margin: 0px;
 }
 
 .icon {
-    font-size: 2rem;
+    font-size: 2em;
 }
 
 .mockup-top {

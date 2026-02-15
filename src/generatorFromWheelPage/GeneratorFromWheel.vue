@@ -339,9 +339,9 @@ function reverseDependentHues() {
                     class="color-wheel-svg"
                     ref="svg"
                     xmlns="http://www.w3.org/2000/svg"
-                    @mousemove="mousemove"
-                    @mouseup="dragend"
-                    @mouseleave="dragend"
+                    @mousemove.prevent="mousemove"
+                    @mouseup.prevent="dragend"
+                    @mouseleave.prevent="dragend"
                 >
                     <ArcShortest
                         v-if="typeOfScheme == schemeType.analog"

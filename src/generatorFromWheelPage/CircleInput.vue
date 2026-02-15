@@ -63,7 +63,7 @@ const lineOpacity = computed(() => {
             stroke="black"
             :stroke-opacity="lineOpacity"
             stroke-width="2"
-            @mousedown="$emit('drag-start', $event)"
+            @mousedown.prevent="$emit('drag-start', $event)"
         />
     </g>
 </template>

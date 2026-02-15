@@ -15,12 +15,12 @@ export class circleObject {
 
     calculateCoords() {
         this.cx = (this.color.x * WHEEL_SVG_WIDTH * SCALE) / 100 + WHEEL_SVG_WIDTH / 2;
-        this.cy = (this.color.y * WHEEL_SVG_WIDTH * SCALE) / 100 + WHEEL_SVG_WIDTH / 2;
+        this.cy = (-this.color.y * WHEEL_SVG_WIDTH * SCALE) / 100 + WHEEL_SVG_WIDTH / 2;
     }
 
     calculateColorCoords() {
         this.color.x = ((this.cx - WHEEL_SVG_WIDTH / 2) * 100) / WHEEL_SVG_WIDTH / SCALE;
-        this.color.y = ((this.cy - WHEEL_SVG_WIDTH / 2) * 100) / WHEEL_SVG_WIDTH / SCALE;
+        this.color.y = -((this.cy - WHEEL_SVG_WIDTH / 2) * 100) / WHEEL_SVG_WIDTH / SCALE;
     }
 }
 

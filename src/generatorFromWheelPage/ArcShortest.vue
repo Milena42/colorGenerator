@@ -18,11 +18,11 @@ const arcPath = computed(() => {
     const [x2, y2] = cartesianFromPolar(radius, props.end);
 
     const diffCW = (props.end - props.start + 360) % 360;
-    const sweepFlag = diffCW <= 180 ? 1 : 0;
+    const sweepFlag = diffCW <= 180 ? 0 : 1;
 
     const largeArcFlag = 0;
 
-    return `M ${x1 + cx} ${y1 + cy} A ${radius} ${radius} 0 ${largeArcFlag} ${sweepFlag} ${x2 + cx} ${y2 + cy}`;
+    return `M ${x1 + cx} ${-y1 + cy} A ${radius} ${radius} 0 ${largeArcFlag} ${sweepFlag} ${x2 + cx} ${-y2 + cy}`;
 });
 </script>
 

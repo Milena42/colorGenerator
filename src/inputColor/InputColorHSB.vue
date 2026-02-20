@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import chroma from 'chroma-js';
-import { computed, reactive, watch } from 'vue';
+import { computed, reactive, ref, watch } from 'vue';
 import { round } from './InputColor.vue';
 import InputRangeColor from './InputRangeColor.vue';
 
@@ -8,14 +8,19 @@ const color = defineModel<string>({ required: true });
 
 const hsb = reactive({ h: 0, s: 0, b: 0 });
 
-//TODO при редактировании одной части другие не должны меняться
+const localInput = ref(false);
+
 watch(
     color,
     () => {
+        if (localInput.value) {
+            localInput.value = false;
+            return;
+        }
         const [h, s, b] = chroma(color.value).hsv();
-        if (h) hsb.h = round(h);
-        if (s) hsb.s = round(s * 100);
-        if (b) hsb.b = round(b * 100);
+        if (h || h == 0) hsb.h = round(h);
+        if (s || s == 0) hsb.s = round(s * 100);
+        if (b || b == 0) hsb.b = round(b * 100);
     },
     { immediate: true },
 );
@@ -44,6 +49,7 @@ const borders = computed(() => {
             gradient="linear-gradient(to right in hsl longer hue, hsl(0 100 50), hsl(360 100 50)"
             :min="0"
             :max="360"
+            @update:model-value="localInput = true"
         />
         <InputRangeColor
             v-model="hsb.s"
@@ -52,6 +58,7 @@ const borders = computed(() => {
             :min="0"
             :max="100"
             :gradient-borders="borders.s"
+            @update:model-value="localInput = true"
         />
         <InputRangeColor
             v-model="hsb.b"
@@ -60,6 +67,7 @@ const borders = computed(() => {
             :min="0"
             :max="100"
             :gradient-borders="borders.b"
+            @update:model-value="localInput = true"
         />
     </div>
 </template>

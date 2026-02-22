@@ -13,6 +13,8 @@ import IconMono from '@/assets/icons/IconMono.vue';
 import IconTriad from '@/assets/icons/IconTriad.vue';
 
 //import MapPlot3d from './MapPlot3d.vue';
+import InputColorHString from '@/inputColor/InputColorHString.vue';
+import InputNumber from '@/InputNumber.vue';
 import MockupEditor from '@/mockupEditor/MockupEditor.vue';
 import {
     accentColorRoles,
@@ -256,6 +258,17 @@ function reverseDependentHues() {
     bgCircle.calculateCoords();
     secondaryCircle.calculateCoords();
 }
+
+const inputHFromColor = ref(false);
+
+const baseH = computed({
+    get: () => inputAccentH.value,
+    set: (v) => {
+        accentCircle.color.h = v;
+        accentCircle.calculateCoords();
+        changeTypeOfScheme();
+    },
+});
 </script>
 <template>
     <div class="generator-wheel-page">
@@ -332,6 +345,22 @@ function reverseDependentHues() {
                 >
                     <span class="material-symbols-rounded">swap_vert</span>
                 </button>
+
+                <div class="color-wheel-square-base-h">
+                    <InputNumber v-model.lazy.number="baseH" :min="0" :max="360" :step="1" circle />
+                </div>
+
+                <div class="color-wheel-square-base-color">
+                    <button v-if="!inputHFromColor" @click="inputHFromColor = true">
+                        Из цвета
+                    </button>
+                    <InputColorHString
+                        v-if="inputHFromColor"
+                        v-model.lazy="baseH"
+                        @change="inputHFromColor = false"
+                    />
+                </div>
+
                 <svg
                     version="1.1"
                     :width="WHEEL_SVG_WIDTH"
@@ -445,5 +474,17 @@ function reverseDependentHues() {
     position: absolute;
     top: 0px;
     right: 0px;
+}
+
+.color-wheel-square-base-color {
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+}
+
+.color-wheel-square-base-h {
+    position: absolute;
+    top: 0px;
+    left: 0px;
 }
 </style>

@@ -25,6 +25,12 @@ body,
     --transparent-bright: rgba(from var(--text-color) r g b / 0.6);
     --fill-color: #808080;
 }
+
+.icon-harmony {
+    --fill: rgba(from var(--text-color) r g b / 0.2);
+    --line: rgba(from var(--text-color) r g b / 0.8);
+}
+
 body {
     font-family: 'Roboto', sans-serif;
     font-size: 18px;

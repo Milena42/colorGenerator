@@ -50,6 +50,7 @@ const borders = computed(() => {
             :min="0"
             :max="360"
             @update:model-value="localInput = true"
+            circle
         />
         <InputRangeColor
             v-model="hsb.s"

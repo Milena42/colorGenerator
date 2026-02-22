@@ -7,6 +7,7 @@ const model = defineModel<number>({ required: true });
 const props = defineProps<{
     min: number;
     max: number;
+    circle?: boolean;
     gradient?: string;
     gradientBorders?: { min: string; max: string };
     id: string;
@@ -39,7 +40,7 @@ const widthCorrected = computed(() => (props.width ? props.width : 0.001));
                 :class="{ 'input-range-color-width': width !== undefined }"
             />
         </div>
-        <InputNumber v-model="model" :min="min" :max="max" :step="1" />
+        <InputNumber v-model="model" :min="min" :max="max" :step="1" :circle="circle" />
     </div>
 </template>
 

@@ -7,6 +7,7 @@ const props = defineProps<{
     min: number;
     max: number;
     step: number;
+    circle?: boolean;
 }>();
 
 const valueInternal = ref('');
@@ -30,13 +31,27 @@ function change() {
 }
 
 function decrement() {
-    const n = model.value - props.step;
-    model.value = Math.max(n, props.min);
+    let n = model.value - props.step;
+    if (n < props.min) {
+        if (props.circle) {
+            n = props.max;
+        } else {
+            n = props.min;
+        }
+    }
+    model.value = n;
 }
 
 function increment() {
-    const n = model.value + props.step;
-    model.value = Math.min(n, props.max);
+    let n = model.value + props.step;
+    if (n > props.max) {
+        if (props.circle) {
+            n = props.min;
+        } else {
+            n = props.max;
+        }
+    }
+    model.value = n;
 }
 </script>
 

@@ -26,6 +26,7 @@ const borders = computed(() => {
             gradient="linear-gradient(to right in oklch longer hue, oklch(0.8 0.15 0), oklch(0.8 0.15 360)"
             :min="0"
             :max="360"
+            circle
         />
         <InputRangeColor
             v-model="color.c"

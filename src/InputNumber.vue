@@ -22,10 +22,10 @@ watch(
 function change() {
     const n = parseFloat(valueInternal.value); //TODO мб регулярка на цифры?
     if (!Number.isNaN(n)) {
-        model.value = n;
+        model.value = Math.max(props.min, Math.min(n, props.max));
     } else {
-        model.value = 0;
-        valueInternal.value = '0.00';
+        model.value = props.min;
+        valueInternal.value = props.min.toFixed(2);
     }
 }
 

@@ -21,13 +21,14 @@ watch(
 );
 
 function change() {
-    const n = parseFloat(valueInternal.value); //TODO мб регулярка на цифры?
+    const n = parseFloat(valueInternal.value);
     if (!Number.isNaN(n)) {
         model.value = Math.max(props.min, Math.min(n, props.max));
     } else {
         model.value = props.min;
         valueInternal.value = props.min.toFixed(2);
     }
+    valueInternal.value = model.value.toFixed(2);
 }
 
 function decrement() {

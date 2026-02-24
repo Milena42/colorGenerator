@@ -26,7 +26,6 @@ function change() {
         model.value = Math.max(props.min, Math.min(n, props.max));
     } else {
         model.value = props.min;
-        valueInternal.value = props.min.toFixed(2);
     }
     valueInternal.value = model.value.toFixed(2);
 }

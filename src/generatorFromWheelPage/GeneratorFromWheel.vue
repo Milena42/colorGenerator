@@ -1,4 +1,9 @@
 <script setup lang="ts">
+import IconAnalog from '@/assets/icons/IconAnalog.vue';
+import IconComplementary from '@/assets/icons/IconComplementary.vue';
+import IconMono from '@/assets/icons/IconMono.vue';
+import IconTriad from '@/assets/icons/IconTriad.vue';
+import { vOnClickOutside } from '@vueuse/components';
 import { computed, reactive, ref, shallowRef, watch, type ShallowRef } from 'vue';
 import CircleInput, {
     circleObject,
@@ -6,11 +11,6 @@ import CircleInput, {
     SCALE,
     WHEEL_SVG_WIDTH,
 } from './CircleInput.vue';
-
-import IconAnalog from '@/assets/icons/IconAnalog.vue';
-import IconComplementary from '@/assets/icons/IconComplementary.vue';
-import IconMono from '@/assets/icons/IconMono.vue';
-import IconTriad from '@/assets/icons/IconTriad.vue';
 
 //import MapPlot3d from './MapPlot3d.vue';
 import InputColorHString from '@/inputColor/InputColorHString.vue';
@@ -354,6 +354,7 @@ const baseH = computed({
                         v-if="inputHFromColor"
                         v-model.lazy="baseH"
                         @change="inputHFromColor = false"
+                        v-on-click-outside="() => (inputHFromColor = false)"
                     />
                 </div>
 

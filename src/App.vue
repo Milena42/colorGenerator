@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { vOnClickOutside } from '@vueuse/components';
 import chroma from 'chroma-js';
 import { computed, provide, ref, watch } from 'vue';
 
@@ -63,7 +64,7 @@ const showSettings = ref(false);
                     >
                 </button>
 
-                <div class="settings-container">
+                <div class="settings-container" v-on-click-outside="() => (showSettings = false)">
                     <button @click="showSettings = !showSettings">
                         <span class="material-symbols-rounded filled">settings</span>
                     </button>

@@ -17,6 +17,7 @@ export function getColorString(color: Color, format: ColorFormat) {
 
 <script setup lang="ts">
 import type { Color, ColorFormat } from '@/model/myTypes';
+import { vOnClickOutside } from '@vueuse/components';
 import chroma from 'chroma-js';
 import { computed, inject, ref, type Ref } from 'vue';
 import InputColorHSB from './InputColorHSB.vue';
@@ -34,9 +35,11 @@ const colorHex = computed({
     get: () => color.value.adjustForRGB(),
     set: (v) => {
         const [l, c, h] = chroma(v).oklch();
-        if (l || l == 0) color.value.l = round(l * 100);
-        if (c || c == 0) color.value.c = round(c * 100);
-        if (h || h == 0) color.value.h = round(h);
+        if (l || l == 0) color.value.l = l * 100;
+        if (c || c == 0) color.value.c = c * 100;
+        if (h || h == 0) color.value.h = h;
+        console.log(v, l, c, h, color.value); //TODO погрешность при вводе hex строкой
+        console.log(chroma.oklch(l, c, h).clipped());
     },
 });
 
@@ -68,7 +71,7 @@ async function copy() {
 </script>
 
 <template>
-    <div class="input-color">
+    <div class="input-color" v-on-click-outside="() => (editing = false)">
         <div class="row">
             <div class="color-preview" :style="{ backgroundColor: colorString }">
                 <button @click="editing = !editing" title="редактировать цвет">
@@ -122,10 +125,6 @@ async function copy() {
     p {
         font-family: monospace;
         font-size: 0.9rem;
-    }
-
-    .edit {
-        min-width: 20rem;
     }
 }
 </style>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import chroma from 'chroma-js';
-import { computed, provide, ref } from 'vue';
+import { computed, provide, ref, watch } from 'vue';
 
 const showQuantityOnPlots = ref(true);
 provide('showQuantityOnPlots', showQuantityOnPlots);
@@ -20,10 +20,30 @@ const themeIsLight = computed(() => {
     const l = c.get('oklch.l');
     return l > 0.5;
 });
+
+const themeIsDark = ref(false);
+watch(themeIsDark, () => {
+    switch (themeIsDark.value) {
+        case false:
+            bgColor.value = '#ffffff';
+            break;
+        case true:
+            bgColor.value = '#000000';
+    }
+});
+
+const showSettings = ref(false);
 </script>
+
 <template>
-    <div class="col page" :class="themeIsLight ? 'light' : 'dark'" :style="{ background: bgColor }">
-        <div class="row">
+    <div
+        class="col page"
+        :class="themeIsLight ? 'light' : 'dark'"
+        :style="{ '--background': bgColor }"
+    >
+        <header class="row">
+            <div>Типа лого тут</div>
+
             <div class="choice-chips">
                 <RouterLink class="choice-chip" activeClass="current" to="/picture"
                     >С картинки</RouterLink
@@ -32,33 +52,54 @@ const themeIsLight = computed(() => {
                     >По кругу</RouterLink
                 >
             </div>
-            <div>
-                <input type="checkbox" v-model="showPlots" id="showPlots" />
-                <label for="showPlots">показывать графики</label>
+
+            <div class="row">
+                <button @click="themeIsDark = !themeIsDark">
+                    <span v-if="!themeIsDark" class="material-symbols-rounded filled"
+                        >dark_mode</span
+                    >
+                    <span v-if="themeIsDark" class="material-symbols-rounded filled"
+                        >light_mode</span
+                    >
+                </button>
+
+                <div class="settings-container">
+                    <button @click="showSettings = !showSettings">
+                        <span class="material-symbols-rounded filled">settings</span>
+                    </button>
+
+                    <div v-if="showSettings" class="settings">
+                        <div>
+                            <input type="checkbox" v-model="showPlots" id="showPlots" />
+                            <label for="showPlots">показывать графики</label>
+                        </div>
+                        <div>
+                            <input type="checkbox" v-model="showQuantityOnPlots" id="showQ" />
+                            <label for="showQ">показывать количество на графиках</label>
+                        </div>
+                        <div>
+                            <input type="color" v-model="bgColor" />
+                        </div>
+                        <div>
+                            <input
+                                type="checkbox"
+                                v-model="alwaysShowColorStrings"
+                                id="alwaysShowColorStrings"
+                            />
+                            <label for="alwaysShowColorStrings">показывать коды цветов</label>
+                        </div>
+                        <div>
+                            <input type="checkbox" v-model="showLandings" id="showLandings" />
+                            <label for="showLandings">показывать примеры лендингов</label>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div>
-                <input type="checkbox" v-model="showQuantityOnPlots" id="showQ" />
-                <label for="showQ">показывать количество на графиках</label>
-            </div>
-            <div>
-                <input type="color" v-model="bgColor" />
-            </div>
-            <div>
-                <input
-                    type="checkbox"
-                    v-model="alwaysShowColorStrings"
-                    id="alwaysShowColorStrings"
-                />
-                <label for="alwaysShowColorStrings">показывать коды цветов</label>
-            </div>
-            <div>
-                <input type="checkbox" v-model="showLandings" id="showLandings" />
-                <label for="showLandings">показывать примеры лендингов</label>
-            </div>
-        </div>
+        </header>
         <RouterView class="grow w-full" />
     </div>
 </template>
+
 <style scoped>
 .page {
     padding: 1rem;
@@ -66,6 +107,7 @@ const themeIsLight = computed(() => {
     min-height: 100%;
     width: 100%;
     color: var(--text-color);
+    background-color: var(--background);
 }
 
 .page.light {
@@ -76,5 +118,34 @@ const themeIsLight = computed(() => {
 .page.dark {
     --text-color: white;
     --transparent-overlay: rgba(0, 0, 0, 0.5);
+}
+
+header {
+    justify-content: space-between;
+    align-items: center;
+
+    > div {
+        align-items: center;
+        gap: 0.5rem;
+    }
+}
+
+.settings-container {
+    position: relative;
+}
+
+.settings {
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: start;
+
+    position: absolute;
+    right: 0px;
+    min-width: max-content;
+
+    background-color: var(--background);
+    box-shadow: 1px 1px 1px 1px #000;
+    padding: 1rem;
+    border-radius: 1rem;
 }
 </style>

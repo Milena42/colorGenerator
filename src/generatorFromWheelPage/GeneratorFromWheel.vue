@@ -74,7 +74,7 @@ const themes: [Theme, MockupColors][] = [
     [darkTheme, generatedNewDark],
 ];
 
-const accentCircle = reactive(new circleObject(0));
+const accentCircle = reactive(new circleObject(236));
 const secondaryCircle = reactive(new circleObject(0));
 const bgCircle = reactive(new circleObject(0));
 
@@ -204,10 +204,6 @@ function dragstart(element: typeof accentCircle, event: MouseEvent) {
     initialCircleY = draggedCircle.cy;
 }
 
-const hRangeBg = computed<[number, number]>(() => {
-    return [(accentCircle.color.h + 120) % 360, (accentCircle.color.h + 120 + 120) % 360];
-}); //TODO  типа этого проверка вдруг диапазон подходит при переключении селекта
-
 function mousemove(event: MouseEvent) {
     if (!draggedCircle) return;
     const deltaX = event.clientX - startX;
@@ -278,33 +274,33 @@ const baseH = computed({
                     class="harmony-type-button choice-chip"
                     :class="{ current: typeOfScheme == schemeType.mono }"
                     @click="typeOfScheme = schemeType.mono"
+                    title="монохромная"
                 >
                     <IconMono />
-                    монохромная
                 </button>
                 <button
                     class="harmony-type-button choice-chip"
                     :class="{ current: typeOfScheme == schemeType.complementary }"
                     @click="typeOfScheme = schemeType.complementary"
+                    title="комплементарная"
                 >
                     <IconComplementary />
-                    комплементарная
                 </button>
                 <button
                     class="harmony-type-button choice-chip"
                     :class="{ current: typeOfScheme == schemeType.analog }"
                     @click="typeOfScheme = schemeType.analog"
+                    title="аналоговая"
                 >
                     <IconAnalog />
-                    аналоговая
                 </button>
                 <button
                     class="harmony-type-button choice-chip"
                     :class="{ current: typeOfScheme == schemeType.triad }"
                     @click="typeOfScheme = schemeType.triad"
+                    title="триада"
                 >
                     <IconTriad />
-                    триада
                 </button>
             </div>
             <div class="col chroma-params">
@@ -340,7 +336,7 @@ const baseH = computed({
                 <button
                     @click="reverseDependentHues"
                     class="color-wheel-square-reverse"
-                    :disabled="!show3Circles"
+                    v-if="show3Circles"
                     title="поменять местами зависимые тона"
                 >
                     <span class="material-symbols-rounded">swap_vert</span>
@@ -436,21 +432,13 @@ const baseH = computed({
 }
 
 .harmony-type-button {
-    padding: 0.2rem 0.4rem 0.4rem;
+    flex-grow: 0;
+    padding: 1rem;
     background: none;
 
     display: flex;
     flex-flow: column nowrap;
     align-items: center;
-
-    & > * {
-        margin: 0px;
-    }
-
-    p {
-        font-size: 0.8rem;
-        word-wrap: break-word;
-    }
 }
 
 .chroma-params {

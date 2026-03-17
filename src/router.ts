@@ -3,6 +3,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import GeneratorFromPicture from './generatorFromPicturePage/GeneratorFromPicture.vue';
 import GeneratorFromWheel from './generatorFromWheelPage/GeneratorFromWheel.vue';
 const routes = [
+    { path: '/', redirect: '/wheel' },
     { path: '/picture', component: GeneratorFromPicture },
     { path: '/wheel', component: GeneratorFromWheel },
 ];

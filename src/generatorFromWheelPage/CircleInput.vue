@@ -38,6 +38,7 @@ defineEmits(['drag-start']);
 const props = defineProps<{
     coords: circleDisplay;
     accent?: boolean;
+    title: string;
 }>();
 
 const lineOpacity = computed(() => {
@@ -55,6 +56,7 @@ const lineOpacity = computed(() => {
             :stroke-opacity="lineOpacity"
             stroke-width="2"
         />
+        <title>{{ title }}</title>
         <circle
             :cx="coords.cx"
             :cy="coords.cy"

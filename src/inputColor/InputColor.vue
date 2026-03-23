@@ -23,6 +23,10 @@ import { computed, inject, ref, type Ref } from 'vue';
 import InputColorHSB from './InputColorHSB.vue';
 import InputColorOKLCH from './InputColorOKLCH.vue';
 
+defineProps<{
+    role: string;
+}>();
+
 const color = defineModel<Color>({ required: true });
 
 const colorFormatEdit = inject<Ref<ColorFormat>>('colorFormatEdit');
@@ -72,6 +76,7 @@ async function copy() {
 
 <template>
     <div class="input-color" v-on-click-outside="() => (editing = false)">
+        <p>{{ role }}</p>
         <div class="row">
             <div class="color-preview" :style="{ backgroundColor: colorString }">
                 <button @click="editing = !editing" title="редактировать цвет">
@@ -125,6 +130,7 @@ async function copy() {
     p {
         font-family: monospace;
         font-size: 0.9rem;
+        margin: 0px;
     }
 }
 </style>

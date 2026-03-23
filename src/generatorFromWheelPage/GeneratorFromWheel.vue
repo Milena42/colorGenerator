@@ -42,14 +42,14 @@ const schemeRulesFromInputs = new Map<schemeType, HFromL>([
         schemeType.complementary,
         (l) => {
             if (35 <= l && l <= 80) return inputAccentH.value;
-            return inputBgH.value;
+            return inputDarkH.value;
         },
     ],
     [
         schemeType.analog,
         (l) => {
             return (
-                ((2 * hMinus(inputSecondaryH.value, inputAccentH.value) * (l - 50)) / 100 +
+                ((2 * hMinus(inputLightH.value, inputAccentH.value) * (l - 50)) / 100 +
                     inputAccentH.value +
                     360) %
                 360
@@ -59,9 +59,9 @@ const schemeRulesFromInputs = new Map<schemeType, HFromL>([
     [
         schemeType.triad,
         (l) => {
-            if (l < 35) return inputBgH.value;
+            if (l < 35) return inputDarkH.value;
             if (l <= 80) return inputAccentH.value;
-            return inputSecondaryH.value;
+            return inputLightH.value;
         },
     ],
 ]);
@@ -75,8 +75,8 @@ const themes: [Theme, MockupColors][] = [
 ];
 
 const accentCircle = reactive(new circleObject(236));
-const secondaryCircle = reactive(new circleObject(0));
-const bgCircle = reactive(new circleObject(0));
+const lightCircle = reactive(new circleObject(0));
+const darkCircle = reactive(new circleObject(0));
 
 const inputAccentH = computed({
     get: () => accentCircle.color.h,
@@ -84,16 +84,16 @@ const inputAccentH = computed({
         accentCircle.color.h = v;
     },
 });
-const inputSecondaryH = computed({
-    get: () => secondaryCircle.color.h,
+const inputLightH = computed({
+    get: () => lightCircle.color.h,
     set: (v) => {
-        secondaryCircle.color.h = v;
+        lightCircle.color.h = v;
     },
 });
-const inputBgH = computed({
-    get: () => bgCircle.color.h,
+const inputDarkH = computed({
+    get: () => darkCircle.color.h,
     set: (v) => {
-        bgCircle.color.h = v;
+        darkCircle.color.h = v;
     },
 });
 
@@ -142,7 +142,7 @@ function generate() {
     generatedMap.value = generateGrayAndAccents();
 }
 
-watch([inputAccentH, inputBgH, inputSecondaryH], generate, { immediate: true });
+watch([inputAccentH, inputDarkH, inputLightH], generate, { immediate: true });
 
 const CHROMA_DIFFERENCE = 5;
 const accentHasGreaterChroma = computed(
@@ -170,21 +170,21 @@ function changeTypeOfScheme() {
         case 'mono':
             break;
         case 'complementary':
-            inputBgH.value = (accentH + 180) % 360;
+            inputDarkH.value = (accentH + 180) % 360;
             break;
         case 'analog':
-            inputBgH.value = (accentH + 60) % 360;
-            inputSecondaryH.value = (accentH - 60 + 360) % 360;
+            inputDarkH.value = (accentH + 60) % 360;
+            inputLightH.value = (accentH - 60 + 360) % 360;
             break;
         case 'triad':
-            inputBgH.value = (accentH + 120) % 360;
-            inputSecondaryH.value = (accentH - 120 + 360) % 360;
+            inputDarkH.value = (accentH + 120) % 360;
+            inputLightH.value = (accentH - 120 + 360) % 360;
             break;
         default:
             break;
     }
-    bgCircle.calculateCoords();
-    secondaryCircle.calculateCoords();
+    darkCircle.calculateCoords();
+    lightCircle.calculateCoords();
     generate();
 }
 
@@ -218,20 +218,20 @@ function mousemove(event: MouseEvent) {
     const accentH = accentCircle.color.h;
     if (draggedCircle === accentCircle) {
         const dH = currentH - oldH;
-        bgCircle.color.h = (bgCircle.color.h + dH + 360) % 360;
-        bgCircle.calculateCoords();
-        secondaryCircle.color.h = (secondaryCircle.color.h + dH + 360) % 360;
-        secondaryCircle.calculateCoords();
-    } else if (draggedCircle === bgCircle) {
+        darkCircle.color.h = (darkCircle.color.h + dH + 360) % 360;
+        darkCircle.calculateCoords();
+        lightCircle.color.h = (lightCircle.color.h + dH + 360) % 360;
+        lightCircle.calculateCoords();
+    } else if (draggedCircle === darkCircle) {
         if (typeOfScheme.value == 'complementary') {
             draggedCircle.color.h = oldH;
         } else {
-            secondaryCircle.color.h = (2 * accentH - currentH + 360) % 360;
-            secondaryCircle.calculateCoords();
+            lightCircle.color.h = (2 * accentH - currentH + 360) % 360;
+            lightCircle.calculateCoords();
         }
-    } else if (draggedCircle === secondaryCircle) {
-        bgCircle.color.h = (2 * accentH - currentH + 360) % 360;
-        bgCircle.calculateCoords();
+    } else if (draggedCircle === lightCircle) {
+        darkCircle.color.h = (2 * accentH - currentH + 360) % 360;
+        darkCircle.calculateCoords();
     }
 
     draggedCircle.color.c = R_SPECTRAL_CIRCLE;
@@ -250,9 +250,9 @@ const show3Circles = computed(() => {
 });
 
 function reverseDependentHues() {
-    [inputBgH.value, inputSecondaryH.value] = [inputSecondaryH.value, inputBgH.value];
-    bgCircle.calculateCoords();
-    secondaryCircle.calculateCoords();
+    [inputDarkH.value, inputLightH.value] = [inputLightH.value, inputDarkH.value];
+    darkCircle.calculateCoords();
+    lightCircle.calculateCoords();
 }
 
 const inputHFromColor = ref(false);
@@ -290,7 +290,7 @@ const baseH = computed({
                     class="harmony-type-button choice-chip"
                     :class="{ current: typeOfScheme == schemeType.analog }"
                     @click="typeOfScheme = schemeType.analog"
-                    title="аналоговая"
+                    title="аналоговая (из градиента)"
                 >
                     <IconAnalog />
                 </button>
@@ -342,12 +342,16 @@ const baseH = computed({
                     <span class="material-symbols-rounded">swap_vert</span>
                 </button>
 
-                <div class="color-wheel-square-base-h">
+                <div class="color-wheel-square-base-h" title="акцентный тон">
                     <InputNumber v-model.lazy.number="baseH" :min="0" :max="360" :step="1" circle />
                 </div>
 
                 <div class="color-wheel-square-base-color">
-                    <button v-if="!inputHFromColor" @click="inputHFromColor = true">
+                    <button
+                        v-if="!inputHFromColor"
+                        @click="inputHFromColor = true"
+                        title="задать акцентный тон на основе цвета"
+                    >
                         Из цвета
                     </button>
                     <InputColorHString
@@ -371,27 +375,30 @@ const baseH = computed({
                 >
                     <ArcShortest
                         v-if="typeOfScheme == schemeType.analog"
-                        :start="bgCircle.color.h"
+                        :start="darkCircle.color.h"
                         :end="accentCircle.color.h"
                     />
                     <ArcShortest
                         v-if="typeOfScheme == schemeType.analog"
                         :start="accentCircle.color.h"
-                        :end="secondaryCircle.color.h"
+                        :end="lightCircle.color.h"
                     />
                     <CircleInput
                         :coords="accentCircle"
                         accent
+                        title="акцентный тон"
                         @drag-start="(e) => dragstart(accentCircle, e)"
                     />
                     <CircleInput
-                        :coords="secondaryCircle"
-                        @drag-start="(e) => dragstart(secondaryCircle, e)"
+                        :coords="lightCircle"
+                        title="светлые"
+                        @drag-start="(e) => dragstart(lightCircle, e)"
                         v-if="show3Circles"
                     />
                     <CircleInput
-                        :coords="bgCircle"
-                        @drag-start="(e) => dragstart(bgCircle, e)"
+                        :coords="darkCircle"
+                        title="темные"
+                        @drag-start="(e) => dragstart(darkCircle, e)"
                         v-if="show2Circles"
                     />
                     <circle

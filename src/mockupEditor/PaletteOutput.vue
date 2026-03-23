@@ -7,7 +7,12 @@ const colors = defineModel<MockupColors>({ required: true });
 
 <template>
     <div class="palette">
-        <InputColor v-model="colors[role]" v-for="(color, role) in colors" :key="role" />
+        <InputColor
+            v-model="colors[role]"
+            v-for="(color, role) in colors"
+            :key="role"
+            :role="role"
+        />
     </div>
 </template>
 

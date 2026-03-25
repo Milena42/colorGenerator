@@ -16,6 +16,8 @@ export function getColorString(color: Color, format: ColorFormat) {
 </script>
 
 <script setup lang="ts">
+import IconCopy from '@/assets/icons/IconCopy.vue';
+import IconTune from '@/assets/icons/IconTune.vue';
 import type { Color, ColorFormat } from '@/model/myTypes';
 import { vOnClickOutside } from '@vueuse/components';
 import chroma from 'chroma-js';
@@ -80,10 +82,10 @@ async function copy() {
         <div class="row">
             <div class="color-preview" :style="{ backgroundColor: colorString }">
                 <button @click="editing = !editing" title="редактировать цвет">
-                    <span class="material-symbols-rounded">tune</span>
+                    <IconTune />
                 </button>
                 <button @click="copy" :title="`копировать цвет: ${colorString}`">
-                    <span class="material-symbols-rounded">content_copy</span>
+                    <IconCopy />
                 </button>
             </div>
             <p v-if="alwaysShowColorStrings && !editing">{{ colorString }}</p>
@@ -98,6 +100,13 @@ async function copy() {
 
 <style scoped>
 .input-color {
+    font-family: 'Source Code Pro', monospace;
+
+    p {
+        font-size: 0.9rem;
+        margin: 0px;
+    }
+
     display: flex;
     flex-flow: column nowrap;
     gap: 0.5rem;
@@ -125,12 +134,6 @@ async function copy() {
         &:hover button {
             visibility: visible;
         }
-    }
-
-    p {
-        font-family: monospace;
-        font-size: 0.9rem;
-        margin: 0px;
     }
 }
 </style>

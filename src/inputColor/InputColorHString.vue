@@ -31,7 +31,7 @@ function change() {
 
 <style scoped>
 input {
-    font-family: monospace;
+    font-family: 'Source Code Pro', monospace;
     width: 6rem;
 }
 </style>

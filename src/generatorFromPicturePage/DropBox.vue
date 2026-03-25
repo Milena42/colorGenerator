@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import IconClose from '@/assets/icons/IconClose.vue';
 import { onMounted, ref } from 'vue';
 
 /**
@@ -107,7 +108,7 @@ function inputFile() {
 <template>
     <div class="dropbox" @dragenter="dragenter" @dragover="dragover" @drop="drop">
         <button v-if="imageHere" @click="clear">
-            <span class="material-symbols-rounded">close</span>
+            <IconClose />
         </button>
         <img v-if="imageHere" :src="image" @load="loadImgData" />
         <div v-else class="col">

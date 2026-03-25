@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import IconCopy from '@/assets/icons/IconCopy.vue';
 import { type ColorFormat, type MockupColors } from '@/model/myTypes';
 import { inject, provide, ref, type Ref } from 'vue';
 import MockupPreview, { getCssColors } from './MockupPreview.vue';
@@ -78,7 +79,7 @@ const showLandings = inject<Ref<boolean>>('showLandings');
                 </button>
             </div>
             <button @click="copyAll">
-                <span class="material-symbols-rounded">content_copy</span>
+                <IconCopy />
             </button>
         </div>
         <div class="mockup-editor">

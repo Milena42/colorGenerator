@@ -2,6 +2,9 @@
 import { vOnClickOutside } from '@vueuse/components';
 import chroma from 'chroma-js';
 import { computed, provide, ref, watch } from 'vue';
+import IconDarkTheme from './assets/icons/IconDarkTheme.vue';
+import IconLightTheme from './assets/icons/IconLightTheme.vue';
+import IconSettings from './assets/icons/IconSettings.vue';
 
 const showQuantityOnPlots = ref(true);
 provide('showQuantityOnPlots', showQuantityOnPlots);
@@ -56,17 +59,13 @@ const showSettings = ref(false);
 
             <div class="row">
                 <button @click="themeIsDark = !themeIsDark">
-                    <span v-if="!themeIsDark" class="material-symbols-rounded filled"
-                        >dark_mode</span
-                    >
-                    <span v-if="themeIsDark" class="material-symbols-rounded filled"
-                        >light_mode</span
-                    >
+                    <IconDarkTheme v-if="!themeIsDark" />
+                    <IconLightTheme v-if="themeIsDark" />
                 </button>
 
                 <div class="settings-container" v-on-click-outside="() => (showSettings = false)">
                     <button @click="showSettings = !showSettings">
-                        <span class="material-symbols-rounded filled">settings</span>
+                        <IconSettings />
                     </button>
 
                     <div v-if="showSettings" class="settings">

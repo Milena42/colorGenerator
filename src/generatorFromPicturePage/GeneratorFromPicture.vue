@@ -3,6 +3,7 @@ import MockupEditor from '@/mockupEditor/MockupEditor.vue';
 import { Color, colorRoles, type MockupColors, type Theme } from '@/model/myTypes.ts';
 import { darkTheme, lightTheme } from '@/model/themes.ts';
 import ArrayOfPlots from '@/plots/ArrayOfPlots.vue';
+import ColorModels3d from '@/plots/ColorModels3d.vue';
 import MapPlotPolar from '@/plots/MapPlotPolar.vue';
 import PolarHistogram from '@/plots/PolarHistogram.vue';
 import { polarFromCartesian } from '@/utilities/math.ts';
@@ -362,6 +363,14 @@ const showPlots: Ref<boolean> = inject('showPlots') ?? ref(false);
         </div>
 
         <div class="row">
+            <ColorModels3d
+                v-if="showPlots"
+                :k="0.01"
+                :data="imgMap"
+                :totalQ="totalPixels"
+                wireframe
+                :size="500"
+            />
             <MapPlotPolar v-if="showPlots" :k="500" :data="imgMap" :totalQ="totalPixels" />
             <MapPlotPolar
                 v-if="showPlots"

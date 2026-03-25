@@ -29,14 +29,14 @@ export const darkTheme: Theme = {
         cMax: 2,
     },
     textOnAccent: {
-        l: 20,
-        cMax: 2,
+        l: 98,
+        cMax: 1,
     },
 };
 
 export const lightTheme: Theme = {
     bg: {
-        l: 96,
+        l: 97,
         cMax: 2,
     },
     overlay: {
@@ -48,19 +48,19 @@ export const lightTheme: Theme = {
         cMax: 15,
     },
     accentSmall: {
-        l: 35,
-        cMax: 15,
+        l: 38,
+        cMax: 18,
     },
     accentOnOverlay: {
         l: 25,
         cMax: 10,
     },
     text: {
-        l: 20,
+        l: 18,
         cMax: 2,
     },
     textOnAccent: {
-        l: 96,
+        l: 18,
         cMax: 1,
     },
 };

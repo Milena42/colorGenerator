@@ -139,36 +139,6 @@ const secondOverlays = computed(() => props.theme == 'dark' || props.theme == 'l
 
 <style scoped>
 .mockup {
-    .landing-part {
-        background-color: var(--bg);
-        color: var(--text);
-    }
-
-    .mockup-overlay,
-    .landing-header,
-    .landing-second {
-        background-color: var(--overlay);
-
-        .button {
-            background-color: var(--accentOnOverlay);
-            color: var(--textOnAccent);
-        }
-    }
-
-    .button {
-        background-color: var(--accentLarge);
-    }
-
-    .a {
-        color: var(--accentSmall);
-    }
-
-    .icon {
-        color: var(--accentOnOverlay);
-    }
-}
-
-.mockup {
     width: 50em;
 
     font-size: 0.4rem;

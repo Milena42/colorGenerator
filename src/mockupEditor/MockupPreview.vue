@@ -51,36 +51,55 @@ const cssColors = computed(() => getCssColors(props.colors, 'rgbHex'));
             </p>
             <div class="button">Кнопка</div>
         </div>
+        <div style="display: flex; align-self: stretch">
+            <div style="background-color: var(--overlay); height: 1rem; flex: 1 1 0"></div>
+            <div style="background-color: var(--accentSmall); height: 1rem; flex: 1 1 0"></div>
+            <div style="background-color: var(--text); height: 1rem; flex: 1 1 0"></div>
+        </div>
     </div>
 </template>
 
-<style scoped>
-.mockup {
+<style>
+.mockup,
+.landing-part {
     background-color: var(--bg);
     color: var(--text);
-
-    .mockup-overlay {
+}
+.mockup {
+    .mockup-overlay,
+    .landing-header,
+    .landing-second {
         background-color: var(--overlay);
 
         .button {
             background-color: var(--accentOnOverlay);
-            color: var(--textOnAccent);
+            color: var(--bg);
         }
     }
 
     .button {
         background-color: var(--accentLarge);
+        color: var(--textOnAccent);
     }
 
     .a {
         color: var(--accentSmall);
     }
+    .landing-header,
+    .landing-footer {
+        .a {
+            color: var(--accentOnOverlay);
+        }
+    }
 
     .icon {
         color: var(--accentOnOverlay);
+        fill: var(--accentOnOverlay);
     }
 }
+</style>
 
+<style scoped>
 .mockup {
     width: 24em;
 

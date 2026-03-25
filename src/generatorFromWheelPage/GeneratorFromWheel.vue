@@ -190,6 +190,8 @@ function changeTypeOfScheme() {
 
 watch(typeOfScheme, changeTypeOfScheme);
 
+const lockSymmetry = ref(true);
+
 let draggedCircle: typeof accentCircle | undefined = undefined;
 let startX = 0;
 let startY = 0;
@@ -222,16 +224,18 @@ function mousemove(event: MouseEvent) {
         darkCircle.calculateCoords();
         lightCircle.color.h = (lightCircle.color.h + dH + 360) % 360;
         lightCircle.calculateCoords();
-    } else if (draggedCircle === darkCircle) {
-        if (typeOfScheme.value == 'complementary') {
-            draggedCircle.color.h = oldH;
-        } else {
-            lightCircle.color.h = (2 * accentH - currentH + 360) % 360;
-            lightCircle.calculateCoords();
+    } else if (lockSymmetry.value) {
+        if (draggedCircle === darkCircle) {
+            if (typeOfScheme.value == 'complementary') {
+                draggedCircle.color.h = oldH;
+            } else {
+                lightCircle.color.h = (2 * accentH - currentH + 360) % 360;
+                lightCircle.calculateCoords();
+            }
+        } else if (draggedCircle === lightCircle) {
+            darkCircle.color.h = (2 * accentH - currentH + 360) % 360;
+            darkCircle.calculateCoords();
         }
-    } else if (draggedCircle === lightCircle) {
-        darkCircle.color.h = (2 * accentH - currentH + 360) % 360;
-        darkCircle.calculateCoords();
     }
 
     draggedCircle.color.c = R_SPECTRAL_CIRCLE;
@@ -333,14 +337,22 @@ const baseH = computed({
                 </div>
             </div>
             <div class="color-wheel-square">
-                <button
-                    @click="reverseDependentHues"
-                    class="color-wheel-square-reverse"
-                    v-if="show3Circles"
-                    title="поменять местами зависимые тона"
-                >
-                    <span class="material-symbols-rounded">swap_vert</span>
-                </button>
+                <div class="color-wheel-square-reverse">
+                    <button
+                        @click="reverseDependentHues"
+                        v-if="show3Circles"
+                        title="поменять местами зависимые тона"
+                    >
+                        <span class="material-symbols-rounded">swap_vert</span>
+                    </button>
+                    <button
+                        @click="lockSymmetry = !lockSymmetry"
+                        v-if="show2Circles"
+                        title="блокировка симметрии"
+                    >
+                        с
+                    </button>
+                </div>
 
                 <div class="color-wheel-square-base-h" title="акцентный тон">
                     <InputNumber v-model.lazy.number="baseH" :min="0" :max="360" :step="1" circle />

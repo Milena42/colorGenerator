@@ -142,6 +142,7 @@ header {
 
     position: absolute;
     right: 0px;
+    z-index: 10;
     min-width: max-content;
 
     background-color: var(--background);

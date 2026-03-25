@@ -100,6 +100,13 @@ async function copy() {
 
 <style scoped>
 .input-color {
+    font-family: 'Source Code Pro', monospace;
+
+    p {
+        font-size: 0.9rem;
+        margin: 0px;
+    }
+
     display: flex;
     flex-flow: column nowrap;
     gap: 0.5rem;
@@ -127,12 +134,6 @@ async function copy() {
         &:hover button {
             visibility: visible;
         }
-    }
-
-    p {
-        font-family: monospace;
-        font-size: 0.9rem;
-        margin: 0px;
     }
 }
 </style>

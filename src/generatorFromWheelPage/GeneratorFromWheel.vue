@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import IconAnalog from '@/assets/icons/IconAnalog.vue';
-import IconComplementary from '@/assets/icons/IconComplementary.vue';
-import IconMono from '@/assets/icons/IconMono.vue';
-import IconTriad from '@/assets/icons/IconTriad.vue';
+import IconAnalog from '@/assets/icons/colorSchemes/IconAnalog.vue';
+import IconComplementary from '@/assets/icons/colorSchemes/IconComplementary.vue';
+import IconMono from '@/assets/icons/colorSchemes/IconMono.vue';
+import IconTriad from '@/assets/icons/colorSchemes/IconTriad.vue';
 import { vOnClickOutside } from '@vueuse/components';
 import { computed, reactive, ref, shallowRef, watch, type ShallowRef } from 'vue';
 import CircleInput, {

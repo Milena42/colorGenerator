@@ -13,6 +13,7 @@ import CircleInput, {
 } from './CircleInput.vue';
 
 //import MapPlot3d from './MapPlot3d.vue';
+import IconSwap from '@/assets/icons/IconSwap.vue';
 import InputColorHString from '@/inputColor/InputColorHString.vue';
 import InputNumber from '@/InputNumber.vue';
 import MockupEditor from '@/mockupEditor/MockupEditor.vue';
@@ -339,7 +340,7 @@ const baseH = computed({
                     v-if="show3Circles"
                     title="поменять местами зависимые тона"
                 >
-                    <span class="material-symbols-rounded">swap_vert</span>
+                    <IconSwap />
                 </button>
 
                 <div class="color-wheel-square-base-h" title="акцентный тон">

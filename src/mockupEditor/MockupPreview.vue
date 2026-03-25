@@ -1,4 +1,8 @@
 <script lang="ts">
+import IconHeart from '@/assets/icons/IconHeart.vue';
+import IconMenu from '@/assets/icons/IconMenu.vue';
+import IconPlus from '@/assets/icons/IconPlus.vue';
+import IconStar from '@/assets/icons/IconStar.vue';
 import { getColorString } from '@/inputColor/InputColor.vue';
 
 export function getCssColors(colors: MockupColors, format: ColorFormat) {
@@ -34,14 +38,10 @@ const cssColors = computed(() => getCssColors(props.colors, 'rgbHex'));
             </p>
             <div class="mockup-icons-row">
                 <div class="button">Кнопка</div>
-                <div class="fix-align" style="padding-top: 0.099em">
-                    <span class="material-symbols-rounded icon">favorite</span>
-                </div>
-                <span class="material-symbols-rounded icon">add</span>
-                <div class="fix-align" style="padding-bottom: 0.1em">
-                    <span class="material-symbols-rounded filled icon">star</span>
-                </div>
-                <span class="material-symbols-rounded icon">menu</span>
+                <IconHeart class="icon" />
+                <IconPlus class="icon" />
+                <IconStar class="icon" />
+                <IconMenu class="icon" />
             </div>
         </div>
         <div class="mockup-overlay">

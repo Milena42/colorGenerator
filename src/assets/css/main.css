@@ -27,6 +27,7 @@ body,
 }
 
 .icon-harmony {
+    fill: none;
     --fill: rgba(from var(--text-color) r g b / 0.2);
     --line: rgba(from var(--text-color) r g b / 0.8);
 }
@@ -114,10 +115,6 @@ input[type='text'] {
     border-color: var(--transparent-bright);
 }
 
-.material-symbols-rounded.filled {
-    font-variation-settings: 'FILL' 1;
-}
-
 button {
     display: flex;
     align-items: center;
@@ -127,7 +124,11 @@ button {
     border-radius: 0.5rem;
     border: none;
     background-color: var(--transparent-pale);
-    color: var(--color);
+    color: var(--text-color);
+
+    svg {
+        fill: var(--text-color);
+    }
 }
 
 button,

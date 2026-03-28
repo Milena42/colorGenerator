@@ -4,7 +4,6 @@ import { Color, colorRoles, type MockupColors, type Theme } from '@/model/myType
 import { darkTheme, lightTheme } from '@/model/themes.ts';
 import ArrayOfPlots from '@/plots/ArrayOfPlots.vue';
 import ColorModels3d from '@/plots/ColorModels3d.vue';
-import MapPlotPolar from '@/plots/MapPlotPolar.vue';
 import PolarHistogram from '@/plots/PolarHistogram.vue';
 import { polarFromCartesian } from '@/utilities/math.ts';
 import chroma from 'chroma-js';
@@ -16,7 +15,6 @@ const userImg = ref<Uint8ClampedArray>();
 let totalPixels = 1;
 const imgMap: ShallowRef<Map<string, Color>> = shallowRef(new Map<string, Color>());
 const debugMap: ShallowRef<Map<string, Color>> = shallowRef(new Map<string, Color>());
-const generatedMap: ShallowRef<Map<string, Color>> = shallowRef(new Map<string, Color>());
 let imgMaxL: number; //TODO я зачем-то их замеряю, мб применить
 let imgMinL: number;
 
@@ -344,7 +342,7 @@ function generateLRangeBased() {
 
 function generate() {
     imgMap.value = fillMapFromImg(); //TODO мб перенести это в dropbox чтобы не повторять при загрузке той же картинки
-    generatedMap.value = generateLRangeBased();
+    generateLRangeBased();
 }
 
 const showPlots: Ref<boolean> = inject('showPlots') ?? ref(false);
@@ -361,48 +359,33 @@ const showPlots: Ref<boolean> = inject('showPlots') ?? ref(false);
                 v-if="userImg"
             />
         </div>
-
-        <div class="row">
-            <ColorModels3d
-                v-if="showPlots"
-                :k="0.01"
-                :data="imgMap"
-                :totalQ="totalPixels"
-                wireframe
-                :size="500"
-            />
-            <MapPlotPolar v-if="showPlots" :k="500" :data="imgMap" :totalQ="totalPixels" />
-            <MapPlotPolar
-                v-if="showPlots"
-                :k="500"
-                :data="debugMap"
-                :totalQ="totalPixels"
-                style="border: 1px solid red"
-            />
-        </div>
-        <div class="row">
-            <PolarHistogram
-                v-if="showPlots"
-                :data="polarHistogramData1"
-                :circle="polarHistogramCircle"
-                :borders="polarHistogramBorders"
-            />
-            <PolarHistogram
-                v-if="showPlots"
-                :data="polarHistogramData2"
-                :circle="polarHistogramCircle"
-                :borders="polarHistogramBorders"
-            />
-        </div>
-        <ArrayOfPlots :maps="mapsClustered" :totalQ="totalPixels" v-if="showPlots" />
-        <div class="row">
-            <MapPlotPolar :k="500" :data="graysMap" :totalQ="totalPixels" v-if="showPlots" />
-            <MapPlotPolar
-                :k="30"
-                :data="generatedMap"
-                :totalQ="generatedMap.size"
-                v-if="showPlots"
-            />
+        <div v-if="showPlots && userImg" class="col">
+            <div class="row">
+                <ColorModels3d :k="0.01" :data="imgMap" :totalQ="totalPixels" wireframe />
+                <ColorModels3d
+                    :k="0.01"
+                    :data="debugMap"
+                    :totalQ="totalPixels"
+                    style="border: 1px solid red"
+                    wireframe
+                />
+            </div>
+            <div class="row">
+                <PolarHistogram
+                    :data="polarHistogramData1"
+                    :circle="polarHistogramCircle"
+                    :borders="polarHistogramBorders"
+                />
+                <PolarHistogram
+                    :data="polarHistogramData2"
+                    :circle="polarHistogramCircle"
+                    :borders="polarHistogramBorders"
+                />
+            </div>
+            <ArrayOfPlots :maps="mapsClustered" :totalQ="totalPixels" />
+            <div class="row">
+                <ColorModels3d :k="0.01" :data="graysMap" :totalQ="totalPixels" wireframe />
+            </div>
         </div>
     </div>
 </template>

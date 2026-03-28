@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import type { Color } from '@/model/myTypes';
+import type { Color, MockupColors } from '@/model/myTypes';
+import { cartesianFromPolar } from '@/utilities/math';
 import chroma from 'chroma-js';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
@@ -11,8 +12,9 @@ const props = defineProps<{
     wireframe?: boolean;
     size?: number; //TODO графики адаптивить?
     k: number;
-    data: Map<string, Color>;
+    data: Map<string, Color> | MockupColors;
     totalQ: number;
+    hsl?: boolean;
 }>();
 
 const container = ref<HTMLDivElement | null>(null);
@@ -40,7 +42,7 @@ function makeModel() {
 
         const [l, x, y] = chroma(r * 255, g * 255, b * 255, 'rgb').oklab();
 
-        hslPos.push(x, l, y);
+        hslPos.push(x, l, -y);
     }
 
     geometry.setAttribute('position', new THREE.Float32BufferAttribute(hslPos, 3));
@@ -55,34 +57,54 @@ function makeModel() {
     scene.add(mesh);
 }
 
+function makeGrid() {
+    const b = new THREE.PolarGridHelper(0.4, 8, 4, undefined, '#ccc', '#bbb');
+    b.translateY(0.5);
+
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.Float32BufferAttribute([0, 0, 0, 0, 1, 0], 3));
+    const a = new THREE.Line(g, new THREE.LineBasicMaterial({ color: '#aaa' }));
+
+    scene.add(b, a);
+}
+
 function animate() {
     renderer.render(scene, camera);
 }
+
+const material = new THREE.ShaderMaterial({
+    vertexShader: vertexShader,
+    fragmentShader: fragmentShader,
+});
+const points = new THREE.Points(new THREE.BufferGeometry(), material);
 
 onMounted(() => {
     if (!container.value) return;
 
     scene = new THREE.Scene();
-    scene.background = new THREE.Color('white');
-    renderer = new THREE.WebGLRenderer({ antialias: true });
+    scene.background = null;
+    renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
     renderer.setSize(container.value.clientWidth, container.value.clientHeight);
     renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
     container.value.appendChild(renderer.domElement);
 
     camera = new THREE.PerspectiveCamera(
-        75,
+        30,
         container.value.clientWidth / container.value.clientHeight,
         0.1,
-        1000,
+        10,
     );
-    camera.position.set(0.7, 0.5, 0.7);
+    camera.position.set(0, 0.5, 2);
     camera.lookAt(0, 0.5, 0);
 
     controls = new OrbitControls(camera, renderer.domElement);
     controls.target.set(0, 0.5, 0);
     controls.update();
 
-    makeModel();
+    if (!props.hsl) makeModel();
+    makeGrid();
+
+    scene.add(points);
 
     plotPoints();
 
@@ -90,36 +112,36 @@ onMounted(() => {
 });
 
 function plotPoints() {
-    //TODO чистить, а то наслаивается при новой картинке
-    if (props.data !== undefined) {
+    if (props.data) {
         const coords: number[] = [];
         const colors: number[] = [];
         const sizes: number[] = [];
 
-        props.data.forEach(({ l, c, h, x, y, q }) => {
-            coords.push(x / 100, l / 100, y / 100);
+        const data = props.data instanceof Map ? props.data.values() : Object.values(props.data);
+
+        for (const { l, c, h, x, y, q } of data) {
+            if (props.hsl) {
+                const [h1, s1, l1] = chroma(l / 100, c / 100, h, 'oklch').hsl();
+                const [x1, y1] = cartesianFromPolar(s1 * Math.min(1 - l1, l1), h1);
+                coords.push(x1, l1, -y1);
+            } else coords.push(x / 100, l / 100, -y / 100);
             const [r, g, b] = chroma(l / 100, c / 100, h, 'oklch').rgb();
             colors.push(r / 255, g / 255, b / 255);
             sizes.push(Math.sqrt(props.k * Math.sqrt((100 * q) / props.totalQ)));
-        });
+        }
 
         const geometry = new THREE.BufferGeometry();
         geometry.setAttribute('position', new THREE.Float32BufferAttribute(coords, 3));
         geometry.setAttribute('pointColor', new THREE.Float32BufferAttribute(colors, 3));
         geometry.setAttribute('scale', new THREE.Float32BufferAttribute(sizes, 1));
-        console.log(sizes);
 
-        const material = new THREE.ShaderMaterial({
-            vertexShader: vertexShader,
-            fragmentShader: fragmentShader,
-        });
-
-        const points = new THREE.Points(geometry, material);
-        scene.add(points);
+        points.geometry = geometry;
+    } else {
+        points.geometry = new THREE.BufferGeometry();
     }
 }
 
-watch(() => props.data, plotPoints);
+watch(() => props.data, plotPoints, { deep: true });
 
 const destroy = () => {
     if (renderer) {
@@ -135,6 +157,6 @@ onUnmounted(destroy);
 <template>
     <div
         ref="container"
-        :style="{ height: `${props.size ?? 200}px`, width: `${props.size ?? 200}px` }"
+        :style="{ height: `${props.size ?? 500}px`, width: `${props.size ?? 500}px` }"
     ></div>
 </template>

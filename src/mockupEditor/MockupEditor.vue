@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import IconCopy from '@/assets/icons/IconCopy.vue';
 import { type ColorFormat, type MockupColors } from '@/model/myTypes';
+import ColorModels3d from '@/plots/ColorModels3d.vue';
 import { inject, provide, ref, type Ref } from 'vue';
 import MockupPreview, { getCssColors } from './MockupPreview.vue';
 import MockupPreviewLanding from './MockupPreviewLanding.vue';
@@ -13,6 +14,8 @@ const props = defineProps<{
 
 const colorsLightLocal = ref(props.colorsLight);
 const colorsDarkLocal = ref(props.colorsDark);
+
+const showPlots: Ref<boolean> = inject('showPlots') ?? ref(false);
 
 const colorFormatCopy = ref<ColorFormat>('rgbHex');
 provide('colorFormatCopy', colorFormatCopy);
@@ -113,6 +116,18 @@ const showLandings = inject<Ref<boolean>>('showLandings');
                 :colorsLight="colorsLightLocal"
                 theme="light"
             />
+        </div>
+        <div v-if="showPlots" class="row">
+            <ColorModels3d :k="0.003" :data="colorsDarkLocal" :totalQ="7" wireframe :size="500" />
+            <ColorModels3d
+                :k="0.003"
+                :data="colorsDarkLocal"
+                :totalQ="7"
+                wireframe
+                :size="500"
+                hsl
+            />
+            <ColorModels3d :k="0.003" :data="colorsLightLocal" :totalQ="7" wireframe :size="500" />
         </div>
     </div>
 </template>

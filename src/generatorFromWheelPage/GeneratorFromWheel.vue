@@ -434,8 +434,6 @@ const baseH = computed({
             </div>
         </div>
 
-        <!--<MapPlot3d :k="30" :data="generatedMap" :totalQ="generatedMap.size" /> --><!--TODO оно зависает-->
-
         <MockupEditor :colorsLight="generatedNewLight" :colorsDark="generatedNewDark" />
     </div>
 </template>

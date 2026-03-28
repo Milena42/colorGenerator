@@ -4,7 +4,7 @@ import { cartesianFromPolar } from '@/utilities/math';
 import chroma from 'chroma-js';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { onMounted, onUnmounted, ref, watch } from 'vue';
+import { inject, onMounted, onUnmounted, ref, watch, type Ref } from 'vue';
 import fragmentShader from './shaders/material-frag.glsl?raw';
 import vertexShader from './shaders/material-vert.glsl?raw';
 
@@ -26,7 +26,17 @@ let controls;
 
 const PIXELS = props.wireframe ? 5 : 200;
 
+const showWireframeOnPlots: Ref<boolean> = inject('showWireframeOnPlots') ?? ref(false);
+let oklchMesh: THREE.Mesh | null;
+
 function makeModel() {
+    if (!showWireframeOnPlots.value) {
+        if (oklchMesh != null) {
+            scene.remove(oklchMesh);
+        }
+        return;
+    }
+    //TODO оптимизировать
     const geometry = new THREE.BoxGeometry(1, 1, 1, PIXELS, PIXELS, PIXELS);
     const pos = geometry.getAttribute('position');
     const v = new THREE.Vector3();
@@ -54,6 +64,7 @@ function makeModel() {
     });
 
     mesh = new THREE.Mesh(geometry, material);
+    oklchMesh = mesh;
     scene.add(mesh);
 }
 
@@ -111,6 +122,9 @@ onMounted(() => {
     renderer.setAnimationLoop(animate);
 });
 
+const showQuantity: Ref<boolean> = inject('showQuantityOnPlots') ?? ref(true);
+const defaultSizeOfPoint = 5;
+
 function plotPoints() {
     if (props.data) {
         const coords: number[] = [];
@@ -127,7 +141,11 @@ function plotPoints() {
             } else coords.push(x / 100, l / 100, -y / 100);
             const [r, g, b] = chroma(l / 100, c / 100, h, 'oklch').rgb();
             colors.push(r / 255, g / 255, b / 255);
-            sizes.push(Math.sqrt(props.k * Math.sqrt((100 * q) / props.totalQ)));
+            sizes.push(
+                showQuantity.value
+                    ? Math.sqrt(props.k * Math.sqrt((100 * q) / props.totalQ))
+                    : defaultSizeOfPoint,
+            );
         }
 
         const geometry = new THREE.BufferGeometry();
@@ -142,6 +160,8 @@ function plotPoints() {
 }
 
 watch(() => props.data, plotPoints, { deep: true });
+watch(showQuantity, plotPoints, { flush: 'post' });
+watch(showWireframeOnPlots, makeModel, { flush: 'post' });
 
 const destroy = () => {
     if (renderer) {
@@ -157,6 +177,6 @@ onUnmounted(destroy);
 <template>
     <div
         ref="container"
-        :style="{ height: `${props.size ?? 500}px`, width: `${props.size ?? 500}px` }"
+        :style="{ height: `${props.size ?? 400}px`, width: `${props.size ?? 400}px` }"
     ></div>
 </template>

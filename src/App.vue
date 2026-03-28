@@ -9,6 +9,9 @@ import IconSettings from './assets/icons/IconSettings.vue';
 const showQuantityOnPlots = ref(true);
 provide('showQuantityOnPlots', showQuantityOnPlots);
 
+const showWireframeOnPlots = ref(false);
+provide('showWireframeOnPlots', showWireframeOnPlots);
+
 const showPlots = ref(false);
 provide('showPlots', showPlots);
 
@@ -72,6 +75,16 @@ const showSettings = ref(false);
                         <div>
                             <input type="checkbox" v-model="showPlots" id="showPlots" />
                             <label for="showPlots">показывать графики</label>
+                        </div>
+                        <div>
+                            <input
+                                type="checkbox"
+                                v-model="showWireframeOnPlots"
+                                id="showWireframeOnPlots"
+                            />
+                            <label for="showWireframeOnPlots"
+                                >показывать границы цветового пространства на графиках</label
+                            >
                         </div>
                         <div>
                             <input type="checkbox" v-model="showQuantityOnPlots" id="showQ" />

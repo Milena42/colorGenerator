@@ -2,7 +2,7 @@
 import IconCopy from '@/assets/icons/IconCopy.vue';
 import { type ColorFormat, type MockupColors } from '@/model/myTypes';
 import ColorModels3d from '@/plots/ColorModels3d.vue';
-import { inject, provide, ref, type Ref } from 'vue';
+import { inject, provide, ref, watchEffect, type Ref } from 'vue';
 import MockupPreview, { getCssColors } from './MockupPreview.vue';
 import MockupPreviewLanding from './MockupPreviewLanding.vue';
 import PaletteOutput from './PaletteOutput.vue';
@@ -12,8 +12,13 @@ const props = defineProps<{
     colorsDark: MockupColors;
 }>();
 
-const colorsLightLocal = ref(props.colorsLight);
-const colorsDarkLocal = ref(props.colorsDark);
+const colorsLightLocal = ref<MockupColors>({});
+const colorsDarkLocal = ref<MockupColors>({});
+
+watchEffect(() => {
+    colorsLightLocal.value = props.colorsLight;
+    colorsDarkLocal.value = props.colorsDark;
+});
 
 const showPlots: Ref<boolean> = inject('showPlots') ?? ref(false);
 

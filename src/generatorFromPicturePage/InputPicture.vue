@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import IconClose from '@/assets/icons/IconClose.vue';
+import { Color, type ColorMap } from '@/model/myTypes';
+import chroma from 'chroma-js';
 import { onMounted, ref } from 'vue';
 
-/**
- * значение инпута - массив rgbargbargba и количество пикселей
- */
-const pixels = defineModel<Uint8ClampedArray>('pixels');
+const imgMap = defineModel<ColorMap | undefined>('imgMap');
+
 const emit = defineEmits<{
     change: [];
 }>();
@@ -56,6 +56,58 @@ function drop(e: DragEvent) {
     reader.readAsDataURL(file);
 }
 
+function fillMapFromImg(pixels: ImageDataArray) {
+    /* обрабатываем массив rgbargbargba - по 4 элемента на каждый пиксель */
+
+    const newImgMap: ColorMap = {
+        data: new Map(),
+        totalQ: pixels.length / 4,
+    };
+
+    for (let i = 0; i < pixels.length; i += 4) {
+        let r = pixels[i];
+        let g = pixels[i + 1];
+        let b = pixels[i + 2];
+
+        const a = pixels[i + 3];
+        if (a != 255) {
+            // прозрачные и полупрозрачные пиксели не считаются
+            continue;
+        }
+
+        // TODO мб убрать, это режет цвета для скорости
+        if (r <= 240) r = Math.round(r / 20) * 20;
+        else r = 255;
+        if (g <= 240) g = Math.round(g / 20) * 20;
+        else g = 255;
+        if (b <= 240) b = Math.round(b / 20) * 20;
+        else b = 255;
+        //
+
+        const rgb = chroma(r, g, b, 'rgb');
+        const colorString = rgb.hex();
+
+        if (!newImgMap.data.has(colorString)) {
+            let [l, c, h] = rgb.oklch();
+
+            if (!l) l = 0;
+            if (!c) c = 0;
+            if (!h) h = 0;
+            // потому что у меня в процентах, а не доля от 1
+            l *= 100;
+            c *= 100;
+
+            const elem = new Color(l, { c, h }, 1);
+
+            newImgMap.data.set(colorString, elem);
+        } else {
+            const elem = newImgMap.data.get(colorString)!;
+            elem.q += 1;
+        }
+    }
+    return newImgMap;
+}
+
 function loadImgData(e: Event) {
     const img1: HTMLImageElement = e.target as HTMLImageElement;
 
@@ -91,13 +143,17 @@ function loadImgData(e: Event) {
     ctx.value.drawImage(img1, 0, 0, theWidth, theHeight); // TODO InvalidStateError, TypeMismatchError
     const imgData = ctx.value.getImageData(0, 0, theWidth, theHeight); // TODO IndexSizeError, SecurityError
 
-    pixels.value = imgData.data; /// одномерный массив rgbargbargba
+    const pixels = imgData.data; /// одномерный массив rgbargbargba
+
+    imgMap.value = fillMapFromImg(pixels);
+
     emit('change');
 }
 
 function clear() {
     imageHere.value = false;
     image.value = '';
+    imgMap.value = undefined;
 }
 
 function inputFile() {
@@ -113,7 +169,7 @@ function inputFile() {
         <img v-if="imageHere" :src="image" @load="loadImgData" />
         <div v-else class="col">
             <input type="file" @change="inputFile" />
-            Загрузите изображение
+            <p>Загрузите изображение</p>
         </div>
     </div>
 </template>

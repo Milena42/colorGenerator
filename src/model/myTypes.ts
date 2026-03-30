@@ -121,3 +121,8 @@ export enum schemeType {
 }
 
 export type ColorFormat = 'rgbHex' | 'hsb' | 'oklch';
+
+export type ColorMap = {
+    totalQ: number;
+    data: Map<string, Color>;
+};

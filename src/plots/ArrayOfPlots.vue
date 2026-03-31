@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import type { Color } from '@/model/myTypes';
-import ColorModels3d from './ColorModels3d.vue';
+import { defineAsyncComponent } from 'vue';
+
+const ColorModels3d = defineAsyncComponent(() => import('@/plots/ColorModels3d.vue'));
+
 const props = defineProps<{
     maps: Map<string, Color>[] | undefined;
     totalQ: number;

@@ -2,7 +2,24 @@
 import type { Color, MockupColors } from '@/model/myTypes';
 import { cartesianFromPolar } from '@/utilities/math';
 import chroma from 'chroma-js';
-import * as THREE from 'three';
+import {
+    BoxGeometry,
+    BufferGeometry,
+    DoubleSide,
+    Float32BufferAttribute,
+    Line,
+    LinearSRGBColorSpace,
+    LineBasicMaterial,
+    Mesh,
+    MeshBasicMaterial,
+    PerspectiveCamera,
+    Points,
+    PolarGridHelper,
+    Scene,
+    ShaderMaterial,
+    Vector3,
+    WebGLRenderer,
+} from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { inject, onMounted, onUnmounted, ref, watch, type Ref } from 'vue';
 import fragmentShader from './shaders/material-frag.glsl?raw';
@@ -18,16 +35,16 @@ const props = defineProps<{
 }>();
 
 const container = ref<HTMLDivElement | null>(null);
-let scene: THREE.Scene;
-let camera: THREE.PerspectiveCamera;
-let renderer: THREE.WebGLRenderer;
-let mesh: THREE.Mesh;
+let scene: Scene;
+let camera: PerspectiveCamera;
+let renderer: WebGLRenderer;
+let mesh: Mesh;
 let controls;
 
 const PIXELS = props.wireframe ? 5 : 200;
 
 const showWireframeOnPlots: Ref<boolean> = inject('showWireframeOnPlots') ?? ref(false);
-let oklchMesh: THREE.Mesh | null;
+let oklchMesh: Mesh | null;
 
 function makeModel() {
     if (!showWireframeOnPlots.value) {
@@ -37,9 +54,9 @@ function makeModel() {
         return;
     }
     //TODO оптимизировать
-    const geometry = new THREE.BoxGeometry(1, 1, 1, PIXELS, PIXELS, PIXELS);
+    const geometry = new BoxGeometry(1, 1, 1, PIXELS, PIXELS, PIXELS);
     const pos = geometry.getAttribute('position');
-    const v = new THREE.Vector3();
+    const v = new Vector3();
     const colors: number[] = [];
     const hslPos: number[] = [];
 
@@ -55,26 +72,26 @@ function makeModel() {
         hslPos.push(x, l, -y);
     }
 
-    geometry.setAttribute('position', new THREE.Float32BufferAttribute(hslPos, 3));
-    geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
-    const material = new THREE.MeshBasicMaterial({
+    geometry.setAttribute('position', new Float32BufferAttribute(hslPos, 3));
+    geometry.setAttribute('color', new Float32BufferAttribute(colors, 3));
+    const material = new MeshBasicMaterial({
         vertexColors: true,
-        side: THREE.DoubleSide,
+        side: DoubleSide,
         wireframe: props.wireframe,
     });
 
-    mesh = new THREE.Mesh(geometry, material);
+    mesh = new Mesh(geometry, material);
     oklchMesh = mesh;
     scene.add(mesh);
 }
 
 function makeGrid() {
-    const b = new THREE.PolarGridHelper(0.4, 8, 4, undefined, '#ccc', '#bbb');
+    const b = new PolarGridHelper(0.4, 8, 4, undefined, '#ccc', '#bbb');
     b.translateY(0.5);
 
-    const g = new THREE.BufferGeometry();
-    g.setAttribute('position', new THREE.Float32BufferAttribute([0, 0, 0, 0, 1, 0], 3));
-    const a = new THREE.Line(g, new THREE.LineBasicMaterial({ color: '#aaa' }));
+    const g = new BufferGeometry();
+    g.setAttribute('position', new Float32BufferAttribute([0, 0, 0, 0, 1, 0], 3));
+    const a = new Line(g, new LineBasicMaterial({ color: '#aaa' }));
 
     scene.add(b, a);
 }
@@ -83,23 +100,23 @@ function animate() {
     renderer.render(scene, camera);
 }
 
-const material = new THREE.ShaderMaterial({
+const material = new ShaderMaterial({
     vertexShader: vertexShader,
     fragmentShader: fragmentShader,
 });
-const points = new THREE.Points(new THREE.BufferGeometry(), material);
+const points = new Points(new BufferGeometry(), material);
 
 onMounted(() => {
     if (!container.value) return;
 
-    scene = new THREE.Scene();
+    scene = new Scene();
     scene.background = null;
-    renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+    renderer = new WebGLRenderer({ alpha: true, antialias: true });
     renderer.setSize(container.value.clientWidth, container.value.clientHeight);
-    renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
+    renderer.outputColorSpace = LinearSRGBColorSpace;
     container.value.appendChild(renderer.domElement);
 
-    camera = new THREE.PerspectiveCamera(
+    camera = new PerspectiveCamera(
         30,
         container.value.clientWidth / container.value.clientHeight,
         0.1,
@@ -148,14 +165,14 @@ function plotPoints() {
             );
         }
 
-        const geometry = new THREE.BufferGeometry();
-        geometry.setAttribute('position', new THREE.Float32BufferAttribute(coords, 3));
-        geometry.setAttribute('pointColor', new THREE.Float32BufferAttribute(colors, 3));
-        geometry.setAttribute('scale', new THREE.Float32BufferAttribute(sizes, 1));
+        const geometry = new BufferGeometry();
+        geometry.setAttribute('position', new Float32BufferAttribute(coords, 3));
+        geometry.setAttribute('pointColor', new Float32BufferAttribute(colors, 3));
+        geometry.setAttribute('scale', new Float32BufferAttribute(sizes, 1));
 
         points.geometry = geometry;
     } else {
-        points.geometry = new THREE.BufferGeometry();
+        points.geometry = new BufferGeometry();
     }
 }
 

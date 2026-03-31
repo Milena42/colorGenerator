@@ -3,11 +3,11 @@ import MockupEditor from '@/mockupEditor/MockupEditor.vue';
 import { Color, type ColorMap, type MockupColors } from '@/model/myTypes.ts';
 import { darkTheme, lightTheme } from '@/model/themes';
 import ArrayOfPlots from '@/plots/ArrayOfPlots.vue';
-import ColorModels3d from '@/plots/ColorModels3d.vue';
-import PolarHistogram from '@/plots/PolarHistogram.vue';
-import { inject, ref, shallowRef, type Ref } from 'vue';
+import { defineAsyncComponent, inject, ref, shallowRef, type Ref } from 'vue';
 import InputPicture from './InputPicture.vue';
 import { generateLRangeBased } from './generatorFromPictureEngine';
+
+const ColorModels3d = defineAsyncComponent(() => import('@/plots/ColorModels3d.vue'));
 
 const imgMap = ref<ColorMap>();
 const totalPixels = ref(1);
@@ -83,18 +83,7 @@ const showPlots: Ref<boolean> = inject('showPlots') ?? ref(false);
                     wireframe
                 />
             </div>
-            <div class="row">
-                <PolarHistogram
-                    :data="polarHistogramData1"
-                    :circle="polarHistogramCircle"
-                    :borders="polarHistogramBorders"
-                />
-                <PolarHistogram
-                    :data="polarHistogramData2"
-                    :circle="polarHistogramCircle"
-                    :borders="polarHistogramBorders"
-                />
-            </div>
+
             <ArrayOfPlots :maps="mapsClustered" :totalQ="totalPixels" />
             <div class="row">
                 <ColorModels3d :k="0.01" :data="graysMap" :totalQ="totalPixels" wireframe />

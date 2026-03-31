@@ -1,7 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router';
 
-import GeneratorFromPicture from './generatorFromPicturePage/GeneratorFromPicture.vue';
-import GeneratorFromWheel from './generatorFromWheelPage/GeneratorFromWheel.vue';
+const GeneratorFromPicture = () => import('./generatorFromPicturePage/GeneratorFromPicture.vue');
+
+const GeneratorFromWheel = () => import('./generatorFromWheelPage/GeneratorFromWheel.vue');
+
 const routes = [
     { path: '/', redirect: '/wheel' },
     { path: '/picture', component: GeneratorFromPicture },

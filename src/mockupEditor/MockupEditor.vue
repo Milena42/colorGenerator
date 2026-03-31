@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import IconCopy from '@/assets/icons/IconCopy.vue';
 import { type ColorFormat, type MockupColors } from '@/model/myTypes';
-import ColorModels3d from '@/plots/ColorModels3d.vue';
-import { inject, provide, ref, watchEffect, type Ref } from 'vue';
+import { defineAsyncComponent, inject, provide, ref, watchEffect, type Ref } from 'vue';
 import MockupPreview, { getCssColors } from './MockupPreview.vue';
 import MockupPreviewLanding from './MockupPreviewLanding.vue';
 import PaletteOutput from './PaletteOutput.vue';
+
+const ColorModels3d = defineAsyncComponent(() => import('@/plots/ColorModels3d.vue'));
 
 const props = defineProps<{
     colorsLight: MockupColors;

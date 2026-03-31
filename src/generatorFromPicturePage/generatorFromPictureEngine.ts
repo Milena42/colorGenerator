@@ -2,9 +2,8 @@ import { Color, colorRoles, type MockupColors, type Theme } from '@/model/myType
 import { polarFromCartesian } from '@/utilities/math';
 import { PolynomialRegression } from 'ml-regression';
 
-function makeClustersNew(mapOfColors: Map<string, Color>, totalPixels: number) {
-    const minQToUsePoint = (0.01 * totalPixels) / 100;
-    const filteredPoints = Array.from(mapOfColors).filter(([, v]) => v.q > minQToUsePoint);
+function makeClustersNew(mapOfColors: Map<string, Color>) {
+    const filteredPoints = Array.from(mapOfColors);
 
     if (filteredPoints.length == 0) return { clusters: [], debugInfo: {} };
 
@@ -16,21 +15,28 @@ function makeClustersNew(mapOfColors: Map<string, Color>, totalPixels: number) {
         circularHistogram[h] += point.q;
     });
 
+    let previousArray: number[] = Array.from(circularHistogram);
     const smoothedCircularHistogram: number[] = new Array(360).fill(0);
     const smoothingRadius = 10;
-    for (let i = 0; i < 360; i++) {
-        let sum = 0;
-        for (let j = -smoothingRadius; j <= smoothingRadius; j++) {
-            const index = (i + j + 360) % 360;
-            sum += circularHistogram[index];
+    for (let k = 0; k < 3; k++) {
+        for (let i = 0; i < 360; i++) {
+            let sum = 0;
+            for (let j = -smoothingRadius; j <= smoothingRadius; j++) {
+                const index = (i + j + 360) % 360;
+                sum += previousArray[index];
+            }
+            smoothedCircularHistogram[i] = sum / (2 * smoothingRadius);
         }
-        smoothedCircularHistogram[i] = sum / (2 * smoothingRadius);
+        previousArray = Array.from(smoothedCircularHistogram);
     }
 
     type Gap = { start: number; end: number; center: number };
     const gaps: Gap[] = [];
     let currentGapStart: number | undefined = undefined;
-    const minQForHistogram = minQToUsePoint * 22900; //TODO настроить кластеризацию
+    const max = smoothedCircularHistogram.reduce((a, b) => Math.max(a, b), 0);
+    const totalPixels = smoothedCircularHistogram.reduce((a, b) => a + b, 0);
+
+    const minQForHistogram = 0.0025 * totalPixels * Math.pow((0.01 * totalPixels) / max, 3.15);
 
     smoothedCircularHistogram.forEach((value, h) => {
         if (currentGapStart != undefined) {
@@ -210,7 +216,7 @@ export function generateLRangeBased(
         mapsClustered = [];
         clusteringDebug = {};
     } else {
-        const { clusters, debugInfo } = makeClustersNew(chromaTorus, totalPixels);
+        const { clusters, debugInfo } = makeClustersNew(chromaTorus);
         clusteringDebug = debugInfo;
         mapsClustered = clusters;
         mapsClustered.forEach((mapOfColors) => {

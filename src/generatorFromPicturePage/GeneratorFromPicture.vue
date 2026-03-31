@@ -75,6 +75,13 @@ const showPlots: Ref<boolean> = inject('showPlots') ?? ref(false);
                     style="border: 1px solid red"
                     wireframe
                 />
+                <ColorModels3d
+                    :k="0.01"
+                    :data="filteredMap"
+                    :totalQ="totalPixels"
+                    style="border: 1px solid red"
+                    wireframe
+                />
             </div>
             <div class="row">
                 <PolarHistogram

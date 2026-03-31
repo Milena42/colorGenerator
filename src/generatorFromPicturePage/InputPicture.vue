@@ -56,7 +56,7 @@ function drop(e: DragEvent) {
     reader.readAsDataURL(file);
 }
 
-function fillMapFromImg(pixels: ImageDataArray) {
+function fillMapFromImg(pixels: Uint8ClampedArray<ArrayBuffer>) {
     /* обрабатываем массив rgbargbargba - по 4 элемента на каждый пиксель */
 
     const newImgMap: ColorMap = {

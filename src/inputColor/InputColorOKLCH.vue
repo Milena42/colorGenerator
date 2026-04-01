@@ -18,7 +18,7 @@ const borders = computed(() => {
 });
 </script>
 <template>
-    <div class="col">
+    <div class="col input-color-components">
         <InputRangeColor
             v-model="color.h"
             label="H"

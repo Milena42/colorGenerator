@@ -78,18 +78,20 @@ async function copy() {
 
 <template>
     <div class="input-color" v-on-click-outside="() => (editing = false)">
-        <p>{{ role }}</p>
         <div class="row">
-            <div class="color-preview" :style="{ backgroundColor: colorString }">
-                <button @click="editing = !editing" title="редактировать цвет">
-                    <IconTune />
-                </button>
-                <button @click="copy" :title="`копировать цвет: ${colorString}`">
-                    <IconCopy />
-                </button>
+            <div class="swatch">
+                <p class="role">{{ role }}</p>
+                <div class="color-preview" :style="{ backgroundColor: colorString }">
+                    <button @click="editing = !editing" title="редактировать цвет">
+                        <IconTune />
+                    </button>
+                    <button @click="copy" :title="`копировать цвет: ${colorString}`">
+                        <IconCopy />
+                    </button>
+                </div>
             </div>
             <p v-if="alwaysShowColorStrings && !editing">{{ colorString }}</p>
-            <input v-if="editing" v-model.lazy="colorString" />
+            <input v-if="editing" v-model.lazy="colorString" type="text" class="grow" />
         </div>
         <div class="col" v-if="editing">
             <InputColorHSB v-model="colorHex" v-if="colorFormatEdit == 'hsb'" />
@@ -106,15 +108,29 @@ async function copy() {
         font-size: 0.9rem;
         margin: 0px;
     }
+    p.role {
+        font-size: 0.7rem;
+    }
 
     display: flex;
     flex-flow: column nowrap;
     gap: 0.5rem;
-    align-items: center;
+    align-items: stretch;
 
     & > .row {
         align-items: center;
         gap: 0.5rem;
+    }
+
+    .swatch {
+        position: relative;
+        & > .role {
+            text-align: center;
+            position: absolute;
+            top: -1rem;
+            left: 50%;
+            transform: translateX(-50%);
+        }
     }
 
     .color-preview {

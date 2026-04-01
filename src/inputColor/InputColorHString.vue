@@ -26,7 +26,7 @@ function change() {
 </script>
 
 <template>
-    <input v-model="colorString" @change="change" />
+    <input v-model="colorString" @change="change" type="text" />
 </template>
 
 <style scoped>

@@ -2,8 +2,13 @@
 import { vOnClickOutside } from '@vueuse/components';
 import chroma from 'chroma-js';
 import { computed, provide, ref, watch } from 'vue';
+import IconTriad from './assets/icons/colorSchemes/IconTriad.vue';
 import IconDarkTheme from './assets/icons/IconDarkTheme.vue';
+import IconFeedback from './assets/icons/IconFeedback.vue';
+import IconImage from './assets/icons/IconImage.vue';
+import IconInfo from './assets/icons/IconInfo.vue';
 import IconLightTheme from './assets/icons/IconLightTheme.vue';
+import IconMenu from './assets/icons/IconMenu.vue';
 import IconSettings from './assets/icons/IconSettings.vue';
 
 const showQuantityOnPlots = ref(true);
@@ -40,6 +45,7 @@ watch(themeIsDark, () => {
 });
 
 const showSettings = ref(false);
+const showMenu = ref(false);
 </script>
 
 <template>
@@ -49,15 +55,23 @@ const showSettings = ref(false);
         :style="{ '--background': bgColor }"
     >
         <header class="row">
-            <div>Типа лого тут</div>
+            <div class="relative" v-on-click-outside="() => (showMenu = false)">
+                <button @click="showMenu = !showMenu">
+                    <IconMenu width="24px" height="auto" />
+                </button>
+                <div v-if="showMenu" class="popup left-0">
+                    <p><IconFeedback />Сообщить об ошибке или предложить улучшение</p>
+                    <p><IconInfo />Как работает генератор</p>
+                </div>
+            </div>
 
             <div class="choice-chips">
-                <RouterLink class="choice-chip" activeClass="current" to="/picture"
-                    >С картинки</RouterLink
-                >
-                <RouterLink class="choice-chip" activeClass="current" to="/wheel"
-                    >По кругу</RouterLink
-                >
+                <RouterLink class="choice-chip router" activeClass="current" to="/picture">
+                    <IconImage /> Из картинки
+                </RouterLink>
+                <RouterLink class="choice-chip router" activeClass="current" to="/wheel">
+                    <IconTriad /> По цветовому кругу
+                </RouterLink>
             </div>
 
             <div class="row">
@@ -66,12 +80,12 @@ const showSettings = ref(false);
                     <IconLightTheme v-if="themeIsDark" />
                 </button>
 
-                <div class="settings-container" v-on-click-outside="() => (showSettings = false)">
+                <div class="relative" v-on-click-outside="() => (showSettings = false)">
                     <button @click="showSettings = !showSettings">
                         <IconSettings />
                     </button>
 
-                    <div v-if="showSettings" class="settings">
+                    <div v-if="showSettings" class="popup right-0">
                         <div>
                             <input type="checkbox" v-model="showPlots" id="showPlots" />
                             <label for="showPlots">показывать графики</label>
@@ -135,31 +149,11 @@ const showSettings = ref(false);
 
 header {
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
 
     > div {
-        align-items: center;
+        align-items: flex-start;
         gap: 0.5rem;
     }
-}
-
-.settings-container {
-    position: relative;
-}
-
-.settings {
-    display: flex;
-    flex-flow: column nowrap;
-    align-items: start;
-
-    position: absolute;
-    right: 0px;
-    z-index: 10;
-    min-width: max-content;
-
-    background-color: var(--background);
-    box-shadow: 1px 1px 1px 1px #000;
-    padding: 1rem;
-    border-radius: 1rem;
 }
 </style>

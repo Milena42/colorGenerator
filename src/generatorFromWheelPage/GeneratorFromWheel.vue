@@ -364,6 +364,7 @@ const baseH = computed({
                         v-if="!inputHFromColor"
                         @click="inputHFromColor = true"
                         title="задать акцентный тон на основе цвета"
+                        class="text-button"
                     >
                         Из цвета
                     </button>

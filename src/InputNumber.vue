@@ -65,6 +65,8 @@ function increment() {
 
 <style scoped>
 .input-number {
+    font-family: 'Source Code Pro', monospace;
+
     display: flex;
     flex-flow: row nowrap;
     align-items: center;
@@ -72,12 +74,19 @@ function increment() {
     input {
         width: 5rem;
         text-align: center;
-        padding: 0.1rem 0.2rem;
     }
 
     button {
+        line-height: 0.6em;
+        padding: 0.3rem;
+        border-radius: 50%;
+
         background: inherit;
         border: none;
+
+        &:hover {
+            background-color: rgba(from var(--text-color) r g b / 0.1);
+        }
     }
 }
 </style>

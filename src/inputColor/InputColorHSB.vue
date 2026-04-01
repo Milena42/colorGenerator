@@ -41,7 +41,7 @@ const borders = computed(() => {
 });
 </script>
 <template>
-    <div class="col">
+    <div class="col input-color-components">
         <InputRangeColor
             v-model="hsb.h"
             label="H"

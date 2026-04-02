@@ -98,9 +98,9 @@ export const colorRoles = [
     'accentSmall',
     'text',
     'textOnAccent',
-    'accentOnOverlay',
+    'accentBright',
 ];
-export const accentColorRoles = ['accentLarge', 'accentSmall', 'accentOnOverlay'];
+export const accentColorRoles = ['accentLarge', 'accentSmall', 'accentBright'];
 export const bgColorRoles = ['bg', 'overlay', 'text', 'textOnAccent'];
 export type ColorRole = (typeof colorRoles)[number];
 

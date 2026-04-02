@@ -20,7 +20,7 @@ export const darkTheme: Theme = {
         l: 80,
         cMax: 15,
     },
-    accentOnOverlay: {
+    accentBright: {
         l: 88,
         cMax: 10,
     },
@@ -51,7 +51,7 @@ export const lightTheme: Theme = {
         l: 38,
         cMax: 18,
     },
-    accentOnOverlay: {
+    accentBright: {
         l: 25,
         cMax: 10,
     },

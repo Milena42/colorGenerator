@@ -72,7 +72,7 @@ const cssColors = computed(() => getCssColors(props.colors, 'rgbHex'));
         background-color: var(--overlay);
 
         .button {
-            background-color: var(--accentOnOverlay);
+            background-color: var(--accentBright);
             color: var(--bg);
         }
     }
@@ -88,13 +88,13 @@ const cssColors = computed(() => getCssColors(props.colors, 'rgbHex'));
     .landing-header,
     .landing-footer {
         .a {
-            color: var(--accentOnOverlay);
+            color: var(--accentBright);
         }
     }
 
     .icon {
-        color: var(--accentOnOverlay);
-        fill: var(--accentOnOverlay);
+        color: var(--accentBright);
+        fill: var(--accentBright);
     }
 }
 </style>

@@ -197,7 +197,7 @@ const baseH = computed({
 </script>
 <template>
     <div class="generator-wheel-page">
-        <div>
+        <div class="generator-wheel-controls">
             <div class="choice-chips">
                 <button
                     class="harmony-type-button choice-chip"
@@ -373,6 +373,12 @@ const baseH = computed({
     flex-flow: row wrap;
     align-items: center;
     justify-content: space-evenly;
+    gap: 1rem;
+}
+
+.generator-wheel-controls {
+    padding: 0px 1rem;
+    width: max-content;
 }
 
 .harmony-type-button {

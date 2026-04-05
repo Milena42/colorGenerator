@@ -113,13 +113,6 @@ export interface ColorRoleConstraints {
 
 export type Theme = Record<ColorRole, ColorRoleConstraints>;
 
-export enum schemeType {
-    mono = 'mono',
-    complementary = 'complementary',
-    analog = 'analog',
-    triad = 'triad',
-}
-
 export type ColorFormat = 'rgbHex' | 'hsb' | 'oklch';
 
 export type ColorMap = {

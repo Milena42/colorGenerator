@@ -3,77 +3,25 @@ import IconAnalog from '@/assets/icons/colorSchemes/IconAnalog.vue';
 import IconComplementary from '@/assets/icons/colorSchemes/IconComplementary.vue';
 import IconMono from '@/assets/icons/colorSchemes/IconMono.vue';
 import IconTriad from '@/assets/icons/colorSchemes/IconTriad.vue';
+import IconSwap from '@/assets/icons/IconSwap.vue';
+import InputColorHString from '@/inputColor/InputColorHString.vue';
+import InputNumber from '@/InputNumber.vue';
+import MockupEditor from '@/mockupEditor/MockupEditor.vue';
+import { type MockupColors } from '@/model/myTypes';
+import { darkTheme, lightTheme, maxCAccent, maxCBg } from '@/model/themes';
 import { vOnClickOutside } from '@vueuse/components';
-import { computed, reactive, ref, shallowRef, watch, type ShallowRef } from 'vue';
+import { computed, reactive, ref, watch } from 'vue';
+import ArcShortest from './ArcShortest.vue';
 import CircleInput, {
     circleObject,
     R_SPECTRAL_CIRCLE,
     SCALE,
     WHEEL_SVG_WIDTH,
 } from './CircleInput.vue';
+import { generateFromWheel, type SchemeType } from './generatorFromWheelEngine';
 
-//import MapPlot3d from './MapPlot3d.vue';
-import IconSwap from '@/assets/icons/IconSwap.vue';
-import InputColorHString from '@/inputColor/InputColorHString.vue';
-import InputNumber from '@/InputNumber.vue';
-import MockupEditor from '@/mockupEditor/MockupEditor.vue';
-import {
-    accentColorRoles,
-    bgColorRoles,
-    Color,
-    schemeType,
-    type MockupColors,
-    type Theme,
-} from '@/model/myTypes';
-import { darkTheme, lightTheme, maxCAccent, maxCBg } from '@/model/themes';
-import { hMinus } from '@/utilities/math';
-import ArcShortest from './ArcShortest.vue';
-
-const generatedMap: ShallowRef<Map<string, Color>> = shallowRef(new Map<string, Color>());
-
-type HFromL = (l: number) => number;
-const schemeRulesFromInputs = new Map<schemeType, HFromL>([
-    [
-        schemeType.mono,
-        () => {
-            return inputAccentH.value;
-        },
-    ],
-    [
-        schemeType.complementary,
-        (l) => {
-            if (35 <= l && l <= 80) return inputAccentH.value;
-            return inputDarkH.value;
-        },
-    ],
-    [
-        schemeType.analog,
-        (l) => {
-            return (
-                ((2 * hMinus(inputLightH.value, inputAccentH.value) * (l - 50)) / 100 +
-                    inputAccentH.value +
-                    360) %
-                360
-            );
-        },
-    ],
-    [
-        schemeType.triad,
-        (l) => {
-            if (l < 35) return inputDarkH.value;
-            if (l <= 80) return inputAccentH.value;
-            return inputLightH.value;
-        },
-    ],
-]);
-
-const generatedNewLight: MockupColors = reactive({});
-const generatedNewDark: MockupColors = reactive({});
-
-const themes: [Theme, MockupColors][] = [
-    [lightTheme, generatedNewLight],
-    [darkTheme, generatedNewDark],
-];
+const generatedLight = ref<MockupColors>({});
+const generatedDark = ref<MockupColors>({});
 
 const accentCircle = reactive(new circleObject(236));
 const lightCircle = reactive(new circleObject(0));
@@ -98,49 +46,27 @@ const inputDarkH = computed({
     },
 });
 
-const typeOfScheme = ref<schemeType>(schemeType.mono);
+const typeOfScheme = ref<SchemeType>('mono');
 
 const inputBgC = ref<number>(maxCBg);
 const inputAccentC = ref<number>(maxCAccent);
 
-function generateGrayAndAccents() {
-    const newGeneratedMap: Map<string, Color> = new Map();
-    themes.forEach(([themeRules, generatedTheme]) => {
-        accentColorRoles.forEach((key) => {
-            const { l, cMax } = themeRules[key];
-
-            const h = schemeRulesFromInputs.get(typeOfScheme.value)!(l);
-
-            const c = (cMax * inputAccentC.value) / maxCAccent;
-
-            const elem = new Color(l, { c, h });
-            const rgbString = elem.adjustForRGB();
-
-            newGeneratedMap.set(rgbString, elem);
-
-            generatedTheme[key] = elem;
-        });
-        bgColorRoles.forEach((key) => {
-            const { l, cMax } = themeRules[key];
-
-            const h = schemeRulesFromInputs.get(typeOfScheme.value)!(l);
-
-            const c = (cMax * inputBgC.value) / maxCBg;
-
-            const elem = new Color(l, { c, h });
-            const rgbString = elem.adjustForRGB();
-
-            newGeneratedMap.set(rgbString, elem);
-
-            generatedTheme[key] = elem;
-        });
-    });
-    return newGeneratedMap;
-}
-
 function generate() {
-    // цветная - частный случай чб, когда насыщенность максимальна
-    generatedMap.value = generateGrayAndAccents();
+    const generatedThemes = generateFromWheel(
+        new Map([
+            ['dark', darkTheme],
+            ['light', lightTheme],
+        ]),
+        inputAccentC.value,
+        inputBgC.value,
+        inputAccentH.value,
+        inputDarkH.value,
+        inputLightH.value,
+        typeOfScheme.value,
+    );
+
+    generatedDark.value = generatedThemes.get('dark') ?? {};
+    generatedLight.value = generatedThemes.get('light') ?? {};
 }
 
 watch([inputAccentH, inputDarkH, inputLightH], generate, { immediate: true });
@@ -170,18 +96,16 @@ function changeTypeOfScheme() {
     switch (typeOfScheme.value) {
         case 'mono':
             break;
-        case 'complementary':
+        case 'step2':
             inputDarkH.value = (accentH + 180) % 360;
             break;
-        case 'analog':
+        case 'gradient':
             inputDarkH.value = (accentH + 60) % 360;
             inputLightH.value = (accentH - 60 + 360) % 360;
             break;
-        case 'triad':
+        case 'step3':
             inputDarkH.value = (accentH + 120) % 360;
             inputLightH.value = (accentH - 120 + 360) % 360;
-            break;
-        default:
             break;
     }
     darkCircle.calculateCoords();
@@ -227,7 +151,7 @@ function mousemove(event: MouseEvent) {
         lightCircle.calculateCoords();
     } else if (lockSymmetry.value) {
         if (draggedCircle === darkCircle) {
-            if (typeOfScheme.value == 'complementary') {
+            if (typeOfScheme.value == 'step2') {
                 draggedCircle.color.h = oldH;
             } else {
                 lightCircle.color.h = (2 * accentH - currentH + 360) % 360;
@@ -251,7 +175,7 @@ const show2Circles = computed(() => {
     return typeOfScheme.value != 'mono';
 });
 const show3Circles = computed(() => {
-    return typeOfScheme.value != 'mono' && typeOfScheme.value != 'complementary';
+    return typeOfScheme.value != 'mono' && typeOfScheme.value != 'step2';
 });
 
 function reverseDependentHues() {
@@ -277,33 +201,33 @@ const baseH = computed({
             <div class="choice-chips">
                 <button
                     class="harmony-type-button choice-chip"
-                    :class="{ current: typeOfScheme == schemeType.mono }"
-                    @click="typeOfScheme = schemeType.mono"
-                    title="монохромная"
+                    :class="{ current: typeOfScheme == 'mono' }"
+                    @click="typeOfScheme = 'mono'"
+                    title="монохромная (1 тон)"
                 >
                     <IconMono />
                 </button>
                 <button
                     class="harmony-type-button choice-chip"
-                    :class="{ current: typeOfScheme == schemeType.complementary }"
-                    @click="typeOfScheme = schemeType.complementary"
-                    title="комплементарная"
+                    :class="{ current: typeOfScheme == 'step2' }"
+                    @click="typeOfScheme = 'step2'"
+                    title="комплементарная (2 тона)"
                 >
                     <IconComplementary />
                 </button>
                 <button
                     class="harmony-type-button choice-chip"
-                    :class="{ current: typeOfScheme == schemeType.analog }"
-                    @click="typeOfScheme = schemeType.analog"
+                    :class="{ current: typeOfScheme == 'gradient' }"
+                    @click="typeOfScheme = 'gradient'"
                     title="аналоговая (из градиента)"
                 >
                     <IconAnalog />
                 </button>
                 <button
                     class="harmony-type-button choice-chip"
-                    :class="{ current: typeOfScheme == schemeType.triad }"
-                    @click="typeOfScheme = schemeType.triad"
-                    title="триада"
+                    :class="{ current: typeOfScheme == 'step3' }"
+                    @click="typeOfScheme = 'step3'"
+                    title="триада (3 тона)"
                 >
                     <IconTriad />
                 </button>
@@ -388,12 +312,12 @@ const baseH = computed({
                     @mouseleave.prevent="dragend"
                 >
                     <ArcShortest
-                        v-if="typeOfScheme == schemeType.analog"
+                        v-if="typeOfScheme == 'gradient'"
                         :start="darkCircle.color.h"
                         :end="accentCircle.color.h"
                     />
                     <ArcShortest
-                        v-if="typeOfScheme == schemeType.analog"
+                        v-if="typeOfScheme == 'gradient'"
                         :start="accentCircle.color.h"
                         :end="lightCircle.color.h"
                     />
@@ -435,7 +359,7 @@ const baseH = computed({
             </div>
         </div>
 
-        <MockupEditor :colorsLight="generatedNewLight" :colorsDark="generatedNewDark" />
+        <MockupEditor :colorsLight="generatedLight" :colorsDark="generatedDark" />
     </div>
 </template>
 <style scoped>

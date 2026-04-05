@@ -262,6 +262,10 @@ const baseH = computed({
                 </div>
             </div>
             <div class="color-wheel-square">
+                <div class="color-wheel-square-base-h" title="акцентный тон">
+                    <InputNumber v-model.lazy.number="baseH" :min="0" :max="360" :step="1" circle />
+                </div>
+
                 <div class="color-wheel-square-reverse">
                     <button
                         @click="reverseDependentHues"
@@ -277,10 +281,6 @@ const baseH = computed({
                     >
                         с
                     </button>
-                </div>
-
-                <div class="color-wheel-square-base-h" title="акцентный тон">
-                    <InputNumber v-model.lazy.number="baseH" :min="0" :max="360" :step="1" circle />
                 </div>
 
                 <div class="color-wheel-square-base-color">

@@ -365,8 +365,13 @@ const baseH = computed({
                 </svg>
             </div>
         </div>
-
-        <MockupEditor :colorsLight="generatedLight" :colorsDark="generatedDark" />
+        <div class="editor-view">
+            <MockupEditor
+                :colorsLight="generatedLight"
+                :colorsDark="generatedDark"
+                class="editor-view-content"
+            />
+        </div>
     </div>
 </template>
 <style scoped>
@@ -386,6 +391,22 @@ const baseH = computed({
 .generator-wheel-controls {
     padding: 0px 1rem;
     width: max-content;
+}
+
+@media (min-width: 1000px) and (max-width: 1900px) {
+    .editor-view {
+        flex: 1 1 0;
+        overflow: scroll;
+        border: 2px solid var(--transparent-pale);
+        border-radius: var(--radius);
+        align-self: stretch;
+        max-height: 100vh;
+
+        .editor-view-content {
+            width: max-content;
+            margin: 1rem auto;
+        }
+    }
 }
 
 .harmony-type-button {

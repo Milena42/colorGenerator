@@ -182,7 +182,8 @@ function inputFile() {
     display: flex;
     align-items: center;
     justify-content: center;
-    border: #dadada solid 2px;
+    border: 2px solid var(--transparent-pale);
+    border-radius: var(--radius);
 
     position: relative;
 
@@ -193,8 +194,8 @@ function inputFile() {
     }
 
     & > * {
-        max-height: 100%;
-        max-width: 100%;
+        max-height: 600px;
+        max-width: min(100%, 600px);
     }
 
     &:-moz-drag-over {

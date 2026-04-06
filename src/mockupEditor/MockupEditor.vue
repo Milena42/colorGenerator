@@ -140,9 +140,6 @@ const showLandings = inject<Ref<boolean>>('showLandings');
 
 <style scoped>
 .mockup-editor-wrapper {
-    max-width: max-content;
-    width: fit-content;
-    flex: 1 1 0;
     display: flex;
     flex-flow: column nowrap;
     gap: 2rem;

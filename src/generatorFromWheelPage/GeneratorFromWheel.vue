@@ -3,6 +3,8 @@ import IconAnalog from '@/assets/icons/colorSchemes/IconAnalog.vue';
 import IconComplementary from '@/assets/icons/colorSchemes/IconComplementary.vue';
 import IconMono from '@/assets/icons/colorSchemes/IconMono.vue';
 import IconTriad from '@/assets/icons/colorSchemes/IconTriad.vue';
+import IconLockOff from '@/assets/icons/IconLockOff.vue';
+import IconLockOn from '@/assets/icons/IconLockOn.vue';
 import IconSwap from '@/assets/icons/IconSwap.vue';
 import InputColorHString from '@/inputColor/InputColorHString.vue';
 import InputNumber from '@/InputNumber.vue';
@@ -31,18 +33,21 @@ const inputAccentH = computed({
     get: () => accentCircle.color.h,
     set: (v) => {
         accentCircle.color.h = v;
+        accentCircle.calculateCoords();
     },
 });
 const inputLightH = computed({
     get: () => lightCircle.color.h,
     set: (v) => {
         lightCircle.color.h = v;
+        lightCircle.calculateCoords();
     },
 });
 const inputDarkH = computed({
     get: () => darkCircle.color.h,
     set: (v) => {
         darkCircle.color.h = v;
+        darkCircle.calculateCoords();
     },
 });
 
@@ -91,9 +96,11 @@ watch(inputAccentC, () => {
     generate();
 });
 
-function changeTypeOfScheme() {
+function setTypeOfScheme(newType: SchemeType) {
+    typeOfScheme.value = newType;
+
     const accentH = inputAccentH.value;
-    switch (typeOfScheme.value) {
+    switch (newType) {
         case 'mono':
             break;
         case 'step2':
@@ -108,12 +115,10 @@ function changeTypeOfScheme() {
             inputLightH.value = (accentH - 120 + 360) % 360;
             break;
     }
-    darkCircle.calculateCoords();
-    lightCircle.calculateCoords();
+
+    lockSymmetry.value = true;
     generate();
 }
-
-watch(typeOfScheme, changeTypeOfScheme);
 
 const lockSymmetry = ref(true);
 
@@ -133,6 +138,7 @@ function dragstart(element: typeof accentCircle, event: MouseEvent) {
 
 function mousemove(event: MouseEvent) {
     if (!draggedCircle) return;
+
     const deltaX = event.clientX - startX;
     const deltaY = event.clientY - startY;
     draggedCircle.cx = initialCircleX + deltaX;
@@ -141,25 +147,21 @@ function mousemove(event: MouseEvent) {
     const oldH = draggedCircle.color.h;
     draggedCircle.calculateColorCoords();
 
-    const currentH = draggedCircle.color.h;
-    const accentH = accentCircle.color.h;
-    if (draggedCircle === accentCircle) {
+    if (lockSymmetry.value) {
+        const currentH = draggedCircle.color.h;
+        const accentH = accentCircle.color.h;
         const dH = currentH - oldH;
-        darkCircle.color.h = (darkCircle.color.h + dH + 360) % 360;
-        darkCircle.calculateCoords();
-        lightCircle.color.h = (lightCircle.color.h + dH + 360) % 360;
-        lightCircle.calculateCoords();
-    } else if (lockSymmetry.value) {
-        if (draggedCircle === darkCircle) {
+
+        if (draggedCircle === accentCircle) {
+            moveDependent(dH);
+        } else if (draggedCircle === darkCircle) {
             if (typeOfScheme.value == 'step2') {
-                draggedCircle.color.h = oldH;
+                inputAccentH.value = (inputAccentH.value + dH + 360) % 360;
             } else {
-                lightCircle.color.h = (2 * accentH - currentH + 360) % 360;
-                lightCircle.calculateCoords();
+                inputLightH.value = (2 * accentH - currentH + 360) % 360;
             }
         } else if (draggedCircle === lightCircle) {
-            darkCircle.color.h = (2 * accentH - currentH + 360) % 360;
-            darkCircle.calculateCoords();
+            inputDarkH.value = (2 * accentH - currentH + 360) % 360;
         }
     }
 
@@ -171,6 +173,11 @@ function dragend() {
     draggedCircle = undefined;
 }
 
+function moveDependent(dH: number) {
+    inputDarkH.value = (inputDarkH.value + dH + 360) % 360;
+    inputLightH.value = (inputLightH.value + dH + 360) % 360;
+}
+
 const show2Circles = computed(() => {
     return typeOfScheme.value != 'mono';
 });
@@ -180,8 +187,6 @@ const show3Circles = computed(() => {
 
 function reverseDependentHues() {
     [inputDarkH.value, inputLightH.value] = [inputLightH.value, inputDarkH.value];
-    darkCircle.calculateCoords();
-    lightCircle.calculateCoords();
 }
 
 const inputHFromColor = ref(false);
@@ -189,9 +194,10 @@ const inputHFromColor = ref(false);
 const baseH = computed({
     get: () => inputAccentH.value,
     set: (v) => {
-        accentCircle.color.h = v;
-        accentCircle.calculateCoords();
-        changeTypeOfScheme();
+        const oldH = inputAccentH.value;
+        const dH = v - oldH;
+        inputAccentH.value = v;
+        moveDependent(dH);
     },
 });
 </script>
@@ -202,7 +208,7 @@ const baseH = computed({
                 <button
                     class="harmony-type-button choice-chip"
                     :class="{ current: typeOfScheme == 'mono' }"
-                    @click="typeOfScheme = 'mono'"
+                    @click="setTypeOfScheme('mono')"
                     title="монохромная (1 тон)"
                 >
                     <IconMono />
@@ -210,7 +216,7 @@ const baseH = computed({
                 <button
                     class="harmony-type-button choice-chip"
                     :class="{ current: typeOfScheme == 'step2' }"
-                    @click="typeOfScheme = 'step2'"
+                    @click="setTypeOfScheme('step2')"
                     title="комплементарная (2 тона)"
                 >
                     <IconComplementary />
@@ -218,7 +224,7 @@ const baseH = computed({
                 <button
                     class="harmony-type-button choice-chip"
                     :class="{ current: typeOfScheme == 'gradient' }"
-                    @click="typeOfScheme = 'gradient'"
+                    @click="setTypeOfScheme('gradient')"
                     title="аналоговая (из градиента)"
                 >
                     <IconAnalog />
@@ -226,7 +232,7 @@ const baseH = computed({
                 <button
                     class="harmony-type-button choice-chip"
                     :class="{ current: typeOfScheme == 'step3' }"
-                    @click="typeOfScheme = 'step3'"
+                    @click="setTypeOfScheme('step3')"
                     title="триада (3 тона)"
                 >
                     <IconTriad />
@@ -268,18 +274,19 @@ const baseH = computed({
 
                 <div class="color-wheel-square-reverse">
                     <button
+                        @click="lockSymmetry = !lockSymmetry"
+                        v-if="show2Circles && !(typeOfScheme == 'gradient')"
+                        :title="`${lockSymmetry ? 'выключить' : 'включить'} блокировку углов`"
+                    >
+                        <IconLockOff v-if="!lockSymmetry" />
+                        <IconLockOn v-if="lockSymmetry" />
+                    </button>
+                    <button
                         @click="reverseDependentHues"
                         v-if="show3Circles"
                         title="поменять местами зависимые тона"
                     >
                         <IconSwap />
-                    </button>
-                    <button
-                        @click="lockSymmetry = !lockSymmetry"
-                        v-if="show2Circles"
-                        title="блокировка симметрии"
-                    >
-                        с
                     </button>
                 </div>
 
@@ -389,6 +396,10 @@ const baseH = computed({
     display: flex;
     flex-flow: column nowrap;
     align-items: center;
+
+    &.current:hover {
+        cursor: pointer;
+    }
 }
 
 .chroma-params {

@@ -56,6 +56,8 @@ const typeOfScheme = ref<SchemeType>('mono');
 const inputBgC = ref<number>(maxCBg);
 const inputAccentC = ref<number>(maxCAccent);
 
+const inputAccentLargeL = ref<number>(darkTheme.accentLarge.l);
+
 function generate() {
     const generatedThemes = generateFromWheel(
         new Map([
@@ -93,6 +95,18 @@ watch(inputAccentC, () => {
         const c = inputAccentC.value - CHROMA_DIFFERENCE;
         inputBgC.value = c > 0 ? c : 0;
     }
+    generate();
+});
+
+watch(inputAccentLargeL, () => {
+    const l = inputAccentLargeL.value;
+    darkTheme.accentLarge.l = l;
+    lightTheme.accentLarge.l = l;
+
+    const textL = l > 70 ? 18 : 98;
+    darkTheme.textOnAccent.l = textL;
+    lightTheme.textOnAccent.l = textL;
+
     generate();
 });
 
@@ -239,6 +253,18 @@ const baseH = computed({
                 </button>
             </div>
             <div class="col chroma-params">
+                <div class="row">
+                    <label for="accent-lightness">светлота акцента</label>
+                    <input
+                        v-model.number="inputAccentLargeL"
+                        type="range"
+                        :min="50"
+                        :max="80"
+                        :step="0.1"
+                        class="input-range"
+                        id="accent-lightness"
+                    />
+                </div>
                 <p>максимальная насыщенность:</p>
                 <div class="row">
                     <label for="accent-chroma">акценты</label>
@@ -426,13 +452,14 @@ const baseH = computed({
 .chroma-params {
     padding: 1.2rem 0px;
     p {
-        margin: 0px 0px 0.6rem;
+        margin: 0.7rem 0px 0.4rem;
     }
     div {
         align-items: center;
+        gap: 0.5rem;
     }
     label {
-        width: 5.5rem;
+        min-width: 5rem;
     }
 }
 

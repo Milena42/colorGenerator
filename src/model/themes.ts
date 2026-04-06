@@ -44,7 +44,7 @@ export const lightTheme: Theme = {
         cMax: 5,
     },
     accentLarge: {
-        l: 65,
+        l: 53,
         cMax: 15,
     },
     accentSmall: {
@@ -60,7 +60,7 @@ export const lightTheme: Theme = {
         cMax: 2,
     },
     textOnAccent: {
-        l: 18,
+        l: 98,
         cMax: 1,
     },
 };

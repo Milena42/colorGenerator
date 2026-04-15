@@ -40,7 +40,7 @@ export const lightTheme: Theme = {
         cMax: 2,
     },
     overlay: {
-        l: 90,
+        l: 88,
         cMax: 5,
     },
     accentLarge: {

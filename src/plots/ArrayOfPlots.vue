@@ -10,16 +10,8 @@ const props = defineProps<{
 }>();
 </script>
 <template>
-    <div v-if="maps">
-        <div class="row" v-if="maps.length < 6">
-            <ColorModels3d
-                v-for="map of props.maps"
-                :k="0.01"
-                :data="map"
-                :totalQ="totalQ"
-                wireframe
-            />
-        </div>
-        <div v-else>Оперативки может не хватить, кол-во графиков: {{ maps.length }}</div>
+    <div class="row" v-if="maps && maps.length < 6">
+        <ColorModels3d v-for="map of props.maps" :k="0.01" :data="map" :totalQ="totalQ" wireframe />
     </div>
+    <div v-else-if="maps">Оперативки может не хватить, кол-во графиков: {{ maps.length }}</div>
 </template>

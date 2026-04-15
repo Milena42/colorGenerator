@@ -51,11 +51,6 @@ const cssColors = computed(() => getCssColors(props.colors, 'rgbHex'));
             </p>
             <div class="button">Кнопка</div>
         </div>
-        <div style="display: flex; align-self: stretch">
-            <div style="background-color: var(--overlay); height: 1rem; flex: 1 1 0"></div>
-            <div style="background-color: var(--accentSmall); height: 1rem; flex: 1 1 0"></div>
-            <div style="background-color: var(--text); height: 1rem; flex: 1 1 0"></div>
-        </div>
     </div>
 </template>
 

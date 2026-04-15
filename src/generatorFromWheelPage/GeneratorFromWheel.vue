@@ -192,7 +192,7 @@ function moveDependent(dH: number) {
     inputLightH.value = (inputLightH.value + dH + 360) % 360;
 }
 
-const show2Circles = computed(() => {
+const showAtLeast2Circles = computed(() => {
     return typeOfScheme.value != 'mono';
 });
 const show3Circles = computed(() => {
@@ -301,7 +301,7 @@ const baseH = computed({
                 <div class="color-wheel-square-reverse">
                     <button
                         @click="lockSymmetry = !lockSymmetry"
-                        v-if="show2Circles && !(typeOfScheme == 'gradient')"
+                        v-if="showAtLeast2Circles && !(typeOfScheme == 'gradient')"
                         :title="`${lockSymmetry ? 'выключить' : 'включить'} блокировку углов`"
                     >
                         <IconLockOff v-if="!lockSymmetry" />
@@ -357,7 +357,7 @@ const baseH = computed({
                     <CircleInput
                         :coords="accentCircle"
                         accent
-                        title="акцентный тон"
+                        :title="showAtLeast2Circles ? 'акцентный тон' : 'тон схемы'"
                         @drag-start="(e) => dragstart(accentCircle, e)"
                     />
                     <CircleInput
@@ -368,9 +368,9 @@ const baseH = computed({
                     />
                     <CircleInput
                         :coords="darkCircle"
-                        title="темные"
+                        :title="show3Circles ? 'темные' : 'фоновые'"
                         @drag-start="(e) => dragstart(darkCircle, e)"
-                        v-if="show2Circles"
+                        v-if="showAtLeast2Circles"
                     />
                     <circle
                         :r="(inputAccentC * WHEEL_SVG_WIDTH * SCALE) / 100"

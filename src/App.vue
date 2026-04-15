@@ -4,12 +4,11 @@ import chroma from 'chroma-js';
 import { computed, provide, ref, watch } from 'vue';
 import IconTriad from './assets/icons/colorSchemes/IconTriad.vue';
 import IconDarkTheme from './assets/icons/IconDarkTheme.vue';
-import IconFeedback from './assets/icons/IconFeedback.vue';
 import IconImage from './assets/icons/IconImage.vue';
-import IconInfo from './assets/icons/IconInfo.vue';
 import IconLightTheme from './assets/icons/IconLightTheme.vue';
 import IconMenu from './assets/icons/IconMenu.vue';
 import IconSettings from './assets/icons/IconSettings.vue';
+import type { ColorFormat } from './model/myTypes';
 
 const showQuantityOnPlots = ref(true);
 provide('showQuantityOnPlots', showQuantityOnPlots);
@@ -23,8 +22,8 @@ provide('showPlots', showPlots);
 const alwaysShowColorStrings = ref(false);
 provide('alwaysShowColorStrings', alwaysShowColorStrings);
 
-const showLandings = ref(false);
-provide('showLandings', showLandings);
+const colorFormatEdit = ref<ColorFormat>('oklch');
+provide('colorFormatEdit', colorFormatEdit);
 
 const bgColor = ref('#ffffff');
 const themeIsLight = computed(() => {
@@ -60,8 +59,14 @@ const showMenu = ref(false);
                     <IconMenu width="24px" height="auto" />
                 </button>
                 <div v-if="showMenu" class="popup left-0">
-                    <p><IconFeedback />Сообщить об ошибке или предложить улучшение</p>
-                    <p><IconInfo />Как работает генератор</p>
+                    <a
+                        href="https://forms.yandex.ru/u/69be9a001f1eb598d3b3d764"
+                        referrerpolicy="no-referrer"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        >Сообщить об ошибке или предложить улучшение</a
+                    >
+                    <a href="">Как работает генератор</a>
                 </div>
             </div>
 
@@ -86,26 +91,24 @@ const showMenu = ref(false);
                     </button>
 
                     <div v-if="showSettings" class="popup right-0">
-                        <div>
-                            <input type="checkbox" v-model="showPlots" id="showPlots" />
-                            <label for="showPlots">показывать графики</label>
-                        </div>
-                        <div>
-                            <input
-                                type="checkbox"
-                                v-model="showWireframeOnPlots"
-                                id="showWireframeOnPlots"
-                            />
-                            <label for="showWireframeOnPlots"
-                                >показывать границы цветового пространства на графиках</label
-                            >
-                        </div>
-                        <div>
-                            <input type="checkbox" v-model="showQuantityOnPlots" id="showQ" />
-                            <label for="showQ">показывать количество на графиках</label>
-                        </div>
-                        <div>
-                            <input type="color" v-model="bgColor" />
+                        <div class="col">
+                            <p>Редактирование цветов:</p>
+                            <div class="choice-chips">
+                                <button
+                                    class="choice-chip"
+                                    :class="{ current: colorFormatEdit == 'hsb' }"
+                                    @click="colorFormatEdit = 'hsb'"
+                                >
+                                    HSB
+                                </button>
+                                <button
+                                    class="choice-chip"
+                                    :class="{ current: colorFormatEdit == 'oklch' }"
+                                    @click="colorFormatEdit = 'oklch'"
+                                >
+                                    OKLCH
+                                </button>
+                            </div>
                         </div>
                         <div>
                             <input
@@ -113,11 +116,25 @@ const showMenu = ref(false);
                                 v-model="alwaysShowColorStrings"
                                 id="alwaysShowColorStrings"
                             />
-                            <label for="alwaysShowColorStrings">показывать коды цветов</label>
+                            <label for="alwaysShowColorStrings">Показывать коды цветов</label>
                         </div>
                         <div>
-                            <input type="checkbox" v-model="showLandings" id="showLandings" />
-                            <label for="showLandings">показывать примеры лендингов</label>
+                            <input type="checkbox" v-model="showPlots" id="showPlots" />
+                            <label for="showPlots">Показывать графики</label>
+                        </div>
+                        <div v-if="showPlots">
+                            <input
+                                type="checkbox"
+                                v-model="showWireframeOnPlots"
+                                id="showWireframeOnPlots"
+                            />
+                            <label for="showWireframeOnPlots"
+                                >Показывать границы цветового пространства на графиках</label
+                            >
+                        </div>
+                        <div v-if="showPlots">
+                            <input type="checkbox" v-model="showQuantityOnPlots" id="showQ" />
+                            <label for="showQ">Показывать количество на графиках</label>
                         </div>
                     </div>
                 </div>

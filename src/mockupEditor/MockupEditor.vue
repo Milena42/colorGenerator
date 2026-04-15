@@ -3,6 +3,7 @@ import IconCopy from '@/assets/icons/IconCopy.vue';
 import { type ColorFormat, type MockupColors } from '@/model/myTypes';
 import { defineAsyncComponent, inject, provide, ref, watchEffect, type Ref } from 'vue';
 import MockupPreview, { getCssColors } from './MockupPreview.vue';
+import MockupPreviewGeometry from './MockupPreviewGeometry.vue';
 import MockupPreviewLanding from './MockupPreviewLanding.vue';
 import PaletteOutput from './PaletteOutput.vue';
 
@@ -26,9 +27,6 @@ const showPlots: Ref<boolean> = inject('showPlots') ?? ref(false);
 const colorFormatCopy = ref<ColorFormat>('rgbHex');
 provide('colorFormatCopy', colorFormatCopy);
 
-const colorFormatEdit = ref<ColorFormat>('oklch');
-provide('colorFormatEdit', colorFormatEdit);
-
 async function copyAll() {
     const stylesToCopy = `.dark {
 ${getCssColors(colorsDarkLocal.value, colorFormatCopy.value)}
@@ -49,7 +47,7 @@ ${getCssColors(colorsLightLocal.value, colorFormatCopy.value)}
     //alert('цвет скопирован');//TODO сообщение?
 }
 
-const showLandings = inject<Ref<boolean>>('showLandings');
+const mockupType = ref<'elementsUI' | 'landingsMixed' | 'landings' | 'geometry'>('elementsUI');
 </script>
 
 <template>
@@ -58,17 +56,31 @@ const showLandings = inject<Ref<boolean>>('showLandings');
             <div class="choice-chips">
                 <button
                     class="choice-chip"
-                    :class="{ current: colorFormatEdit == 'hsb' }"
-                    @click="colorFormatEdit = 'hsb'"
+                    :class="{ current: mockupType == 'elementsUI' }"
+                    @click="mockupType = 'elementsUI'"
                 >
-                    HSB
+                    Элементы интерфейса
                 </button>
                 <button
                     class="choice-chip"
-                    :class="{ current: colorFormatEdit == 'oklch' }"
-                    @click="colorFormatEdit = 'oklch'"
+                    :class="{ current: mockupType == 'landingsMixed' }"
+                    @click="mockupType = 'landingsMixed'"
                 >
-                    OKLCH
+                    Лендинги
+                </button>
+                <button
+                    class="choice-chip"
+                    :class="{ current: mockupType == 'landings' }"
+                    @click="mockupType = 'landings'"
+                >
+                    Лендинги 2
+                </button>
+                <button
+                    class="choice-chip"
+                    :class="{ current: mockupType == 'geometry' }"
+                    @click="mockupType = 'geometry'"
+                >
+                    Геометрия
                 </button>
             </div>
             <div class="choice-chips">
@@ -76,6 +88,7 @@ const showLandings = inject<Ref<boolean>>('showLandings');
                     class="choice-chip"
                     :class="{ current: colorFormatCopy == 'rgbHex' }"
                     @click="colorFormatCopy = 'rgbHex'"
+                    :title="colorFormatCopy == 'rgbHex' ? '' : 'выбрать RGB для кодов цветов'"
                 >
                     RGB (hex)
                 </button>
@@ -83,57 +96,76 @@ const showLandings = inject<Ref<boolean>>('showLandings');
                     class="choice-chip"
                     :class="{ current: colorFormatCopy == 'oklch' }"
                     @click="colorFormatCopy = 'oklch'"
+                    :title="colorFormatCopy == 'oklch' ? '' : 'выбрать OKLCH для кодов цветов'"
                 >
                     OKLCH
                 </button>
             </div>
-            <button @click="copyAll">
+            <button @click="copyAll" title="копировать палитру в CSS">
                 <IconCopy />
             </button>
         </div>
         <div class="mockup-editor">
             <div class="row">
                 <PaletteOutput v-model="colorsDarkLocal" />
-                <MockupPreview :colors="colorsDarkLocal" />
+                <MockupPreview v-if="mockupType == 'elementsUI'" :colors="colorsDarkLocal" />
+
+                <MockupPreviewLanding
+                    v-if="mockupType == 'landingsMixed'"
+                    :colorsDark="colorsDarkLocal"
+                    :colorsLight="colorsLightLocal"
+                    theme="mixed-dark"
+                />
+                <MockupPreviewLanding
+                    v-if="mockupType == 'landings'"
+                    :colorsDark="colorsDarkLocal"
+                    :colorsLight="colorsLightLocal"
+                    theme="dark"
+                />
+                <MockupPreviewGeometry v-if="mockupType == 'geometry'" :colors="colorsDarkLocal" />
             </div>
+
             <div class="row">
-                <MockupPreview :colors="colorsLightLocal" />
+                <MockupPreviewGeometry v-if="mockupType == 'geometry'" :colors="colorsLightLocal" />
+                <MockupPreviewLanding
+                    v-if="mockupType == 'landingsMixed'"
+                    :colorsDark="colorsDarkLocal"
+                    :colorsLight="colorsLightLocal"
+                    theme="mixed-light"
+                />
+                <MockupPreviewLanding
+                    v-if="mockupType == 'landings'"
+                    :colorsDark="colorsDarkLocal"
+                    :colorsLight="colorsLightLocal"
+                    theme="light"
+                />
+
+                <MockupPreview v-if="mockupType == 'elementsUI'" :colors="colorsLightLocal" />
                 <PaletteOutput v-model="colorsLightLocal" />
             </div>
         </div>
-        <div v-if="showLandings" class="mockup-landings">
-            <MockupPreviewLanding
-                :colorsDark="colorsDarkLocal"
-                :colorsLight="colorsLightLocal"
-                theme="mixed-dark"
-            />
-            <MockupPreviewLanding
-                :colorsDark="colorsDarkLocal"
-                :colorsLight="colorsLightLocal"
-                theme="mixed-light"
-            />
-            <MockupPreviewLanding
-                :colorsDark="colorsDarkLocal"
-                :colorsLight="colorsLightLocal"
-                theme="dark"
-            />
-            <MockupPreviewLanding
-                :colorsDark="colorsDarkLocal"
-                :colorsLight="colorsLightLocal"
-                theme="light"
-            />
-        </div>
+
         <div v-if="showPlots" class="row">
-            <ColorModels3d :k="0.003" :data="colorsDarkLocal" :totalQ="7" wireframe :size="500" />
-            <ColorModels3d
-                :k="0.003"
-                :data="colorsDarkLocal"
-                :totalQ="7"
-                wireframe
-                :size="500"
-                hsl
-            />
-            <ColorModels3d :k="0.003" :data="colorsLightLocal" :totalQ="7" wireframe :size="500" />
+            <figure>
+                <ColorModels3d
+                    :k="0.003"
+                    :data="colorsDarkLocal"
+                    :totalQ="7"
+                    wireframe
+                    :size="500"
+                />
+                <figcaption>Темная тема</figcaption>
+            </figure>
+            <figure>
+                <ColorModels3d
+                    :k="0.003"
+                    :data="colorsLightLocal"
+                    :totalQ="7"
+                    wireframe
+                    :size="500"
+                />
+                <figcaption>Светлая тема</figcaption>
+            </figure>
         </div>
     </div>
 </template>

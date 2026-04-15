@@ -195,5 +195,6 @@ onUnmounted(destroy);
     <div
         ref="container"
         :style="{ height: `${props.size ?? 400}px`, width: `${props.size ?? 400}px` }"
+        class="model3D"
     ></div>
 </template>

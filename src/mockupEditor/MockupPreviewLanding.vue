@@ -139,6 +139,7 @@ const secondOverlays = computed(() => props.theme == 'dark' || props.theme == 'l
 
 <style scoped>
 .mockup {
+    margin: 0.5rem;
     width: 50em;
 
     font-size: 0.4rem;

@@ -13,7 +13,7 @@ const imgMap = ref<ColorMap>();
 const totalPixels = ref(1);
 
 const chromaTorusMap = shallowRef(new Map<string, Color>());
-const filteredMap = shallowRef(new Map<string, Color>());
+
 const mapsClustered = shallowRef<Map<string, Color>[]>([]);
 
 const polarHistogramData1 = ref<number[]>([]);
@@ -48,7 +48,6 @@ function generate() {
     polarHistogramData2.value = debugInfo.clusteringDebug.smoothedCircularHistogram ?? [];
     polarHistogramCircle.value = debugInfo.clusteringDebug.minQForHistogram ?? 0;
     polarHistogramBorders.value = debugInfo.clusteringDebug.borders ?? [];
-    filteredMap.value = new Map(debugInfo.clusteringDebug.filteredPoints);
 }
 
 const showPlots: Ref<boolean> = inject('showPlots') ?? ref(false);
@@ -65,29 +64,34 @@ const showPlots: Ref<boolean> = inject('showPlots') ?? ref(false);
                 v-if="imgMap?.totalQ"
             />
         </div>
-        <div v-if="showPlots && imgMap?.totalQ" class="col">
+        <div v-if="showPlots && imgMap?.totalQ" class="col plots">
             <div class="row">
-                <ColorModels3d :k="0.01" :data="imgMap.data" :totalQ="totalPixels" wireframe />
-                <ColorModels3d
-                    :k="0.01"
-                    :data="chromaTorusMap"
-                    :totalQ="totalPixels"
-                    style="border: 1px solid red"
-                    wireframe
-                />
-                <ColorModels3d
-                    :k="0.01"
-                    :data="filteredMap"
-                    :totalQ="totalPixels"
-                    style="border: 1px solid red"
-                    wireframe
-                />
+                <figure>
+                    <ColorModels3d :k="0.01" :data="imgMap.data" :totalQ="totalPixels" wireframe />
+                    <figcaption>Все цвета изображения</figcaption>
+                </figure>
+                <figure>
+                    <ColorModels3d
+                        :k="0.01"
+                        :data="chromaTorusMap"
+                        :totalQ="totalPixels"
+                        wireframe
+                    />
+                    <figcaption>Насыщенные цвета</figcaption>
+                </figure>
+                <figure>
+                    <ColorModels3d :k="0.01" :data="graysMap" :totalQ="totalPixels" wireframe />
+                    <figcaption>Ненасыщенные цвета</figcaption>
+                </figure>
             </div>
 
-            <ArrayOfPlots :maps="mapsClustered" :totalQ="totalPixels" />
-            <div class="row">
-                <ColorModels3d :k="0.01" :data="graysMap" :totalQ="totalPixels" wireframe />
-            </div>
+            <p v-if="mapsClustered.length > 1">Кластеры насыщенных цветов:</p>
+            <ArrayOfPlots
+                v-if="mapsClustered.length > 1"
+                :maps="mapsClustered"
+                :totalQ="totalPixels"
+                class="clusters"
+            />
         </div>
     </div>
 </template>
@@ -103,6 +107,27 @@ const showPlots: Ref<boolean> = inject('showPlots') ?? ref(false);
     .dropbox {
         flex: 5 1 0;
         align-self: stretch;
+    }
+}
+
+.plots {
+    margin: 6rem 1rem;
+    align-items: stretch;
+    gap: 4rem;
+
+    p {
+        text-align: center;
+    }
+
+    > div {
+        justify-content: space-around;
+        gap: 2rem;
+    }
+
+    .clusters {
+        flex-flow: row wrap;
+        gap: 2rem;
+        justify-content: center;
     }
 }
 </style>

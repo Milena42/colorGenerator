@@ -8,7 +8,7 @@ import IconImage from './assets/icons/IconImage.vue';
 import IconLightTheme from './assets/icons/IconLightTheme.vue';
 import IconMenu from './assets/icons/IconMenu.vue';
 import IconSettings from './assets/icons/IconSettings.vue';
-import type { ColorFormat } from './model/myTypes';
+import type { ColorFormat } from './generator/common';
 
 const showQuantityOnPlots = ref(true);
 provide('showQuantityOnPlots', showQuantityOnPlots);

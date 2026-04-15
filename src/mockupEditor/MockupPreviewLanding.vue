@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import type { MockupColors } from '@/model/myTypes';
+import { getCssColors, type MockupColors } from '@/generator/common';
 import { computed } from 'vue';
-import { getCssColors } from './MockupPreview.vue';
 
 const props = defineProps<{
     colorsLight: MockupColors;

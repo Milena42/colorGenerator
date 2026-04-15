@@ -6,11 +6,12 @@ import IconTriad from '@/assets/icons/colorSchemes/IconTriad.vue';
 import IconLockOff from '@/assets/icons/IconLockOff.vue';
 import IconLockOn from '@/assets/icons/IconLockOn.vue';
 import IconSwap from '@/assets/icons/IconSwap.vue';
+import { type MockupColors } from '@/generator/common';
+import { generateFromWheel, type SchemeType } from '@/generator/generatorFromWheelEngine';
+import { darkTheme, lightTheme, maxCAccent, maxCBg } from '@/generator/themesExample';
 import InputColorHString from '@/inputColor/InputColorHString.vue';
 import InputNumber from '@/InputNumber.vue';
 import MockupEditor from '@/mockupEditor/MockupEditor.vue';
-import { type MockupColors } from '@/model/myTypes';
-import { darkTheme, lightTheme, maxCAccent, maxCBg } from '@/model/themes';
 import { vOnClickOutside } from '@vueuse/components';
 import { computed, reactive, ref, watch } from 'vue';
 import ArcShortest from './ArcShortest.vue';
@@ -20,7 +21,6 @@ import CircleInput, {
     SCALE,
     WHEEL_SVG_WIDTH,
 } from './CircleInput.vue';
-import { generateFromWheel, type SchemeType } from './generatorFromWheelEngine';
 
 const generatedLight = ref<MockupColors>({});
 const generatedDark = ref<MockupColors>({});

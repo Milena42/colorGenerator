@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Color } from '@/model/myTypes';
+import { Color } from '@/generator/common';
 import chroma from 'chroma-js';
 import { computed } from 'vue';
 import InputRangeColor from './InputRangeColor.vue';

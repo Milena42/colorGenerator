@@ -1,4 +1,4 @@
-import type { Theme } from './myTypes';
+import type { Theme } from './common';
 
 export const maxCBg = 5;
 export const maxCAccent = 15;
@@ -15,14 +15,17 @@ export const darkTheme: Theme = {
     accentLarge: {
         l: 53,
         cMax: 15,
+        isAccent: true,
     },
     accentSmall: {
         l: 80,
         cMax: 15,
+        isAccent: true,
     },
     accentBright: {
         l: 88,
         cMax: 10,
+        isAccent: true,
     },
     text: {
         l: 98,
@@ -46,14 +49,17 @@ export const lightTheme: Theme = {
     accentLarge: {
         l: 53,
         cMax: 15,
+        isAccent: true,
     },
     accentSmall: {
         l: 38,
         cMax: 18,
+        isAccent: true,
     },
     accentBright: {
         l: 25,
         cMax: 10,
+        isAccent: true,
     },
     text: {
         l: 18,

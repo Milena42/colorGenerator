@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Color } from '@/model/myTypes';
+import type { Color } from '@/generator/common';
 import { defineAsyncComponent } from 'vue';
 
 const ColorModels3d = defineAsyncComponent(() => import('@/plots/ColorModels3d.vue'));

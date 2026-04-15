@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import IconCopy from '@/assets/icons/IconCopy.vue';
-import { type ColorFormat, type MockupColors } from '@/model/myTypes';
+import { getCssColors, type ColorFormat, type MockupColors } from '@/generator/common';
 import { defineAsyncComponent, inject, provide, ref, watchEffect, type Ref } from 'vue';
-import MockupPreview, { getCssColors } from './MockupPreview.vue';
 import MockupPreviewGeometry from './MockupPreviewGeometry.vue';
 import MockupPreviewLanding from './MockupPreviewLanding.vue';
 import PaletteOutput from './PaletteOutput.vue';

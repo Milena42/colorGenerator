@@ -1,8 +1,12 @@
 <script setup lang="ts">
 import chroma from 'chroma-js';
 import { computed, reactive, ref, watch } from 'vue';
-import { round } from './InputColor.vue';
+
 import InputRangeColor from './InputRangeColor.vue';
+
+function round(n: number) {
+    return parseFloat(n.toFixed(2));
+}
 
 const color = defineModel<string>({ required: true });
 

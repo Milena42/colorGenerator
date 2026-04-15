@@ -1,11 +1,11 @@
 <script setup lang="ts">
+import { Color, type ColorMap, type MockupColors } from '@/generator/common';
+import { generateLRangeBased } from '@/generator/generatorFromPictureEngine';
+import { darkTheme, lightTheme } from '@/generator/themesExample';
 import MockupEditor from '@/mockupEditor/MockupEditor.vue';
-import { Color, type ColorMap, type MockupColors } from '@/model/myTypes.ts';
-import { darkTheme, lightTheme } from '@/model/themes';
 import ArrayOfPlots from '@/plots/ArrayOfPlots.vue';
 import { defineAsyncComponent, inject, ref, shallowRef, type Ref } from 'vue';
 import InputPicture from './InputPicture.vue';
-import { generateLRangeBased } from './generatorFromPictureEngine';
 
 const ColorModels3d = defineAsyncComponent(() => import('@/plots/ColorModels3d.vue'));
 

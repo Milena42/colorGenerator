@@ -1,4 +1,4 @@
-import { Color, colorRoles, type MockupColors, type Theme } from '@/model/myTypes';
+import { Color, type MockupColors, type Theme } from '@/generator/common';
 import { polarFromCartesian } from '@/utilities/math';
 import { PolynomialRegression } from 'ml-regression';
 
@@ -255,8 +255,8 @@ export function generateLRangeBased(
 
     themes.forEach((themeRules, name) => {
         const generatedTheme: MockupColors = {};
-        colorRoles.forEach((key) => {
-            const { l, cMax } = themeRules[key];
+        Object.entries(themeRules).forEach(([key, rule]) => {
+            const { l, cMax } = rule;
 
             const { xFromL, yFromL } = getLFunction(l);
             const x = xFromL.predict(l);

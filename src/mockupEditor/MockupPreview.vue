@@ -1,24 +1,9 @@
-<script lang="ts">
+<script setup lang="ts">
 import IconHeart from '@/assets/icons/IconHeart.vue';
 import IconMenu from '@/assets/icons/IconMenu.vue';
 import IconPlus from '@/assets/icons/IconPlus.vue';
 import IconStar from '@/assets/icons/IconStar.vue';
-import { getColorString } from '@/inputColor/InputColor.vue';
-
-export function getCssColors(colors: MockupColors, format: ColorFormat) {
-    return (
-        Object.entries(colors)
-            .map(([role, color]) => {
-                const colorString = getColorString(color, format);
-                return `--${role}: ${colorString}`;
-            })
-            .join(';\n') + ';'
-    );
-}
-</script>
-
-<script setup lang="ts">
-import type { ColorFormat, MockupColors } from '@/model/myTypes';
+import { getCssColors, type MockupColors } from '@/generator/common';
 import { computed } from 'vue';
 
 const props = defineProps<{

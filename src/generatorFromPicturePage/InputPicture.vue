@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import IconClose from '@/assets/icons/IconClose.vue';
-import { Color, type ColorMap } from '@/model/myTypes';
+import { Color, type ColorMap } from '@/generator/common';
 import chroma from 'chroma-js';
 import { onMounted, ref } from 'vue';
 

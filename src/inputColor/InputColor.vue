@@ -1,24 +1,7 @@
-<script lang="ts">
-export function round(n: number) {
-    return parseFloat(n.toFixed(2));
-}
-
-export function getColorString(color: Color, format: ColorFormat) {
-    switch (format) {
-        case 'oklch':
-            const { l, c, h } = color;
-            return `oklch(${l}% ${(c / 100).toFixed(2)} ${h.toFixed(2)})`;
-        case 'rgbHex':
-        default:
-            return color.adjustForRGB();
-    }
-}
-</script>
-
 <script setup lang="ts">
 import IconCopy from '@/assets/icons/IconCopy.vue';
 import IconTune from '@/assets/icons/IconTune.vue';
-import type { Color, ColorFormat } from '@/model/myTypes';
+import { getColorString, type Color, type ColorFormat } from '@/generator/common';
 import { vOnClickOutside } from '@vueuse/components';
 import chroma from 'chroma-js';
 import { computed, inject, ref, type Ref } from 'vue';

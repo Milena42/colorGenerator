@@ -91,31 +91,40 @@ export class Color {
     }
 }
 
-export const colorRoles = [
-    'bg',
-    'overlay',
-    'accentLarge',
-    'accentSmall',
-    'text',
-    'textOnAccent',
-    'accentBright',
-];
-export const accentColorRoles = ['accentLarge', 'accentSmall', 'accentBright'];
-export const bgColorRoles = ['bg', 'overlay', 'text', 'textOnAccent'];
-export type ColorRole = (typeof colorRoles)[number];
-
-export type MockupColors = Record<ColorRole, Color>;
-
 export interface ColorRoleConstraints {
     l: number;
     cMax: number;
+    isAccent?: boolean;
 }
 
-export type Theme = Record<ColorRole, ColorRoleConstraints>;
-
-export type ColorFormat = 'rgbHex' | 'hsb' | 'oklch';
+export type Theme = Record<string, ColorRoleConstraints>;
+export type MockupColors = Record<keyof Theme, Color>;
 
 export type ColorMap = {
     totalQ: number;
     data: Map<string, Color>;
 };
+
+export type ColorFormat = 'rgbHex' | 'hsb' | 'oklch';
+
+export function getColorString(color: Color, format: ColorFormat) {
+    switch (format) {
+        case 'oklch':
+            const { l, c, h } = color;
+            return `oklch(${l}% ${(c / 100).toFixed(2)} ${h.toFixed(2)})`;
+        case 'rgbHex':
+        default:
+            return color.adjustForRGB();
+    }
+}
+
+export function getCssColors(colors: MockupColors, format: ColorFormat) {
+    return (
+        Object.entries(colors)
+            .map(([role, color]) => {
+                const colorString = getColorString(color, format);
+                return `--${role}: ${colorString}`;
+            })
+            .join(';\n') + ';'
+    );
+}

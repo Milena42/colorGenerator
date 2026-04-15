@@ -1,11 +1,5 @@
-import {
-    accentColorRoles,
-    bgColorRoles,
-    Color,
-    type MockupColors,
-    type Theme,
-} from '@/model/myTypes';
-import { maxCAccent, maxCBg } from '@/model/themes';
+import { Color, type MockupColors, type Theme } from '@/generator/common';
+import { maxCAccent, maxCBg } from '@/generator/themesExample';
 import { hMinus } from '@/utilities/math';
 
 type HFromL = (l: number) => number;
@@ -46,31 +40,22 @@ export function generateFromWheel(
 
     themes.forEach((themeRules, name) => {
         const generatedTheme: MockupColors = {};
-        accentColorRoles.forEach((key) => {
-            const { l, cMax } = themeRules[key];
+
+        Object.entries(themeRules).forEach(([key, rule]) => {
+            const { l, cMax, isAccent } = rule;
 
             const h = schemeRulesFromInputs[schemeType](l);
 
-            const c = (cMax * accentC) / maxCAccent;
+            const c = isAccent ? (cMax * accentC) / maxCAccent : (cMax * bgC) / maxCBg;
 
             const elem = new Color(l, { c, h });
             elem.adjustForRGB();
 
             generatedTheme[key] = elem;
         });
-        bgColorRoles.forEach((key) => {
-            const { l, cMax } = themeRules[key];
 
-            const h = schemeRulesFromInputs[schemeType](l);
-
-            const c = (cMax * bgC) / maxCBg;
-
-            const elem = new Color(l, { c, h });
-            elem.adjustForRGB();
-
-            generatedTheme[key] = elem;
-        });
         generatedThemes.set(name, generatedTheme);
     });
+
     return generatedThemes;
 }

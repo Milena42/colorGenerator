@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Color, MockupColors } from '@/model/myTypes';
+import type { Color, MockupColors } from '@/generator/common';
 import { cartesianFromPolar } from '@/utilities/math';
 import chroma from 'chroma-js';
 import {

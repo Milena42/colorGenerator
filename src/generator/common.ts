@@ -77,7 +77,7 @@ export class Color {
             if (rgb.clipped()) {
                 exist = false;
                 if (this._c == 0) {
-                    this.l--;
+                    this.l -= 0.01;
                 } else {
                     this._c--; //TODO мб уменьшить шаг, см производительность
                     if (this._c < 0) this._c = 0;

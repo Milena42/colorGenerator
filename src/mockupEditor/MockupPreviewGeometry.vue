@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { getCssColors, type MockupColors } from '@/generator/common';
+import type { ColorRole } from '@/generator/themesExample';
 import { computed } from 'vue';
 
 const props = defineProps<{
-    colors: MockupColors;
+    colors: MockupColors<ColorRole>;
 }>();
 
 const cssColors = computed(() => getCssColors(props.colors, 'rgbHex'));

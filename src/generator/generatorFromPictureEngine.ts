@@ -190,10 +190,12 @@ function getLFunction(l: number) {
     return range!.function!;
 }
 
-export function generateLRangeBased(
+export function generateLRangeBased<T extends string, R extends string>(
     imgMap: Map<string, Color>,
     totalPixels: number,
-    themes: Map<string, Theme>,
+    themeKeys: readonly T[],
+    roleKeys: readonly R[],
+    themes: Record<T, Theme<R>>,
 ) {
     const chromaLimit = 8;
     const sufficientNumber = 0.005 * totalPixels;
@@ -251,12 +253,13 @@ export function generateLRangeBased(
         } else lRange.function = sectors[i];
     });
 
-    const generatedThemes = new Map<string, MockupColors>();
+    const generatedThemes: Record<T, MockupColors<R>> = Object.create(null);
+    themeKeys.forEach((themeName) => {
+        const themeRules = themes[themeName];
 
-    themes.forEach((themeRules, name) => {
-        const generatedTheme: MockupColors = {};
-        Object.entries(themeRules).forEach(([key, rule]) => {
-            const { l, cMax } = rule;
+        const generatedTheme: MockupColors<R> = Object.create(null);
+        roleKeys.forEach((roleName) => {
+            const { l, cMax } = themeRules[roleName];
 
             const { xFromL, yFromL } = getLFunction(l);
             const x = xFromL.predict(l);
@@ -268,9 +271,10 @@ export function generateLRangeBased(
             const elem = new Color(l, { c, h });
             elem.adjustForRGB();
 
-            generatedTheme[key] = elem;
+            generatedTheme[roleName] = elem;
         });
-        generatedThemes.set(name, generatedTheme);
+
+        generatedThemes[themeName] = generatedTheme;
     });
 
     return { generatedThemes, debugInfo: { grays, chromaTorus, mapsClustered, clusteringDebug } };

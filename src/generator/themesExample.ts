@@ -3,7 +3,19 @@ import type { Theme } from './common';
 export const maxCBg = 5;
 export const maxCAccent = 15;
 
-export const darkTheme: Theme = {
+export const colorRoles = [
+    'bg',
+    'overlay',
+    'accentLarge',
+    'accentSmall',
+    'accentBright',
+    'text',
+    'textOnAccent',
+] as const;
+
+export type ColorRole = (typeof colorRoles)[number];
+
+export const darkTheme: Theme<ColorRole> = {
     bg: {
         l: 20,
         cMax: 2,
@@ -37,7 +49,7 @@ export const darkTheme: Theme = {
     },
 };
 
-export const lightTheme: Theme = {
+export const lightTheme: Theme<ColorRole> = {
     bg: {
         l: 97,
         cMax: 2,

@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import IconCopy from '@/assets/icons/IconCopy.vue';
 import { getCssColors, type ColorFormat, type MockupColors } from '@/generator/common';
-import { defineAsyncComponent, inject, provide, ref, watchEffect, type Ref } from 'vue';
+import type { ColorRole } from '@/generator/themesExample';
+import { defineAsyncComponent, inject, provide, ref, shallowRef, watch, type Ref } from 'vue';
 import MockupPreview from './MockupPreview.vue';
 import MockupPreviewGeometry from './MockupPreviewGeometry.vue';
 import MockupPreviewLanding from './MockupPreviewLanding.vue';
@@ -10,14 +11,14 @@ import PaletteOutput from './PaletteOutput.vue';
 const ColorModels3d = defineAsyncComponent(() => import('@/plots/ColorModels3d.vue'));
 
 const props = defineProps<{
-    colorsLight: MockupColors;
-    colorsDark: MockupColors;
+    colorsLight: MockupColors<ColorRole>;
+    colorsDark: MockupColors<ColorRole>;
 }>();
 
-const colorsLightLocal = ref<MockupColors>({});
-const colorsDarkLocal = ref<MockupColors>({});
+const colorsLightLocal = shallowRef(props.colorsLight);
+const colorsDarkLocal = shallowRef(props.colorsDark);
 
-watchEffect(() => {
+watch([() => props.colorsLight, () => props.colorsDark], () => {
     colorsLightLocal.value = props.colorsLight;
     colorsDarkLocal.value = props.colorsDark;
 });

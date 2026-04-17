@@ -6,14 +6,21 @@ import IconTriad from '@/assets/icons/colorSchemes/IconTriad.vue';
 import IconLockOff from '@/assets/icons/IconLockOff.vue';
 import IconLockOn from '@/assets/icons/IconLockOn.vue';
 import IconSwap from '@/assets/icons/IconSwap.vue';
-import { type MockupColors } from '@/generator/common';
+import { type MockupColors, type Theme } from '@/generator/common';
 import { generateFromWheel, type SchemeType } from '@/generator/generatorFromWheelEngine';
-import { darkTheme, lightTheme, maxCAccent, maxCBg } from '@/generator/themesExample';
+import {
+    colorRoles,
+    darkTheme,
+    lightTheme,
+    maxCAccent,
+    maxCBg,
+    type ColorRole,
+} from '@/generator/themesExample';
 import InputColorHString from '@/inputColor/InputColorHString.vue';
 import InputNumber from '@/InputNumber.vue';
 import MockupEditor from '@/mockupEditor/MockupEditor.vue';
 import { vOnClickOutside } from '@vueuse/components';
-import { computed, reactive, ref, watch } from 'vue';
+import { computed, inject, reactive, ref, watch, type Ref } from 'vue';
 import ArcShortest from './ArcShortest.vue';
 import CircleInput, {
     circleObject,
@@ -22,8 +29,8 @@ import CircleInput, {
     WHEEL_SVG_WIDTH,
 } from './CircleInput.vue';
 
-const generatedLight = ref<MockupColors>({});
-const generatedDark = ref<MockupColors>({});
+const generatedLight = ref<MockupColors<ColorRole>>();
+const generatedDark = ref<MockupColors<ColorRole>>();
 
 const accentCircle = reactive(new circleObject(236));
 const lightCircle = reactive(new circleObject(0));
@@ -60,20 +67,22 @@ const inputAccentLargeL = ref<number>(darkTheme.accentLarge.l);
 
 function generate() {
     const generatedThemes = generateFromWheel(
-        new Map([
-            ['dark', darkTheme],
-            ['light', lightTheme],
-        ]),
         inputAccentC.value,
         inputBgC.value,
         inputAccentH.value,
         inputDarkH.value,
         inputLightH.value,
         typeOfScheme.value,
+        ['dark', 'light'],
+        colorRoles,
+        {
+            dark: darkTheme,
+            light: lightTheme,
+        },
     );
 
-    generatedDark.value = generatedThemes.get('dark') ?? {};
-    generatedLight.value = generatedThemes.get('light') ?? {};
+    generatedDark.value = generatedThemes.dark;
+    generatedLight.value = generatedThemes.light;
 }
 
 watch([inputAccentH, inputDarkH, inputLightH], generate, { immediate: true });
@@ -338,7 +347,6 @@ const baseH = computed({
                     :width="WHEEL_SVG_WIDTH"
                     :height="WHEEL_SVG_WIDTH"
                     class="color-wheel-svg"
-                    ref="svg"
                     xmlns="http://www.w3.org/2000/svg"
                     @mousemove.prevent="mousemove"
                     @mouseup.prevent="dragend"
@@ -396,6 +404,7 @@ const baseH = computed({
                 :colorsLight="generatedLight"
                 :colorsDark="generatedDark"
                 class="editor-view-content"
+                v-if="generatedDark && generatedLight"
             />
         </div>
     </div>

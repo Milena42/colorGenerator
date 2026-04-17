@@ -4,10 +4,11 @@ import IconMenu from '@/assets/icons/IconMenu.vue';
 import IconPlus from '@/assets/icons/IconPlus.vue';
 import IconStar from '@/assets/icons/IconStar.vue';
 import { getCssColors, type MockupColors } from '@/generator/common';
+import type { ColorRole } from '@/generator/themesExample';
 import { computed } from 'vue';
 
 const props = defineProps<{
-    colors: MockupColors;
+    colors: MockupColors<ColorRole>;
 }>();
 
 const cssColors = computed(() => getCssColors(props.colors, 'rgbHex'));

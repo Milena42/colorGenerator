@@ -97,8 +97,8 @@ export interface ColorRoleConstraints {
     isAccent?: boolean;
 }
 
-export type Theme = Record<string, ColorRoleConstraints>;
-export type MockupColors = Record<keyof Theme, Color>;
+export type Theme<T extends string> = Record<T, ColorRoleConstraints>;
+export type MockupColors<T extends string> = Record<T, Color>;
 
 export type ColorMap = {
     totalQ: number;
@@ -118,7 +118,7 @@ export function getColorString(color: Color, format: ColorFormat) {
     }
 }
 
-export function getCssColors(colors: MockupColors, format: ColorFormat) {
+export function getCssColors(colors: MockupColors<string>, format: ColorFormat) {
     return (
         Object.entries(colors)
             .map(([role, color]) => {

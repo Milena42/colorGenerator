@@ -5,14 +5,16 @@ import { hMinus } from '@/utilities/math';
 type HFromL = (l: number) => number;
 export type SchemeType = 'mono' | 'step2' | 'step3' | 'gradient';
 
-export function generateFromWheel(
-    themes: Map<string, Theme>,
+export function generateFromWheel<T extends string, R extends string>(
     accentC: number,
     bgC: number,
     accentH: number,
     darkH: number,
     lightH: number,
     schemeType: SchemeType,
+    themeKeys: readonly T[],
+    roleKeys: readonly R[],
+    themes: Record<T, Theme<R>>,
 ) {
     const schemeRulesFromInputs: Record<SchemeType, HFromL> = {
         mono: () => {
@@ -36,13 +38,13 @@ export function generateFromWheel(
         },
     };
 
-    const generatedThemes = new Map<string, MockupColors>();
+    const generatedThemes: Record<T, MockupColors<R>> = Object.create(null);
+    themeKeys.forEach((themeName) => {
+        const themeRules = themes[themeName];
 
-    themes.forEach((themeRules, name) => {
-        const generatedTheme: MockupColors = {};
-
-        Object.entries(themeRules).forEach(([key, rule]) => {
-            const { l, cMax, isAccent } = rule;
+        const generatedTheme: MockupColors<R> = Object.create(null);
+        roleKeys.forEach((roleName) => {
+            const { l, cMax, isAccent } = themeRules[roleName];
 
             const h = schemeRulesFromInputs[schemeType](l);
 
@@ -51,10 +53,10 @@ export function generateFromWheel(
             const elem = new Color(l, { c, h });
             elem.adjustForRGB();
 
-            generatedTheme[key] = elem;
+            generatedTheme[roleName] = elem;
         });
 
-        generatedThemes.set(name, generatedTheme);
+        generatedThemes[themeName] = generatedTheme;
     });
 
     return generatedThemes;

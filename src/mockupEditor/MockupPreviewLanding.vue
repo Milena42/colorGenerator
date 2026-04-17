@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { getCssColors, type MockupColors } from '@/generator/common';
+import type { ColorRole } from '@/generator/themesExample';
 import { computed } from 'vue';
 
 const props = defineProps<{
-    colorsLight: MockupColors;
-    colorsDark: MockupColors;
+    colorsLight: MockupColors<ColorRole>;
+    colorsDark: MockupColors<ColorRole>;
     theme: 'light' | 'dark' | 'mixed-dark' | 'mixed-light';
 }>();
 

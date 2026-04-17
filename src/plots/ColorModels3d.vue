@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { Color, MockupColors } from '@/generator/common';
+import type { ColorRole } from '@/generator/themesExample';
 import { cartesianFromPolar } from '@/utilities/math';
 import chroma from 'chroma-js';
 import {
@@ -29,7 +30,7 @@ const props = defineProps<{
     wireframe?: boolean;
     size?: number; //TODO графики адаптивить?
     k: number;
-    data: Map<string, Color> | MockupColors;
+    data: Map<string, Color> | MockupColors<ColorRole>;
     totalQ: number;
     hsl?: boolean;
 }>();

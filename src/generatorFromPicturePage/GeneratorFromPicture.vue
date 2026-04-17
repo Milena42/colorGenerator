@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Color, type ColorMap, type MockupColors } from '@/generator/common';
 import { generateLRangeBased } from '@/generator/generatorFromPictureEngine';
-import { darkTheme, lightTheme } from '@/generator/themesExample';
+import { colorRoles, darkTheme, lightTheme, type ColorRole } from '@/generator/themesExample';
 import MockupEditor from '@/mockupEditor/MockupEditor.vue';
 import ArrayOfPlots from '@/plots/ArrayOfPlots.vue';
 import { defineAsyncComponent, inject, ref, shallowRef, type Ref } from 'vue';
@@ -23,8 +23,8 @@ const polarHistogramBorders = ref<number[]>([]);
 
 const graysMap = shallowRef(new Map<string, Color>());
 
-const generatedDark = ref<MockupColors>({});
-const generatedLight = ref<MockupColors>({});
+const generatedDark = ref<MockupColors<ColorRole>>();
+const generatedLight = ref<MockupColors<ColorRole>>();
 
 function generate() {
     if (!imgMap.value) return;
@@ -32,13 +32,15 @@ function generate() {
     const { generatedThemes, debugInfo } = generateLRangeBased(
         imgMap.value.data,
         imgMap.value.totalQ,
-        new Map([
-            ['dark', darkTheme],
-            ['light', lightTheme],
-        ]),
+        ['dark', 'light'],
+        colorRoles,
+        {
+            dark: darkTheme,
+            light: lightTheme,
+        },
     );
-    generatedDark.value = generatedThemes.get('dark') ?? {};
-    generatedLight.value = generatedThemes.get('light') ?? {};
+    generatedDark.value = generatedThemes.dark;
+    generatedLight.value = generatedThemes.light;
 
     mapsClustered.value = debugInfo.mapsClustered;
     graysMap.value = debugInfo.grays;
@@ -61,7 +63,7 @@ const showPlots: Ref<boolean> = inject('showPlots') ?? ref(false);
                 class="grow"
                 :colorsDark="generatedDark"
                 :colorsLight="generatedLight"
-                v-if="imgMap?.totalQ"
+                v-if="imgMap?.totalQ && generatedDark && generatedLight"
             />
         </div>
         <div v-if="showPlots && imgMap?.totalQ" class="col plots">

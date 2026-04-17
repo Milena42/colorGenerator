@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { type MockupColors } from '@/generator/common';
+import type { ColorRole } from '@/generator/themesExample';
 import InputColor from '@/inputColor/InputColor.vue';
 
-const colors = defineModel<MockupColors>({ required: true });
+const colors = defineModel<MockupColors<ColorRole>>({ required: true });
 </script>
 
 <template>

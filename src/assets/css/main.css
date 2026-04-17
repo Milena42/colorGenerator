@@ -92,6 +92,37 @@ input[type='text'] {
     padding: 0.1rem 0.4rem;
 }
 
+input[type='checkbox'] {
+    appearance: none;
+    position: relative;
+
+    flex: 0 0 auto;
+    width: 1em;
+    height: 1em;
+    border-radius: 0.1em;
+
+    background-color: var(--background);
+    border: 1px solid gray;
+
+    &:checked {
+        &::before {
+            visibility: visible;
+        }
+    }
+    &::before {
+        position: absolute;
+        content: '';
+        left: 0.3em;
+        bottom: 0.15em;
+        width: 0.35em;
+        height: 0.8em;
+        border: 1px solid var(--text-color);
+        border-width: 0 2px 2px 0;
+        transform: rotate(45deg);
+        visibility: hidden;
+    }
+}
+
 .choice-chips {
     display: flex;
     flex-flow: row nowrap;
@@ -194,7 +225,7 @@ input {
 
     > div {
         display: flex;
-        align-items: first baseline;
+        align-items: center;
         gap: 0.6rem;
     }
 

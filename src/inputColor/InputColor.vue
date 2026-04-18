@@ -118,7 +118,7 @@ async function copy() {
 
     .color-preview {
         border-radius: 0.3rem;
-        border: 1px solid var(--transparent-pale);
+        border: 1px solid rgba(from var(--text) r g b / 0.2);
         display: flex;
         overflow: hidden;
 

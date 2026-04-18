@@ -101,7 +101,7 @@ function inputFile() {
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 2px solid var(--transparent-pale);
+    border: 2px solid var(--pale);
     border-radius: var(--radius);
 
     position: relative;

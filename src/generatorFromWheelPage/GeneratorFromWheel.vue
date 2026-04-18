@@ -432,7 +432,7 @@ const baseH = computed({
     .editor-view {
         flex: 1 1 0;
         overflow: scroll;
-        border: 2px solid var(--transparent-pale);
+        border: 2px solid var(--pale);
         border-radius: var(--radius);
         align-self: stretch;
         max-height: 100vh;

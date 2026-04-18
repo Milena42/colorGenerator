@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { vOnClickOutside } from '@vueuse/components';
-import chroma from 'chroma-js';
-import { computed, provide, ref, watch } from 'vue';
+import { provide, ref } from 'vue';
 import IconTriad from './assets/icons/colorSchemes/IconTriad.vue';
 import IconDarkTheme from './assets/icons/IconDarkTheme.vue';
 import IconImage from './assets/icons/IconImage.vue';
@@ -25,34 +24,14 @@ provide('alwaysShowColorStrings', alwaysShowColorStrings);
 const colorFormatEdit = ref<ColorFormat>('oklch');
 provide('colorFormatEdit', colorFormatEdit);
 
-const bgColor = ref('#ffffff');
-const themeIsLight = computed(() => {
-    const c = chroma(bgColor.value);
-    const l = c.get('oklch.l');
-    return l > 0.5;
-});
-
 const themeIsDark = ref(false);
-watch(themeIsDark, () => {
-    switch (themeIsDark.value) {
-        case false:
-            bgColor.value = '#ffffff';
-            break;
-        case true:
-            bgColor.value = '#000000';
-    }
-});
 
 const showSettings = ref(false);
 const showMenu = ref(false);
 </script>
 
 <template>
-    <div
-        class="col page"
-        :class="themeIsLight ? 'light' : 'dark'"
-        :style="{ '--background': bgColor }"
-    >
+    <div class="col app-root" :class="themeIsDark ? 'dark' : 'light'">
         <header class="row">
             <div class="relative" v-on-click-outside="() => (showMenu = false)">
                 <button @click="showMenu = !showMenu">
@@ -145,23 +124,13 @@ const showMenu = ref(false);
 </template>
 
 <style scoped>
-.page {
+.app-root {
     padding: 1rem;
     gap: 1rem;
     min-height: 100%;
     width: 100%;
-    color: var(--text-color);
+    color: var(--text);
     background-color: var(--background);
-}
-
-.page.light {
-    --text-color: black;
-    --transparent-overlay: rgba(255, 255, 255, 0.5);
-}
-
-.page.dark {
-    --text-color: white;
-    --transparent-overlay: rgba(0, 0, 0, 0.5);
 }
 
 header {

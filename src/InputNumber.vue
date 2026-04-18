@@ -85,7 +85,7 @@ function increment() {
         border: none;
 
         &:hover {
-            background-color: var(--transparent-pale-2);
+            background-color: var(--accent-pale);
         }
     }
 }

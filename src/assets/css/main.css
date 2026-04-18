@@ -20,19 +20,48 @@ body,
     min-height: 500px;
 }
 
-.page {
-    --transparent-pale-2: rgba(from var(--text-color) r g b / 0.1);
-    --transparent-pale: rgba(from var(--text-color) r g b / 0.2);
-    --transparent-pale-0: rgba(from var(--text-color) r g b / 0.2);
-    --transparent-bright: rgba(from var(--text-color) r g b / 0.6);
-    --fill-color: #808080;
+:root {
     --radius: 0.5rem;
+}
+
+.app-root,
+.app-root.light {
+    --background: white;
+    --text: black;
+
+    --pale: #cccccc;
+
+    --accent-pale: #dbdbdb;
+    --accent-pale-bright: #c5c5c5;
+    --accent: #808080;
+    --accent-small: #666666;
+
+    --line: #353535;
+    --line-large: #5f5f5f;
+
+    --transparent-overlay: rgba(255, 255, 255, 0.5);
+}
+
+.app-root.dark {
+    --background: black;
+    --text: white;
+
+    --pale: #333333;
+
+    --accent-pale: #222222;
+    --accent-pale-bright: #3b3b3b;
+    --accent: #808080;
+    --accent-small: #999999;
+
+    --line: #cacaca;
+    --line-large: #999999;
+
+    --transparent-overlay: rgba(0, 0, 0, 0.5);
 }
 
 .icon-harmony {
     fill: none;
-    --fill: rgba(from var(--text-color) r g b / 0.2);
-    --line: rgba(from var(--text-color) r g b / 0.8);
+    --fill: var(--pale);
 }
 
 body {
@@ -47,7 +76,7 @@ body {
     -webkit-appearance: none;
     appearance: none;
 
-    background: rgba(from var(--text-color) r g b / 0.2);
+    background: var(--pale);
     border: none;
 
     --height: 4px;
@@ -62,7 +91,7 @@ body {
         width: var(--height-thumb);
         height: var(--height-thumb);
         border-radius: calc(var(--height-thumb) / 2);
-        background: var(--fill-color);
+        background: var(--accent);
         border: none;
         cursor: pointer;
         box-sizing: content-box;
@@ -77,7 +106,7 @@ body {
         width: var(--height-thumb);
         height: var(--height-thumb);
         border-radius: calc(var(--height-thumb) / 2);
-        background: var(--fill-color);
+        background: var(--accent);
         border: none;
         cursor: pointer;
         box-sizing: content-box;
@@ -87,7 +116,7 @@ body {
 input[type='number'],
 input[type='text'] {
     border-radius: 0.2rem;
-    border: 1px solid var(--transparent-pale);
+    border: 1px solid var(--pale);
     background: inherit;
     padding: 0.1rem 0.4rem;
 }
@@ -116,7 +145,7 @@ input[type='checkbox'] {
         bottom: 0.15em;
         width: 0.35em;
         height: 0.8em;
-        border: 1px solid var(--text-color);
+        border: 1px solid var(--text);
         border-width: 0 2px 2px 0;
         transform: rotate(45deg);
         visibility: hidden;
@@ -132,7 +161,7 @@ input[type='checkbox'] {
 
 .choice-chip {
     flex: 1 1 0;
-    border: 2px solid var(--transparent-pale);
+    border: 2px solid var(--pale);
     border-radius: var(--radius);
     padding: 0.5rem 0.8rem;
 
@@ -142,13 +171,13 @@ input[type='checkbox'] {
 
     gap: 0.2rem;
 
-    color: var(--text-color);
+    color: var(--text);
     background: none;
     text-decoration: none;
     text-wrap: nowrap;
 
     &:hover:not(.current) {
-        background-color: var(--transparent-pale-2);
+        background-color: var(--accent-pale);
     }
 }
 
@@ -157,7 +186,7 @@ input[type='checkbox'] {
     svg {
         height: 2.5rem;
         width: auto;
-        fill: var(--fill-color);
+        fill: var(--line-large);
     }
     .icon-harmony {
         fill: none;
@@ -166,7 +195,7 @@ input[type='checkbox'] {
 }
 
 .choice-chip.current {
-    border-color: var(--transparent-bright);
+    border-color: var(--accent-small);
 }
 
 button {
@@ -177,15 +206,15 @@ button {
     padding: 0.4rem;
     border-radius: var(--radius);
     border: none;
-    background-color: var(--transparent-pale-2);
-    color: var(--text-color);
+    background-color: var(--accent-pale);
+    color: var(--text);
 
     svg {
-        fill: var(--text-color);
+        fill: var(--text);
     }
 
     &:hover:not(.current) {
-        background-color: var(--transparent-pale-0);
+        background-color: var(--accent-pale-bright);
     }
 }
 
@@ -219,7 +248,7 @@ input {
 
     background-color: var(--background);
     box-shadow: 0px 3px 4px 0px #000000ab;
-    border: 1px solid var(--transparent-pale);
+    border: 1px solid var(--pale);
     padding: 2rem;
     border-radius: var(--radius);
 

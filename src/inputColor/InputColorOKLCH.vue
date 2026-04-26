@@ -43,7 +43,7 @@ const borders = computed(() => {
             id="oklchL"
             :min="0"
             :max="100"
-            gradient="linear-gradient(to right in oklch, oklch(0 0 0), oklch(1 0 0)"
+            gradient="linear-gradient(to right in oklch, black, white)"
         />
     </div>
 </template>

@@ -36,7 +36,7 @@ const widthCorrected = computed(() => (props.width ? props.width : 0.001));
                 :max="max"
                 :step="0.01"
                 :id="id"
-                class="input-range-color"
+                class="input-range-color input-range-gradient"
                 :class="{ 'input-range-color-width': width !== undefined }"
             />
         </div>
@@ -79,39 +79,7 @@ const widthCorrected = computed(() => (props.width ? props.width : 0.001));
     flex-shrink: 0;
     margin: 0px;
 
-    --height: 1.5rem;
-    --height-thumb: calc(var(--height) * 0.7);
-    height: var(--height);
-    border-radius: calc(var(--height) / 2);
-    border: none;
-    --border: 2px;
-
-    background: v-bind(cssGradient);
-
-    &::-moz-range-thumb {
-        width: var(--height-thumb);
-        height: var(--height-thumb);
-        border-radius: 50%;
-        background: none;
-        border: var(--border) solid white;
-        cursor: pointer;
-        box-sizing: content-box;
-    }
-
-    &::-webkit-slider-thumb {
-        -webkit-appearance: none;
-        appearance: none;
-
-        /* намеренное дублирование: chrome игнорирует, если объединить */
-
-        width: var(--height-thumb);
-        height: var(--height-thumb);
-        border-radius: 50%;
-        background: none;
-        border: var(--border) solid white;
-        cursor: pointer;
-        box-sizing: content-box;
-    }
+    background-image: v-bind(cssGradient);
 }
 
 .input-range-color-width {

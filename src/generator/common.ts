@@ -123,7 +123,7 @@ export function getCssColors(colors: MockupColors<string>, format: ColorFormat) 
         Object.entries(colors)
             .map(([role, color]) => {
                 const colorString = getColorString(color, format);
-                return `--${role}: ${colorString}`;
+                return `  --${role}: ${colorString}`;
             })
             .join(';\n') + ';'
     );

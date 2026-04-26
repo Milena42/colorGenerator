@@ -63,7 +63,11 @@ const typeOfScheme = ref<SchemeType>('mono');
 const inputBgC = ref<number>(maxCBg);
 const inputAccentC = ref<number>(maxCAccent);
 
-const inputAccentLargeL = ref<number>(darkTheme.accentLarge.l);
+const darkThemeModified = inject<Ref<Theme<ColorRole>>>('darkThemeLightness');
+const lightThemeModified = inject<Ref<Theme<ColorRole>>>('lightThemeLightness');
+watch([darkThemeModified, lightThemeModified], () => {
+    generate();
+});
 
 function generate() {
     const generatedThemes = generateFromWheel(
@@ -76,8 +80,8 @@ function generate() {
         ['dark', 'light'],
         colorRoles,
         {
-            dark: darkTheme,
-            light: lightTheme,
+            dark: darkThemeModified?.value ?? darkTheme,
+            light: lightThemeModified?.value ?? lightTheme,
         },
     );
 
@@ -104,18 +108,6 @@ watch(inputAccentC, () => {
         const c = inputAccentC.value - CHROMA_DIFFERENCE;
         inputBgC.value = c > 0 ? c : 0;
     }
-    generate();
-});
-
-watch(inputAccentLargeL, () => {
-    const l = inputAccentLargeL.value;
-    darkTheme.accentLarge.l = l;
-    lightTheme.accentLarge.l = l;
-
-    const textL = l > 70 ? 18 : 98;
-    darkTheme.textOnAccent.l = textL;
-    lightTheme.textOnAccent.l = textL;
-
     generate();
 });
 
@@ -262,18 +254,6 @@ const baseH = computed({
                 </button>
             </div>
             <div class="col chroma-params">
-                <div class="row">
-                    <label for="accent-lightness">светлота акцента</label>
-                    <input
-                        v-model.number="inputAccentLargeL"
-                        type="range"
-                        :min="50"
-                        :max="80"
-                        :step="0.1"
-                        class="input-range"
-                        id="accent-lightness"
-                    />
-                </div>
                 <p>максимальная насыщенность:</p>
                 <div class="row">
                     <label for="accent-chroma">акценты</label>
@@ -399,13 +379,15 @@ const baseH = computed({
                 </svg>
             </div>
         </div>
-        <div class="editor-view">
-            <MockupEditor
-                :colorsLight="generatedLight"
-                :colorsDark="generatedDark"
-                class="editor-view-content"
-                v-if="generatedDark && generatedLight"
-            />
+        <div class="editor-view-space">
+            <div class="editor-view">
+                <MockupEditor
+                    :colorsLight="generatedLight"
+                    :colorsDark="generatedDark"
+                    class="editor-view-content"
+                    v-if="generatedDark && generatedLight"
+                />
+            </div>
         </div>
     </div>
 </template>
@@ -420,26 +402,45 @@ const baseH = computed({
     flex-flow: row wrap;
     align-items: center;
     justify-content: space-evenly;
-    gap: 1rem;
+    gap: var(--adaptive-gap);
 }
 
 .generator-wheel-controls {
-    padding: 0px 1rem;
     width: max-content;
+
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: stretch;
+    justify-content: center;
+    gap: calc(var(--adaptive-gap) * 2);
 }
 
 @media (min-width: 1000px) and (max-width: 1900px) {
-    .editor-view {
+    .generator-wheel-page {
+        flex-flow: row nowrap;
+        align-items: stretch;
+    }
+    .editor-view-space {
+        position: relative;
+
         flex: 1 1 0;
-        overflow: scroll;
+    }
+    .editor-view {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        overflow: auto;
         border: 2px solid var(--pale);
         border-radius: var(--radius);
-        align-self: stretch;
-        max-height: 100vh;
 
         .editor-view-content {
+            justify-content: center;
+            min-height: 100%;
             width: max-content;
-            margin: 1rem auto;
+            padding: 1rem;
+            margin: 0px auto;
         }
     }
 }
@@ -459,9 +460,8 @@ const baseH = computed({
 }
 
 .chroma-params {
-    padding: 1.2rem 0px;
     p {
-        margin: 0.7rem 0px 0.4rem;
+        margin: 0px 0px 0.4rem;
     }
     div {
         align-items: center;

@@ -22,6 +22,11 @@ body,
 
 :root {
     --radius: 0.5rem;
+    --radius-around: calc(var(--radius) + 2px);
+    --adaptive-gap: min(1rem, max(0.2rem, 0.6vw));
+
+    --font-default: 'Roboto', sans-serif;
+    --font-mono: 'Source Code Pro', monospace;
 }
 
 .app-root,
@@ -40,6 +45,7 @@ body,
     --line-large: #5f5f5f;
 
     --transparent-overlay: rgba(255, 255, 255, 0.5);
+    --transparent-border: rgba(0, 0, 0, 0.2);
 }
 
 .app-root.dark {
@@ -57,6 +63,7 @@ body,
     --line-large: #999999;
 
     --transparent-overlay: rgba(0, 0, 0, 0.5);
+    --transparent-border: rgba(255, 255, 255, 0.25);
 }
 
 .icon-harmony {
@@ -65,11 +72,15 @@ body,
 }
 
 body {
-    font-family: 'Roboto', sans-serif;
+    font-family: var(--font-default);
     font-size: 18px;
     line-height: 1.5;
     font-weight: normal;
     font-style: normal;
+}
+
+code {
+    font-family: var(--font-mono);
 }
 
 .input-range {
@@ -85,15 +96,12 @@ body {
     border-radius: calc(var(--height) / 2);
     margin: 10px 0px;
 
-    cursor: pointer;
-
     &::-moz-range-thumb {
         width: var(--height-thumb);
         height: var(--height-thumb);
         border-radius: calc(var(--height-thumb) / 2);
         background: var(--accent);
         border: none;
-        cursor: pointer;
         box-sizing: content-box;
     }
 
@@ -108,9 +116,98 @@ body {
         border-radius: calc(var(--height-thumb) / 2);
         background: var(--accent);
         border: none;
-        cursor: pointer;
         box-sizing: content-box;
     }
+}
+
+.input-range-gradient {
+    --height: 1.5rem;
+    --height-thumb: calc(var(--height) - 2px);
+    height: var(--height);
+    border-radius: calc(var(--height) / 2);
+
+    border: 1px solid var(--transparent-border);
+
+    background-origin: border-box;
+    background-repeat: no-repeat;
+
+    --border: 2px;
+    --border-colored: var(--border) solid white;
+    --box-shadow: 0px 0px 0px 1px gray;
+
+    &.slider-track-visible {
+        padding: 0px calc(var(--height-thumb) / 2);
+    }
+
+    .slider-track-inner {
+        position: relative;
+        height: var(--height);
+    }
+
+    .slider-handle {
+        position: absolute;
+        top: 0px;
+        transform: translateX(-50%);
+        z-index: 2;
+
+        width: var(--height-thumb);
+        height: var(--height-thumb);
+        border-radius: 50%;
+        background: none;
+        border: var(--border-colored);
+        box-shadow: var(--box-shadow);
+    }
+
+    &::-moz-range-thumb {
+        width: var(--height-thumb);
+        height: var(--height-thumb);
+        border-radius: 50%;
+        background: none;
+        border: var(--border-colored);
+        box-shadow: var(--box-shadow);
+
+        box-sizing: border-box;
+    }
+
+    &::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+
+        /* намеренное дублирование: chrome игнорирует, если объединить */
+
+        width: var(--height-thumb);
+        height: var(--height-thumb);
+        border-radius: 50%;
+        background: none;
+        border: var(--border-colored);
+        box-shadow: var(--box-shadow);
+
+        box-sizing: border-box;
+    }
+}
+
+.slider-handle:hover {
+    cursor: pointer;
+}
+.slider-handle:hover,
+.slider-handle.active {
+    transform: translateX(-50%) scale(1.1);
+}
+
+input[type='range']:hover {
+    &::-moz-range-thumb {
+        --accent: var(--accent-small);
+        transform: scale(1.1);
+    }
+    &::-webkit-slider-thumb {
+        --accent: var(--accent-small);
+        transform: scale(1.1);
+    }
+}
+
+input[type='range']:active,
+.slider-handle.active {
+    cursor: grabbing;
 }
 
 input[type='number'],
@@ -160,7 +257,6 @@ input[type='checkbox'] {
 }
 
 .choice-chip {
-    flex: 1 1 0;
     border: 2px solid var(--pale);
     border-radius: var(--radius);
     padding: 0.5rem 0.8rem;
@@ -178,11 +274,18 @@ input[type='checkbox'] {
 
     &:hover:not(.current) {
         background-color: var(--accent-pale);
+        --line-large: var(--text);
+
+        .icon-harmony {
+            --fill: var(--accent);
+            --line: var(--text);
+        }
     }
 }
 
 .choice-chip.router {
-    padding: 0.5rem 0.9rem 0.5rem 0.5rem;
+    --padding: min(0.5rem, max(0.2rem, 0.5vw));
+    padding: var(--padding) calc(var(--padding) * 2) var(--padding) var(--padding);
     svg {
         height: 2.5rem;
         width: auto;

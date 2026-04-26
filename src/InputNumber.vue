@@ -65,7 +65,7 @@ function increment() {
 
 <style scoped>
 .input-number {
-    font-family: 'Source Code Pro', monospace;
+    font-family: var(--font-mono);
 
     display: flex;
     flex-flow: row nowrap;

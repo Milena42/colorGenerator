@@ -8,6 +8,8 @@ import IconLightTheme from './assets/icons/IconLightTheme.vue';
 import IconMenu from './assets/icons/IconMenu.vue';
 import IconSettings from './assets/icons/IconSettings.vue';
 import type { ColorFormat } from './generator/common';
+import { darkTheme, lightTheme } from './generator/themesExample';
+import InputThemeLightness from './InputThemeLightness.vue';
 
 const showQuantityOnPlots = ref(true);
 provide('showQuantityOnPlots', showQuantityOnPlots);
@@ -24,31 +26,23 @@ provide('alwaysShowColorStrings', alwaysShowColorStrings);
 const colorFormatEdit = ref<ColorFormat>('oklch');
 provide('colorFormatEdit', colorFormatEdit);
 
+const colorFormatCopy = ref<ColorFormat>('rgbHex');
+provide('colorFormatCopy', colorFormatCopy);
+
 const themeIsDark = ref(false);
 
 const showSettings = ref(false);
 const showMenu = ref(false);
+
+const darkThemeLightness = ref(darkTheme);
+provide('darkThemeLightness', darkThemeLightness);
+const lightThemeLightness = ref(lightTheme);
+provide('lightThemeLightness', lightThemeLightness);
 </script>
 
 <template>
     <div class="col app-root" :class="themeIsDark ? 'dark' : 'light'">
         <header class="row">
-            <div class="relative" v-on-click-outside="() => (showMenu = false)">
-                <button @click="showMenu = !showMenu">
-                    <IconMenu width="24px" height="auto" />
-                </button>
-                <div v-if="showMenu" class="popup left-0">
-                    <a
-                        href="https://forms.yandex.ru/u/69be9a001f1eb598d3b3d764"
-                        referrerpolicy="no-referrer"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        >Сообщить об ошибке или предложить улучшение</a
-                    >
-                    <a href="">Как работает генератор</a>
-                </div>
-            </div>
-
             <div class="choice-chips">
                 <RouterLink class="choice-chip router" activeClass="current" to="/picture">
                     <IconImage /> Из картинки
@@ -57,6 +51,9 @@ const showMenu = ref(false);
                     <IconTriad /> По цветовому кругу
                 </RouterLink>
             </div>
+
+            <InputThemeLightness v-model="darkThemeLightness" class="grow" />
+            <InputThemeLightness v-model="lightThemeLightness" themeIsLight class="grow" />
 
             <div class="row">
                 <button @click="themeIsDark = !themeIsDark">
@@ -70,7 +67,7 @@ const showMenu = ref(false);
                     </button>
 
                     <div v-if="showSettings" class="popup right-0">
-                        <div class="col">
+                        <div class="row">
                             <p>Редактирование цветов:</p>
                             <div class="choice-chips">
                                 <button
@@ -84,6 +81,35 @@ const showMenu = ref(false);
                                     class="choice-chip"
                                     :class="{ current: colorFormatEdit == 'oklch' }"
                                     @click="colorFormatEdit = 'oklch'"
+                                >
+                                    OKLCH
+                                </button>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <p>Коды цветов:</p>
+                            <div class="choice-chips">
+                                <button
+                                    class="choice-chip"
+                                    :class="{ current: colorFormatCopy == 'rgbHex' }"
+                                    @click="colorFormatCopy = 'rgbHex'"
+                                    :title="
+                                        colorFormatCopy == 'rgbHex'
+                                            ? ''
+                                            : 'выбрать RGB для кодов цветов'
+                                    "
+                                >
+                                    RGB (hex)
+                                </button>
+                                <button
+                                    class="choice-chip"
+                                    :class="{ current: colorFormatCopy == 'oklch' }"
+                                    @click="colorFormatCopy = 'oklch'"
+                                    :title="
+                                        colorFormatCopy == 'oklch'
+                                            ? ''
+                                            : 'выбрать OKLCH для кодов цветов'
+                                    "
                                 >
                                     OKLCH
                                 </button>
@@ -117,6 +143,21 @@ const showMenu = ref(false);
                         </div>
                     </div>
                 </div>
+                <div class="relative" v-on-click-outside="() => (showMenu = false)">
+                    <button @click="showMenu = !showMenu">
+                        <IconMenu width="24px" height="auto" />
+                    </button>
+                    <div v-if="showMenu" class="popup right-0">
+                        <a
+                            href="https://forms.yandex.ru/u/69be9a001f1eb598d3b3d764"
+                            referrerpolicy="no-referrer"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            >Сообщить об ошибке или предложить улучшение</a
+                        >
+                        <a href="">Как работает генератор</a>
+                    </div>
+                </div>
             </div>
         </header>
         <RouterView class="grow w-full" />
@@ -125,10 +166,12 @@ const showMenu = ref(false);
 
 <style scoped>
 .app-root {
-    padding: 1rem;
-    gap: 1rem;
+    padding: var(--adaptive-gap);
+    gap: var(--adaptive-gap);
+
     min-height: 100%;
     width: 100%;
+
     color: var(--text);
     background-color: var(--background);
 }
@@ -136,10 +179,11 @@ const showMenu = ref(false);
 header {
     justify-content: space-between;
     align-items: flex-start;
+    gap: var(--adaptive-gap);
 
     > div {
         align-items: flex-start;
-        gap: 0.5rem;
+        gap: calc(var(--adaptive-gap) * 0.7);
     }
 }
 </style>

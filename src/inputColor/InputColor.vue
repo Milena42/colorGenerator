@@ -85,7 +85,7 @@ async function copy() {
 
 <style scoped>
 .input-color {
-    font-family: 'Source Code Pro', monospace;
+    font-family: var(--font-mono);
 
     p {
         font-size: 0.9rem;
@@ -118,7 +118,7 @@ async function copy() {
 
     .color-preview {
         border-radius: 0.3rem;
-        border: 1px solid rgba(from var(--text) r g b / 0.2);
+        border: 1px solid var(--transparent-border);
         display: flex;
         overflow: hidden;
 

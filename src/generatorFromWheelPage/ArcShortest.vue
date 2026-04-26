@@ -27,5 +27,12 @@ const arcPath = computed(() => {
 </script>
 
 <template>
-    <path :d="arcPath" fill="none" stroke="black" stroke-width="2" stroke-opacity="0.5" />
+    <path
+        :d="arcPath"
+        fill="none"
+        stroke="black"
+        stroke-width="2"
+        stroke-opacity="0.5"
+        class="wheel-svg-controls"
+    />
 </template>

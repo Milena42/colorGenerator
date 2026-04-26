@@ -46,7 +46,7 @@ const lineOpacity = computed(() => {
 });
 </script>
 <template>
-    <g>
+    <g class="wheel-svg-controls">
         <line
             :x1="WHEEL_SVG_WIDTH / 2"
             :y1="WHEEL_SVG_WIDTH / 2"

@@ -361,6 +361,7 @@ const baseH = computed({
                         v-if="showAtLeast2Circles"
                     />
                     <circle
+                        class="wheel-svg-controls"
                         :r="(inputAccentC * WHEEL_SVG_WIDTH * SCALE) / 100"
                         :cx="WHEEL_SVG_WIDTH / 2"
                         :cy="WHEEL_SVG_WIDTH / 2"
@@ -369,6 +370,7 @@ const baseH = computed({
                         stroke-width="2"
                     />
                     <circle
+                        class="wheel-svg-controls"
                         :r="(inputBgC * WHEEL_SVG_WIDTH * SCALE) / 100"
                         :cx="WHEEL_SVG_WIDTH / 2"
                         :cy="WHEEL_SVG_WIDTH / 2"

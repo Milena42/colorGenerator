@@ -234,5 +234,6 @@ onUnmounted(() => {
     background: var(--pale);
     font-size: 0.8rem;
     border-radius: 0.2rem;
+    font-family: var(--font-mono);
 }
 </style>

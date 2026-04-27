@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { setWithTransition } from '@/animation';
 import IconAnalog from '@/assets/icons/colorSchemes/IconAnalog.vue';
 import IconComplementary from '@/assets/icons/colorSchemes/IconComplementary.vue';
 import IconMono from '@/assets/icons/colorSchemes/IconMono.vue';
@@ -201,7 +202,12 @@ const show3Circles = computed(() => {
 });
 
 function reverseDependentHues() {
-    [inputDarkH.value, inputLightH.value] = [inputLightH.value, inputDarkH.value];
+    const startDark = inputDarkH.value;
+    const startLight = inputLightH.value;
+
+    const time = 400;
+    setWithTransition(inputDarkH, startLight, time, { circle: true });
+    setWithTransition(inputLightH, startDark, time, { circle: true });
 }
 
 const inputHFromColor = ref(false);

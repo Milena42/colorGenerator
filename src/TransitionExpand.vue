@@ -142,8 +142,6 @@ onUnmounted(() => {
     overflow: hidden;
 }
 
-/*
-
 .palette-swap-transition {
     .expand-enter-active {
         transition: max-height 1.5s cubic-bezier(1, 0, 0.87, 0.4);
@@ -152,5 +150,4 @@ onUnmounted(() => {
         transition: max-height 1.5s cubic-bezier(0, 1.03, 0.72, 0.65);
     }
 }
-*/
 </style>

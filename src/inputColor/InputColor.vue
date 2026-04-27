@@ -4,6 +4,7 @@ import IconTune from '@/assets/icons/IconTune.vue';
 import { getColorString, type Color, type ColorFormat } from '@/generator/common';
 import type { ColorRole } from '@/generator/themesExample';
 import TransitionExpand from '@/TransitionExpand.vue';
+import { vOnClickOutside } from '@vueuse/components';
 import chroma from 'chroma-js';
 import { computed, inject, type Ref } from 'vue';
 import InputColorHSB from './InputColorHSB.vue';
@@ -65,12 +66,16 @@ const emit = defineEmits<{
 </script>
 
 <template>
-    <div class="input-color">
+    <div
+        class="input-color"
+        v-on-click-outside="[() => emit('closeEditing'), { ignore: ['.open-color-editor'] }]"
+    >
         <div class="row">
             <div class="swatch">
                 <p class="role">{{ role }}</p>
                 <div class="color-preview" :style="{ backgroundColor: colorString }">
                     <button
+                        class="open-color-editor"
                         @click="editing ? emit('closeEditing') : emit('openEditing', role)"
                         title="редактировать цвет"
                     >

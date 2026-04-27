@@ -10,6 +10,7 @@ import IconSettings from './assets/icons/IconSettings.vue';
 import type { ColorFormat } from './generator/common';
 import { darkTheme, lightTheme } from './generator/themesExample';
 import InputThemeLightness from './InputThemeLightness.vue';
+import TransitionExpand from './TransitionExpand.vue';
 
 const showQuantityOnPlots = ref(true);
 provide('showQuantityOnPlots', showQuantityOnPlots);
@@ -65,98 +66,101 @@ provide('lightThemeLightness', lightThemeLightness);
                     <button @click="showSettings = !showSettings">
                         <IconSettings />
                     </button>
-
-                    <div v-if="showSettings" class="popup right-0">
-                        <div class="row">
-                            <p>Редактирование цветов:</p>
-                            <div class="choice-chips">
-                                <button
-                                    class="choice-chip"
-                                    :class="{ current: colorFormatEdit == 'hsb' }"
-                                    @click="colorFormatEdit = 'hsb'"
+                    <TransitionExpand>
+                        <div v-if="showSettings" class="popup right-0">
+                            <div class="row">
+                                <p>Редактирование цветов:</p>
+                                <div class="choice-chips">
+                                    <button
+                                        class="choice-chip"
+                                        :class="{ current: colorFormatEdit == 'hsb' }"
+                                        @click="colorFormatEdit = 'hsb'"
+                                    >
+                                        HSB
+                                    </button>
+                                    <button
+                                        class="choice-chip"
+                                        :class="{ current: colorFormatEdit == 'oklch' }"
+                                        @click="colorFormatEdit = 'oklch'"
+                                    >
+                                        OKLCH
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <p>Коды цветов:</p>
+                                <div class="choice-chips">
+                                    <button
+                                        class="choice-chip"
+                                        :class="{ current: colorFormatCopy == 'rgbHex' }"
+                                        @click="colorFormatCopy = 'rgbHex'"
+                                        :title="
+                                            colorFormatCopy == 'rgbHex'
+                                                ? ''
+                                                : 'выбрать RGB для кодов цветов'
+                                        "
+                                    >
+                                        RGB (hex)
+                                    </button>
+                                    <button
+                                        class="choice-chip"
+                                        :class="{ current: colorFormatCopy == 'oklch' }"
+                                        @click="colorFormatCopy = 'oklch'"
+                                        :title="
+                                            colorFormatCopy == 'oklch'
+                                                ? ''
+                                                : 'выбрать OKLCH для кодов цветов'
+                                        "
+                                    >
+                                        OKLCH
+                                    </button>
+                                </div>
+                            </div>
+                            <div>
+                                <input
+                                    type="checkbox"
+                                    v-model="alwaysShowColorStrings"
+                                    id="alwaysShowColorStrings"
+                                />
+                                <label for="alwaysShowColorStrings">Показывать коды цветов</label>
+                            </div>
+                            <div>
+                                <input type="checkbox" v-model="showPlots" id="showPlots" />
+                                <label for="showPlots">Показывать графики</label>
+                            </div>
+                            <div v-if="showPlots">
+                                <input
+                                    type="checkbox"
+                                    v-model="showWireframeOnPlots"
+                                    id="showWireframeOnPlots"
+                                />
+                                <label for="showWireframeOnPlots"
+                                    >Показывать границы цветового пространства на графиках</label
                                 >
-                                    HSB
-                                </button>
-                                <button
-                                    class="choice-chip"
-                                    :class="{ current: colorFormatEdit == 'oklch' }"
-                                    @click="colorFormatEdit = 'oklch'"
-                                >
-                                    OKLCH
-                                </button>
+                            </div>
+                            <div v-if="showPlots">
+                                <input type="checkbox" v-model="showQuantityOnPlots" id="showQ" />
+                                <label for="showQ">Показывать количество на графиках</label>
                             </div>
                         </div>
-                        <div class="row">
-                            <p>Коды цветов:</p>
-                            <div class="choice-chips">
-                                <button
-                                    class="choice-chip"
-                                    :class="{ current: colorFormatCopy == 'rgbHex' }"
-                                    @click="colorFormatCopy = 'rgbHex'"
-                                    :title="
-                                        colorFormatCopy == 'rgbHex'
-                                            ? ''
-                                            : 'выбрать RGB для кодов цветов'
-                                    "
-                                >
-                                    RGB (hex)
-                                </button>
-                                <button
-                                    class="choice-chip"
-                                    :class="{ current: colorFormatCopy == 'oklch' }"
-                                    @click="colorFormatCopy = 'oklch'"
-                                    :title="
-                                        colorFormatCopy == 'oklch'
-                                            ? ''
-                                            : 'выбрать OKLCH для кодов цветов'
-                                    "
-                                >
-                                    OKLCH
-                                </button>
-                            </div>
-                        </div>
-                        <div>
-                            <input
-                                type="checkbox"
-                                v-model="alwaysShowColorStrings"
-                                id="alwaysShowColorStrings"
-                            />
-                            <label for="alwaysShowColorStrings">Показывать коды цветов</label>
-                        </div>
-                        <div>
-                            <input type="checkbox" v-model="showPlots" id="showPlots" />
-                            <label for="showPlots">Показывать графики</label>
-                        </div>
-                        <div v-if="showPlots">
-                            <input
-                                type="checkbox"
-                                v-model="showWireframeOnPlots"
-                                id="showWireframeOnPlots"
-                            />
-                            <label for="showWireframeOnPlots"
-                                >Показывать границы цветового пространства на графиках</label
-                            >
-                        </div>
-                        <div v-if="showPlots">
-                            <input type="checkbox" v-model="showQuantityOnPlots" id="showQ" />
-                            <label for="showQ">Показывать количество на графиках</label>
-                        </div>
-                    </div>
+                    </TransitionExpand>
                 </div>
                 <div class="relative" v-on-click-outside="() => (showMenu = false)">
                     <button @click="showMenu = !showMenu">
                         <IconMenu width="24px" height="auto" />
                     </button>
-                    <div v-if="showMenu" class="popup right-0">
-                        <a
-                            href="https://forms.yandex.ru/u/69be9a001f1eb598d3b3d764"
-                            referrerpolicy="no-referrer"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            >Сообщить об ошибке или предложить улучшение</a
-                        >
-                        <a href="">Как работает генератор</a>
-                    </div>
+                    <TransitionExpand>
+                        <div v-if="showMenu" class="popup right-0">
+                            <a
+                                href="https://forms.yandex.ru/u/69be9a001f1eb598d3b3d764"
+                                referrerpolicy="no-referrer"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                >Сообщить об ошибке или предложить улучшение</a
+                            >
+                            <a href="">Как работает генератор</a>
+                        </div>
+                    </TransitionExpand>
                 </div>
             </div>
         </header>

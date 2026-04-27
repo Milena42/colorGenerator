@@ -2,14 +2,16 @@
 import IconCopy from '@/assets/icons/IconCopy.vue';
 import IconTune from '@/assets/icons/IconTune.vue';
 import { getColorString, type Color, type ColorFormat } from '@/generator/common';
-import { vOnClickOutside } from '@vueuse/components';
+import type { ColorRole } from '@/generator/themesExample';
+import TransitionExpand from '@/TransitionExpand.vue';
 import chroma from 'chroma-js';
-import { computed, inject, ref, type Ref } from 'vue';
+import { computed, inject, type Ref } from 'vue';
 import InputColorHSB from './InputColorHSB.vue';
 import InputColorOKLCH from './InputColorOKLCH.vue';
 
 defineProps<{
-    role: string;
+    role: ColorRole;
+    editing: boolean;
 }>();
 
 const color = defineModel<Color>({ required: true });
@@ -43,8 +45,6 @@ const colorString = computed({
     },
 });
 
-const editing = ref(false);
-
 async function copy() {
     try {
         await navigator.clipboard.writeText(colorString.value);
@@ -57,15 +57,23 @@ async function copy() {
     }
     //alert('цвет скопирован');//TODO сообщение?
 }
+
+const emit = defineEmits<{
+    openEditing: [ColorRole];
+    closeEditing: [];
+}>();
 </script>
 
 <template>
-    <div class="input-color" v-on-click-outside="() => (editing = false)">
+    <div class="input-color">
         <div class="row">
             <div class="swatch">
                 <p class="role">{{ role }}</p>
                 <div class="color-preview" :style="{ backgroundColor: colorString }">
-                    <button @click="editing = !editing" title="редактировать цвет">
+                    <button
+                        @click="editing ? emit('closeEditing') : emit('openEditing', role)"
+                        title="редактировать цвет"
+                    >
                         <IconTune />
                     </button>
                     <button @click="copy" :title="`копировать цвет: ${colorString}`">
@@ -73,19 +81,33 @@ async function copy() {
                     </button>
                 </div>
             </div>
-            <p v-if="alwaysShowColorStrings && !editing">{{ colorString }}</p>
-            <input v-if="editing" v-model.lazy="colorString" type="text" class="grow" />
+            <TransitionExpand>
+                <p v-show="alwaysShowColorStrings && !editing" class="input-color-gap-x">
+                    {{ colorString }}
+                </p>
+            </TransitionExpand>
+            <Transition name="fade">
+                <input
+                    v-if="editing"
+                    v-model.lazy="colorString"
+                    type="text"
+                    class="input-color-input-text input-color-gap-x"
+                />
+            </Transition>
         </div>
-        <div class="col" v-if="editing">
-            <InputColorHSB v-model="colorHex" v-if="colorFormatEdit == 'hsb'" />
-            <InputColorOKLCH v-model="color" v-if="colorFormatEdit == 'oklch'" />
-        </div>
+        <TransitionExpand>
+            <div class="col input-color-editing-inputs" v-if="editing">
+                <InputColorHSB v-model="colorHex" v-if="colorFormatEdit == 'hsb'" />
+                <InputColorOKLCH v-model="color" v-if="colorFormatEdit == 'oklch'" />
+            </div>
+        </TransitionExpand>
     </div>
 </template>
 
 <style scoped>
 .input-color {
     font-family: var(--font-mono);
+    width: min-content;
 
     p {
         font-size: 0.9rem;
@@ -95,14 +117,21 @@ async function copy() {
         font-size: 0.7rem;
     }
 
-    display: flex;
-    flex-flow: column nowrap;
-    gap: 0.5rem;
-    align-items: stretch;
+    .input-color-editing-inputs {
+        padding-top: 0.5rem;
+        width: calc(50px + 16em + 2.2rem);
+    }
+
+    .input-color-gap-x {
+        margin-left: 0.5rem;
+    }
+
+    .input-color-input-text {
+        width: 16em;
+    }
 
     & > .row {
         align-items: center;
-        gap: 0.5rem;
     }
 
     .swatch {
@@ -134,5 +163,27 @@ async function copy() {
             visibility: visible;
         }
     }
+}
+</style>
+
+<style>
+.fade-enter-to,
+.fade-leave-from {
+    max-width: 20em;
+    opacity: 1;
+}
+.fade-enter-from,
+.fade-leave-to {
+    max-width: 0px;
+    overflow: hidden;
+    opacity: 0;
+}
+.fade-enter-active {
+    transition: all 1s linear;
+    transition-delay: 0.1s;
+}
+
+.fade-leave-active {
+    transition: all 0.4s linear;
 }
 </style>

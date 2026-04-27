@@ -424,3 +424,8 @@ figcaption {
     background:
         linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url('@/assets/color-wheel.png');
 }
+
+body.is-animating * {
+    pointer-events: none !important;
+    /* это чтобы не моргал экран если во время анимации произошел hover на tooltip */
+}

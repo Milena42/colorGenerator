@@ -393,6 +393,15 @@ const baseH = computed({
         </div>
     </div>
 </template>
+<style>
+@media (min-width: 1900px) {
+    .generator-wheel-page,
+    .mockup-editor {
+        flex-flow: row nowrap !important;
+    }
+}
+</style>
+
 <style scoped>
 .color-wheel-svg {
     background-image: url('@/assets/color-wheel.png');

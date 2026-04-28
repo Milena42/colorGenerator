@@ -2,10 +2,14 @@ import { Color, type MockupColors, type Theme } from '@/generator/common';
 import { polarFromCartesian } from '@/utilities/math';
 import { PolynomialRegression } from 'ml-regression';
 
-function makeClustersNew(mapOfColors: Map<string, Color>) {
+function makeClustersNew(
+    mapOfColors: Map<string, Color>,
+):
+    | { clusters: []; debugInfo: undefined }
+    | { clusters: Map<string, Color>[]; debugInfo: ClusteringDebugInfo } {
     const filteredPoints = Array.from(mapOfColors);
 
-    if (filteredPoints.length == 0) return { clusters: [], debugInfo: {} };
+    if (filteredPoints.length == 0) return { clusters: [], debugInfo: undefined };
 
     const points = filteredPoints.map(([, v]) => ({ h: v.h, q: v.q }));
 
@@ -143,7 +147,7 @@ function addWhite(map: Map<string, Color>) {
     map.set('#fdfdfd', new Color(98, { c: 0, h: 0 }));
 }
 
-type rangeL = {
+type LRange = {
     start: number;
     end: number;
     function: {
@@ -152,130 +156,167 @@ type rangeL = {
     } | null;
 };
 
-const lRanges: rangeL[] = [
-    {
-        start: 0,
-        end: 30,
-        function: null,
-    },
-    {
-        start: 30,
-        end: 40,
-        function: null,
-    },
-    {
-        start: 40,
-        end: 70,
-        function: null,
-    },
-    {
-        start: 70,
-        end: 80,
-        function: null,
-    },
-    {
-        start: 80,
-        end: 100,
-        function: null,
-    },
-];
-
-function lInRange(l: number, lRange: (typeof lRanges)[0]) {
+function lInRange(l: number, lRange: LRange) {
     return lRange.start <= l && l <= lRange.end;
 }
 
-function getLFunction(l: number) {
+function getLFunction(l: number, lRanges: LRange[]) {
     const range = lRanges.find((r) => lInRange(l, r));
     if (!range) console.error('lRanges не покрывает весь диапазон');
     return range!.function!;
 }
 
-export function generateLRangeBased<T extends string, R extends string>(
+type ClusteringDebugInfo = {
+    borders: number[];
+    filteredPoints: [string, Color][];
+    circularHistogram: number[];
+    smoothedCircularHistogram: number[];
+    minQForHistogram: number;
+};
+type GeneratorDebugInfo = {
+    grays: Map<string, Color>;
+    chromaTorus: Map<string, Color>;
+    mapsClustered: Map<string, Color>[];
+    clusteringDebug: ClusteringDebugInfo | undefined;
+};
+
+export class GeneratorFromPicture {
+    lRanges: LRange[] = [
+        {
+            start: 0,
+            end: 30,
+            function: null,
+        },
+        {
+            start: 30,
+            end: 40,
+            function: null,
+        },
+        {
+            start: 40,
+            end: 70,
+            function: null,
+        },
+        {
+            start: 70,
+            end: 80,
+            function: null,
+        },
+        {
+            start: 80,
+            end: 100,
+            function: null,
+        },
+    ];
+
+    debugInfo: GeneratorDebugInfo;
+
+    constructor(imgMap: Map<string, Color>, totalPixels: number) {
+        const chromaLimit = 8;
+        const sufficientNumber = 0.005 * totalPixels;
+        //console.log("sN", sufficientNumber);
+
+        const chromaTorus = new Map(Array.from(imgMap).filter(([, v]) => v.c > chromaLimit));
+        const grays = new Map(Array.from(imgMap).filter(([, v]) => v.c < chromaLimit));
+
+        addWhite(grays);
+        addBlack(grays);
+
+        const grayFunction = regrFunction(grays);
+        const sectors: (typeof grayFunction)[] = [];
+
+        let clusteringDebug;
+        let mapsClustered: Map<string, Color>[];
+        if (!chromaTorus.size) {
+            // видимо, это нечто серое
+            console.log('gray');
+            mapsClustered = [];
+            clusteringDebug = undefined;
+        } else {
+            const { clusters, debugInfo } = makeClustersNew(chromaTorus);
+            clusteringDebug = debugInfo;
+            mapsClustered = clusters;
+            mapsClustered.forEach((mapOfColors) => {
+                const newMap = new Map(mapOfColors);
+                addBlack(newMap);
+                addWhite(newMap);
+                sectors.push(regrFunction(newMap));
+            });
+        }
+
+        this.lRanges.forEach((lRange) => {
+            const { i } = mapsClustered.reduce(
+                (best, currentMap, i) => {
+                    const arr = Array.from(currentMap).filter(([, v]) => lInRange(v.l, lRange));
+                    let q, c;
+                    if (arr.length == 0) {
+                        q = 0;
+                        c = 0;
+                    } else {
+                        q = arr.map(([, v]) => v.q).reduce((e1, e2) => e1 + e2);
+                        c = arr.map(([, v]) => v.c).reduce((a, b) => Math.max(a, b));
+                    }
+
+                    if (c > best.c && q + 0.1 * sufficientNumber > best.q) return { i, q, c };
+                    return best;
+                },
+                { i: -1, q: sufficientNumber, c: 0 },
+            );
+
+            if (i == -1) {
+                lRange.function = grayFunction;
+            } else lRange.function = sectors[i];
+        });
+
+        this.debugInfo = { grays, chromaTorus, mapsClustered, clusteringDebug };
+    }
+
+    generate<T extends string, R extends string>(
+        themeKeys: readonly T[],
+        roleKeys: readonly R[],
+        themes: Record<T, Theme<R>>,
+    ) {
+        const generatedThemes: Record<T, MockupColors<R>> = Object.create(null);
+        themeKeys.forEach((themeName) => {
+            const themeRules = themes[themeName];
+
+            const generatedTheme: MockupColors<R> = Object.create(null);
+            roleKeys.forEach((roleName) => {
+                const { l, cMax } = themeRules[roleName];
+
+                const { xFromL, yFromL } = getLFunction(l, this.lRanges);
+                const x = xFromL.predict(l);
+                const y = yFromL.predict(l);
+
+                const [cF, h] = polarFromCartesian(x, y);
+                const c = Math.min(cF, cMax);
+
+                const elem = new Color(l, { c, h });
+                elem.adjustForRGB();
+
+                generatedTheme[roleName] = elem;
+            });
+
+            generatedThemes[themeName] = generatedTheme;
+        });
+        return generatedThemes;
+    }
+}
+
+/**
+ * Создает и инициализирует объект генератора, выдает результат генерации.
+ * При многоразовых генерациях по одному изображению рекомендуется вместо использования данной функции создать объект генератора и использовать повторно.
+ */
+export function generateFromPictureOnce<T extends string, R extends string>(
     imgMap: Map<string, Color>,
     totalPixels: number,
     themeKeys: readonly T[],
     roleKeys: readonly R[],
     themes: Record<T, Theme<R>>,
 ) {
-    const chromaLimit = 8;
-    const sufficientNumber = 0.005 * totalPixels;
-    //console.log("sN", sufficientNumber);
+    const generator = new GeneratorFromPicture(imgMap, totalPixels);
 
-    const chromaTorus = new Map(Array.from(imgMap).filter(([, v]) => v.c > chromaLimit));
-    const grays = new Map(Array.from(imgMap).filter(([, v]) => v.c < chromaLimit));
+    const generatedThemes = generator.generate(themeKeys, roleKeys, themes);
 
-    addWhite(grays);
-    addBlack(grays);
-
-    const grayFunction = regrFunction(grays);
-    const sectors: (typeof grayFunction)[] = [];
-
-    let clusteringDebug;
-    let mapsClustered: Map<string, Color>[];
-    if (!chromaTorus.size) {
-        // видимо, это нечто серое
-        console.log('gray');
-        mapsClustered = [];
-        clusteringDebug = {};
-    } else {
-        const { clusters, debugInfo } = makeClustersNew(chromaTorus);
-        clusteringDebug = debugInfo;
-        mapsClustered = clusters;
-        mapsClustered.forEach((mapOfColors) => {
-            const newMap = new Map(mapOfColors);
-            addBlack(newMap);
-            addWhite(newMap);
-            sectors.push(regrFunction(newMap));
-        });
-    }
-
-    lRanges.forEach((lRange) => {
-        const { i } = mapsClustered.reduce(
-            (best, currentMap, i) => {
-                const arr = Array.from(currentMap).filter(([, v]) => lInRange(v.l, lRange));
-                let q, c;
-                if (arr.length == 0) {
-                    q = 0;
-                    c = 0;
-                } else {
-                    q = arr.map(([, v]) => v.q).reduce((e1, e2) => e1 + e2);
-                    c = arr.map(([, v]) => v.c).reduce((a, b) => Math.max(a, b));
-                }
-
-                if (c > best.c && q + 0.1 * sufficientNumber > best.q) return { i, q, c };
-                return best;
-            },
-            { i: -1, q: sufficientNumber, c: 0 },
-        );
-
-        if (i == -1) {
-            lRange.function = grayFunction;
-        } else lRange.function = sectors[i];
-    });
-
-    const generatedThemes: Record<T, MockupColors<R>> = Object.create(null);
-    themeKeys.forEach((themeName) => {
-        const themeRules = themes[themeName];
-
-        const generatedTheme: MockupColors<R> = Object.create(null);
-        roleKeys.forEach((roleName) => {
-            const { l, cMax } = themeRules[roleName];
-
-            const { xFromL, yFromL } = getLFunction(l);
-            const x = xFromL.predict(l);
-            const y = yFromL.predict(l);
-
-            const [cF, h] = polarFromCartesian(x, y);
-            const c = Math.min(cF, cMax);
-
-            const elem = new Color(l, { c, h });
-            elem.adjustForRGB();
-
-            generatedTheme[roleName] = elem;
-        });
-
-        generatedThemes[themeName] = generatedTheme;
-    });
-
-    return { generatedThemes, debugInfo: { grays, chromaTorus, mapsClustered, clusteringDebug } };
+    return { generatedThemes, debugInfo: generator.debugInfo };
 }

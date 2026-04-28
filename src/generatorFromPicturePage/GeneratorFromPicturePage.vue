@@ -1,16 +1,22 @@
 <script setup lang="ts">
-import { Color, type ColorMap, type MockupColors } from '@/generator/common';
-import { generateLRangeBased } from '@/generator/generatorFromPictureEngine';
+import { Color, type ColorMap, type MockupColors, type Theme } from '@/generator/common';
+import { GeneratorFromPicture } from '@/generator/generatorFromPictureEngine';
 import { colorRoles, darkTheme, lightTheme, type ColorRole } from '@/generator/themesExample';
 import MockupEditor from '@/mockupEditor/MockupEditor.vue';
 import ArrayOfPlots from '@/plots/ArrayOfPlots.vue';
-import { defineAsyncComponent, inject, ref, shallowRef, type Ref } from 'vue';
+import { defineAsyncComponent, inject, ref, shallowRef, watch, type Ref } from 'vue';
 import InputPicture from './InputPicture.vue';
 
 const ColorModels3d = defineAsyncComponent(() => import('@/plots/ColorModels3d.vue'));
 
 const imgMap = ref<ColorMap>();
 const totalPixels = ref(1);
+
+const darkThemeModified = inject<Ref<Theme<ColorRole>>>('darkThemeLightness');
+const lightThemeModified = inject<Ref<Theme<ColorRole>>>('lightThemeLightness');
+watch([darkThemeModified, lightThemeModified], () => {
+    generate();
+});
 
 const chromaTorusMap = shallowRef(new Map<string, Color>());
 
@@ -26,30 +32,33 @@ const graysMap = shallowRef(new Map<string, Color>());
 const generatedDark = ref<MockupColors<ColorRole>>();
 const generatedLight = ref<MockupColors<ColorRole>>();
 
-function generate() {
+let generator: GeneratorFromPicture;
+
+function setPicture() {
     if (!imgMap.value) return;
     totalPixels.value = imgMap.value.totalQ;
-    const { generatedThemes, debugInfo } = generateLRangeBased(
-        imgMap.value.data,
-        imgMap.value.totalQ,
-        ['dark', 'light'],
-        colorRoles,
-        {
-            dark: darkTheme,
-            light: lightTheme,
-        },
-    );
+    generator = new GeneratorFromPicture(imgMap.value.data, imgMap.value.totalQ);
+    generate();
+}
+
+function generate() {
+    const generatedThemes = generator.generate(['dark', 'light'], colorRoles, {
+        dark: darkThemeModified?.value ?? darkTheme,
+        light: lightThemeModified?.value ?? lightTheme,
+    });
     generatedDark.value = generatedThemes.dark;
     generatedLight.value = generatedThemes.light;
+
+    const debugInfo = generator.debugInfo;
 
     mapsClustered.value = debugInfo.mapsClustered;
     graysMap.value = debugInfo.grays;
     chromaTorusMap.value = debugInfo.chromaTorus;
 
-    polarHistogramData1.value = debugInfo.clusteringDebug.circularHistogram ?? [];
-    polarHistogramData2.value = debugInfo.clusteringDebug.smoothedCircularHistogram ?? [];
-    polarHistogramCircle.value = debugInfo.clusteringDebug.minQForHistogram ?? 0;
-    polarHistogramBorders.value = debugInfo.clusteringDebug.borders ?? [];
+    polarHistogramData1.value = debugInfo.clusteringDebug?.circularHistogram ?? [];
+    polarHistogramData2.value = debugInfo.clusteringDebug?.smoothedCircularHistogram ?? [];
+    polarHistogramCircle.value = debugInfo.clusteringDebug?.minQForHistogram ?? 0;
+    polarHistogramBorders.value = debugInfo.clusteringDebug?.borders ?? [];
 }
 
 const showPlots: Ref<boolean> = inject('showPlots') ?? ref(false);
@@ -58,7 +67,7 @@ const showPlots: Ref<boolean> = inject('showPlots') ?? ref(false);
 <template>
     <div class="col">
         <div class="grow generator-picture-page-main">
-            <InputPicture v-model:imgMap="imgMap" @change="generate" />
+            <InputPicture v-model:imgMap="imgMap" @change="setPicture" />
             <MockupEditor
                 class="grow"
                 :colorsDark="generatedDark"

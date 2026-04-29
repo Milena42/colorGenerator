@@ -81,7 +81,7 @@ function increment() {
         padding: 0.3rem;
         border-radius: 50%;
 
-        background: inherit;
+        background: #00000000;
         border: none;
 
         &:hover {

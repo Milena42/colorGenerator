@@ -68,7 +68,12 @@ const emit = defineEmits<{
 <template>
     <div
         class="input-color"
-        v-on-click-outside="[() => emit('closeEditing'), { ignore: ['.open-color-editor'] }]"
+        v-on-click-outside="[
+            () => {
+                if (editing) emit('closeEditing');
+            },
+            { ignore: ['.open-color-editor', '.settings'] },
+        ]"
     >
         <div class="row">
             <div class="swatch">
@@ -113,6 +118,7 @@ const emit = defineEmits<{
 .input-color {
     font-family: var(--font-mono);
     width: min-content;
+    background: var(--background);
 
     p {
         font-size: 0.9rem;

@@ -29,7 +29,7 @@ function swapOrOpenEditing(role: ColorRole) {
     <div
         class="palette"
         :class="{ 'palette-swap-transition': isSwap }"
-        v-on-click-outside="() => closeEditing()"
+        v-on-click-outside="[() => closeEditing(), { ignore: ['.settings'] }]"
     >
         <InputColor
             v-model="colors[role]"

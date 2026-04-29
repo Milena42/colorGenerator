@@ -62,7 +62,7 @@ provide('lightThemeLightness', lightThemeLightness);
                     <IconLightTheme v-if="themeIsDark" />
                 </button>
 
-                <div class="relative" v-on-click-outside="() => (showSettings = false)">
+                <div class="relative settings" v-on-click-outside="() => (showSettings = false)">
                     <button @click="showSettings = !showSettings">
                         <IconSettings />
                     </button>

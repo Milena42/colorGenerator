@@ -8,6 +8,7 @@ const imgMap = defineModel<ColorMap | undefined>('imgMap');
 
 const emit = defineEmits<{
     change: [];
+    loading: [isLong: boolean];
 }>();
 
 const imageHere = ref(false);
@@ -18,7 +19,7 @@ const ctx = ref<CanvasRenderingContext2D>();
 
 onMounted(() => {
     canvas.value = document.createElement('canvas');
-    ctx.value = canvas.value.getContext('2d') ?? undefined;
+    ctx.value = canvas.value.getContext('2d', { willReadFrequently: true }) ?? undefined;
 });
 
 function dragenter(e: DragEvent) {
@@ -35,6 +36,7 @@ function drop(e: DragEvent) {
     e.stopPropagation();
     e.preventDefault();
     if (!e.dataTransfer) return;
+
     const file = e.dataTransfer.files[0];
     imageHere.value = true;
 
@@ -56,15 +58,21 @@ function drop(e: DragEvent) {
     reader.readAsDataURL(file);
 }
 
-function loadImgData(e: Event) {
+async function loadImgData(e: Event) {
     const img1: HTMLImageElement = e.target as HTMLImageElement;
+
+    const size = img1.naturalHeight * img1.naturalWidth;
+
+    const isLong = size > 200000;
+    emit('loading', isLong);
+    await new Promise((r) => setTimeout(r, 50));
 
     if (!canvas.value || !ctx.value) {
         console.error('canvas not found');
         return;
     }
 
-    imgMap.value = mapFromImage(img1, canvas.value, ctx.value);
+    imgMap.value = await mapFromImage(img1, canvas.value, ctx.value);
 
     emit('change');
 }

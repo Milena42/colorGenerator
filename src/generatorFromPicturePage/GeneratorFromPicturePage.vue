@@ -32,13 +32,27 @@ const graysMap = shallowRef(new Map<string, Color>());
 const generatedDark = ref<MockupColors<ColorRole>>();
 const generatedLight = ref<MockupColors<ColorRole>>();
 
+const loading = ref(false);
+const loaderVisible = ref(false);
+
 let generator: GeneratorFromPicture;
 
-function setPicture() {
+async function turnOnLoading(isLong: boolean) {
+    loading.value = true;
+    document.body.style.pointerEvents = 'none';
+    loaderVisible.value = isLong;
+}
+
+async function setPicture() {
     if (!imgMap.value) return;
+
     totalPixels.value = imgMap.value.totalQ;
-    generator = new GeneratorFromPicture(imgMap.value.data, imgMap.value.totalQ);
+    generator = await GeneratorFromPicture.create(imgMap.value.data, imgMap.value.totalQ);
     generate();
+
+    loading.value = false;
+    loaderVisible.value = false;
+    document.body.style.pointerEvents = 'auto';
 }
 
 function generate() {
@@ -67,7 +81,7 @@ const showPlots: Ref<boolean> = inject('showPlots') ?? ref(false);
 <template>
     <div class="col">
         <div class="grow generator-picture-page-main">
-            <InputPicture v-model:imgMap="imgMap" @change="setPicture" />
+            <InputPicture v-model:imgMap="imgMap" @change="setPicture" @loading="turnOnLoading" />
             <MockupEditor
                 class="grow"
                 :colorsDark="generatedDark"
@@ -104,6 +118,17 @@ const showPlots: Ref<boolean> = inject('showPlots') ?? ref(false);
                 class="clusters"
             />
         </div>
+        <Transition name="loader">
+            <div
+                class="loading-overlay"
+                v-show="loading"
+                :class="{ 'loader-visible': loaderVisible }"
+                @pointerdown.stop.capture
+                @click.stop.capture
+            >
+                <span class="loading-spinner"></span>
+            </div>
+        </Transition>
     </div>
 </template>
 
@@ -140,5 +165,74 @@ const showPlots: Ref<boolean> = inject('showPlots') ?? ref(false);
         gap: 2rem;
         justify-content: center;
     }
+}
+</style>
+
+<style>
+.loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    z-index: 100;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    pointer-events: all;
+
+    background: #00000000;
+
+    &.loader-visible {
+        background: var(--transparent-overlay);
+        .loading-spinner {
+            visibility: visible;
+        }
+    }
+
+    .loading-spinner {
+        visibility: hidden;
+        position: sticky;
+        bottom: 40vh;
+    }
+}
+
+.loading-spinner {
+    display: inline-block;
+    width: 50px;
+    height: 50px;
+    border: 6px dotted var(--accent-small);
+    border-bottom: none;
+    border-left: none;
+    border-radius: 50%;
+    box-sizing: border-box;
+    animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.loader-enter-to,
+.loader-leave-from {
+    opacity: 1;
+}
+
+.loader-enter-from,
+.loader-leave-to {
+    opacity: 0;
+}
+
+.loader-enter-active {
+    transition: opacity 0.5s ease-in-out;
+}
+
+.loader-leave-active {
+    transition: opacity 0.1s ease-in-out;
 }
 </style>

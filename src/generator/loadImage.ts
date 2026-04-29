@@ -1,11 +1,11 @@
 import chroma from 'chroma-js';
 import { Color, type ColorMap } from './common';
 
-export function mapFromImage(
+export async function mapFromImage(
     img: HTMLImageElement,
     canvas: HTMLCanvasElement,
     ctx: CanvasRenderingContext2D,
-): ColorMap {
+): Promise<ColorMap> {
     ////////////////////////////////
     // уменьшаем большие картинки: для скорости и борьбы с зернистостью
     // возможна проблема с размыванием векторных покрасов => возвращаясь к проблеме золотого картона
@@ -35,13 +35,13 @@ export function mapFromImage(
 
     const pixels = imgData.data; /// одномерный массив rgbargbargba
 
-    return mapFromPixels(pixels);
+    return await mapFromPixels(pixels);
 }
 
 /***
  * @param pixels rgbargbargba array
  */
-export function mapFromPixels(pixels: Uint8ClampedArray<ArrayBuffer>): ColorMap {
+export async function mapFromPixels(pixels: Uint8ClampedArray<ArrayBuffer>): Promise<ColorMap> {
     /* обрабатываем массив rgbargbargba - по 4 элемента на каждый пиксель */
 
     const newImgMap: ColorMap = {

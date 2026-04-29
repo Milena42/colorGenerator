@@ -181,37 +181,16 @@ type GeneratorDebugInfo = {
 };
 
 export class GeneratorFromPicture {
-    lRanges: LRange[] = [
-        {
-            start: 0,
-            end: 30,
-            function: null,
-        },
-        {
-            start: 30,
-            end: 40,
-            function: null,
-        },
-        {
-            start: 40,
-            end: 70,
-            function: null,
-        },
-        {
-            start: 70,
-            end: 80,
-            function: null,
-        },
-        {
-            start: 80,
-            end: 100,
-            function: null,
-        },
-    ];
+    lRanges: LRange[];
 
     debugInfo: GeneratorDebugInfo;
 
-    constructor(imgMap: Map<string, Color>, totalPixels: number) {
+    private constructor(lRanges: LRange[], debugInfo: GeneratorDebugInfo) {
+        this.lRanges = lRanges;
+        this.debugInfo = debugInfo;
+    }
+
+    static async create(imgMap: Map<string, Color>, totalPixels: number) {
         const chromaLimit = 8;
         const sufficientNumber = 0.005 * totalPixels;
         //console.log("sN", sufficientNumber);
@@ -243,8 +222,35 @@ export class GeneratorFromPicture {
                 sectors.push(regrFunction(newMap));
             });
         }
+        const lRanges: LRange[] = [
+            {
+                start: 0,
+                end: 30,
+                function: null,
+            },
+            {
+                start: 30,
+                end: 40,
+                function: null,
+            },
+            {
+                start: 40,
+                end: 70,
+                function: null,
+            },
+            {
+                start: 70,
+                end: 80,
+                function: null,
+            },
+            {
+                start: 80,
+                end: 100,
+                function: null,
+            },
+        ];
 
-        this.lRanges.forEach((lRange) => {
+        lRanges.forEach((lRange) => {
             const { i } = mapsClustered.reduce(
                 (best, currentMap, i) => {
                     const arr = Array.from(currentMap).filter(([, v]) => lInRange(v.l, lRange));
@@ -268,7 +274,12 @@ export class GeneratorFromPicture {
             } else lRange.function = sectors[i];
         });
 
-        this.debugInfo = { grays, chromaTorus, mapsClustered, clusteringDebug };
+        return new GeneratorFromPicture(lRanges, {
+            grays,
+            chromaTorus,
+            mapsClustered,
+            clusteringDebug,
+        });
     }
 
     generate<T extends string, R extends string>(
@@ -307,14 +318,14 @@ export class GeneratorFromPicture {
  * Создает и инициализирует объект генератора, выдает результат генерации.
  * При многоразовых генерациях по одному изображению рекомендуется вместо использования данной функции создать объект генератора и использовать повторно.
  */
-export function generateFromPictureOnce<T extends string, R extends string>(
+export async function generateFromPictureOnce<T extends string, R extends string>(
     imgMap: Map<string, Color>,
     totalPixels: number,
     themeKeys: readonly T[],
     roleKeys: readonly R[],
     themes: Record<T, Theme<R>>,
 ) {
-    const generator = new GeneratorFromPicture(imgMap, totalPixels);
+    const generator = await GeneratorFromPicture.create(imgMap, totalPixels);
 
     const generatedThemes = generator.generate(themeKeys, roleKeys, themes);
 

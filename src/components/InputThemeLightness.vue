@@ -1,7 +1,7 @@
 <script setup lang="ts">
+import type { Theme } from '@/generator/common';
+import type { ColorRole } from '@/generator/themesExample';
 import { onUnmounted, ref, useTemplateRef } from 'vue';
-import type { Theme } from './generator/common';
-import type { ColorRole } from './generator/themesExample';
 
 const theme = defineModel<Theme<ColorRole>>({
     required: true,

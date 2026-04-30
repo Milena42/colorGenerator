@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { setWithTransition } from '@/animation';
+import { setWithTransition } from '@/assets/animation';
 import IconAnalog from '@/assets/icons/colorSchemes/IconAnalog.vue';
 import IconComplementary from '@/assets/icons/colorSchemes/IconComplementary.vue';
 import IconMono from '@/assets/icons/colorSchemes/IconMono.vue';
@@ -7,6 +7,8 @@ import IconTriad from '@/assets/icons/colorSchemes/IconTriad.vue';
 import IconLockOff from '@/assets/icons/IconLockOff.vue';
 import IconLockOn from '@/assets/icons/IconLockOn.vue';
 import IconSwap from '@/assets/icons/IconSwap.vue';
+import InputColorHString from '@/components/inputColor/InputColorHString.vue';
+import InputNumber from '@/components/InputNumber.vue';
 import { type MockupColors, type Theme } from '@/generator/common';
 import { generateFromWheel, type SchemeType } from '@/generator/generatorFromWheelEngine';
 import {
@@ -17,8 +19,6 @@ import {
     maxCBg,
     type ColorRole,
 } from '@/generator/themesExample';
-import InputColorHString from '@/inputColor/InputColorHString.vue';
-import InputNumber from '@/InputNumber.vue';
 import MockupEditor from '@/mockupEditor/MockupEditor.vue';
 import { vOnClickOutside } from '@vueuse/components';
 import { computed, inject, reactive, ref, watch, type Ref } from 'vue';

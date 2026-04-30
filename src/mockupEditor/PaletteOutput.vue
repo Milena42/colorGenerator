@@ -1,7 +1,7 @@
 <script setup lang="ts">
+import InputColor from '@/components/inputColor/InputColor.vue';
 import { type MockupColors } from '@/generator/common';
 import type { ColorRole } from '@/generator/themesExample';
-import InputColor from '@/inputColor/InputColor.vue';
 import { vOnClickOutside } from '@vueuse/components';
 import { ref } from 'vue';
 

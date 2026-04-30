@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import InputNumber from '@/InputNumber.vue';
+import InputNumber from '@/components/InputNumber.vue';
 import { computed } from 'vue';
 
 const model = defineModel<number>({ required: true });

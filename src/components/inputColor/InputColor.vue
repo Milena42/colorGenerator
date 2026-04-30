@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import IconCopy from '@/assets/icons/IconCopy.vue';
 import IconTune from '@/assets/icons/IconTune.vue';
+import TransitionExpand from '@/assets/TransitionExpand.vue';
 import { getColorString, type Color, type ColorFormat } from '@/generator/common';
 import type { ColorRole } from '@/generator/themesExample';
-import TransitionExpand from '@/TransitionExpand.vue';
 import { vOnClickOutside } from '@vueuse/components';
 import chroma from 'chroma-js';
 import { computed, inject, type Ref } from 'vue';

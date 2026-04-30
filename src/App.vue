@@ -7,10 +7,10 @@ import IconImage from './assets/icons/IconImage.vue';
 import IconLightTheme from './assets/icons/IconLightTheme.vue';
 import IconMenu from './assets/icons/IconMenu.vue';
 import IconSettings from './assets/icons/IconSettings.vue';
+import TransitionExpand from './assets/TransitionExpand.vue';
+import InputThemeLightness from './components/InputThemeLightness.vue';
 import type { ColorFormat } from './generator/common';
 import { darkTheme, lightTheme } from './generator/themesExample';
-import InputThemeLightness from './InputThemeLightness.vue';
-import TransitionExpand from './TransitionExpand.vue';
 
 const showQuantityOnPlots = ref(true);
 provide('showQuantityOnPlots', showQuantityOnPlots);

@@ -1,4 +1,4 @@
-import type { Color } from '@/generator/common';
+import type { Color } from './common';
 
 export function polarFromCartesian(x: number, y: number): [r: number, deg: number] {
     const r = Math.sqrt(x * x + y * y);

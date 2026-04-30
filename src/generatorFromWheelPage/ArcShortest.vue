@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { cartesianFromPolar } from '@/utilities/math';
+import { cartesianFromPolar } from '@/generator/math';
 import { computed } from 'vue';
 import { R_SPECTRAL_CIRCLE, SCALE, WHEEL_SVG_WIDTH } from './CircleInput.vue';
 

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Color, MockupColors } from '@/generator/common';
+import { cartesianFromPolar } from '@/generator/math';
 import type { ColorRole } from '@/generator/themesExample';
-import { cartesianFromPolar } from '@/utilities/math';
 import chroma from 'chroma-js';
 import {
     BoxGeometry,

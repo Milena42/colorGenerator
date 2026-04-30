@@ -1,5 +1,5 @@
-import { cartesianFromPolar, polarFromCartesian } from '@/utilities/math';
 import chroma from 'chroma-js';
+import { cartesianFromPolar, polarFromCartesian } from './math';
 
 export class Color {
     l: number;

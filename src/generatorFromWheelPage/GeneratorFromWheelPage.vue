@@ -10,7 +10,14 @@ import IconSwap from '@/assets/icons/IconSwap.vue';
 import InputColorHString from '@/components/inputColor/InputColorHString.vue';
 import InputNumber from '@/components/InputNumber.vue';
 import { type MockupColors, type Theme } from '@/generator/common';
-import { generateFromWheel, type SchemeType } from '@/generator/generatorFromWheelEngine';
+import {
+    generateFromWheelGradient,
+    generateFromWheelMono,
+    generateFromWheelStep2,
+    generateFromWheelStep3,
+    type ChromaParams,
+    type SchemeType,
+} from '@/generator/generatorFromWheelEngine';
 import {
     colorRoles,
     darkTheme,
@@ -71,20 +78,49 @@ watch([darkThemeModified, lightThemeModified], () => {
 });
 
 function generate() {
-    const generatedThemes = generateFromWheel(
-        inputAccentC.value,
-        inputBgC.value,
-        inputAccentH.value,
-        inputDarkH.value,
-        inputLightH.value,
-        typeOfScheme.value,
-        ['dark', 'light'],
-        colorRoles,
-        {
+    const themeParams = {
+        themeKeys: ['dark', 'light'],
+        roleKeys: colorRoles,
+        themes: {
             dark: darkThemeModified?.value ?? darkTheme,
             light: lightThemeModified?.value ?? lightTheme,
         },
-    );
+    } as const;
+
+    const chromaParams: ChromaParams = {
+        accentC: inputAccentC.value / maxCAccent,
+        bgC: inputBgC.value / maxCBg,
+    };
+
+    const generatedThemes = (() => {
+        switch (typeOfScheme.value) {
+            case 'mono':
+                return generateFromWheelMono(inputAccentH.value, themeParams, chromaParams);
+            case 'step2':
+                return generateFromWheelStep2(
+                    inputAccentH.value,
+                    inputDarkH.value,
+                    themeParams,
+                    chromaParams,
+                );
+            case 'step3':
+                return generateFromWheelStep3(
+                    inputAccentH.value,
+                    inputDarkH.value,
+                    inputLightH.value,
+                    themeParams,
+                    chromaParams,
+                );
+            case 'gradient':
+                return generateFromWheelGradient(
+                    inputAccentH.value,
+                    inputDarkH.value,
+                    inputLightH.value,
+                    themeParams,
+                    chromaParams,
+                );
+        }
+    })();
 
     generatedDark.value = generatedThemes.dark;
     generatedLight.value = generatedThemes.light;

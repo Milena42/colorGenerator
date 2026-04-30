@@ -1,6 +1,6 @@
-import { Color, type MockupColors, type Theme } from '@/generator/common';
-import { polarFromCartesian } from '@/utilities/math';
 import { PolynomialRegression } from 'ml-regression';
+import { Color, type MockupColors, type Theme } from './common';
+import { polarFromCartesian } from './math';
 
 function makeClustersNew(
     mapOfColors: Map<string, Color>,

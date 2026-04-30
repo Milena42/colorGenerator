@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { Color } from '@/generator/common';
-import chroma from 'chroma-js';
 import { computed } from 'vue';
 import InputRangeColor from './InputRangeColor.vue';
 
@@ -13,7 +12,7 @@ const bordersC = computed(() => {
     const maxC = c1.c;
     return {
         maxC,
-        gradient: `linear-gradient(to right in oklab, ${chroma.oklch(l / 100, 0, h).css('oklch')}, ${maxCHex})`,
+        gradient: `linear-gradient(to right in oklab, oklch(${l}% 0 ${h}), ${maxCHex})`,
     };
 });
 </script>

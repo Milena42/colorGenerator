@@ -22,6 +22,17 @@ onMounted(() => {
     ctx.value = canvas.value.getContext('2d', { willReadFrequently: true }) ?? undefined;
 });
 
+function inputFile(e: Event) {
+    const input = e.target as HTMLInputElement;
+    const files = input.files;
+    if (files == null) {
+        clear();
+        return;
+    }
+    const file = files[0];
+    readFile(file);
+}
+
 function dragenter(e: DragEvent) {
     e.stopPropagation();
     e.preventDefault();
@@ -38,8 +49,12 @@ function drop(e: DragEvent) {
     if (!e.dataTransfer) return;
 
     const file = e.dataTransfer.files[0];
-    imageHere.value = true;
 
+    readFile(file);
+}
+
+function readFile(file: File) {
+    imageHere.value = true;
     const reader = new FileReader();
 
     reader.onload = () => {
@@ -82,10 +97,6 @@ function clear() {
     image.value = '';
     imgMap.value = undefined;
 }
-
-function inputFile() {
-    //TODO
-}
 </script>
 
 <template>
@@ -94,9 +105,9 @@ function inputFile() {
             <IconClose />
         </button>
         <img v-if="imageHere" :src="image" @load="loadImgData" />
-        <div v-else class="col">
-            <input type="file" @change="inputFile" />
-            <p>Загрузите изображение</p>
+        <div v-else class="input-file">
+            <input type="file" id="file" @change="inputFile" accept=".jpg, .jpeg, .png" />
+            <label for="file" class="button text-button">Загрузите изображение (PNG, JPG)</label>
         </div>
     </div>
 </template>
@@ -128,6 +139,20 @@ function inputFile() {
     &:-moz-drag-over {
         /*TODO браузеры*/
         background-color: green;
+    }
+}
+
+.input-file {
+    position: relative;
+
+    input[type='file'] {
+        opacity: 0;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
     }
 }
 </style>

@@ -303,7 +303,8 @@ input[type='checkbox'] {
     border-color: var(--accent-small);
 }
 
-button {
+button,
+.button {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -314,16 +315,16 @@ button {
     background-color: var(--accent-pale);
     color: var(--text);
 
-    svg {
-        fill: var(--text);
-    }
-
     &:hover:not(.current) {
         background-color: var(--accent-pale-bright);
     }
 }
 
-button.text-button {
+button svg {
+    fill: var(--text);
+}
+
+.text-button {
     padding: 0.4rem 0.8rem;
 }
 

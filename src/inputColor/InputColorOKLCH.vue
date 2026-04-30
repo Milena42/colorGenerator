@@ -6,14 +6,14 @@ import InputRangeColor from './InputRangeColor.vue';
 
 const color = defineModel<Color>({ required: true });
 
-const borders = computed(() => {
+const bordersC = computed(() => {
     const { l, h } = color.value;
     const c1 = new Color(l, { c: 40, h });
     const maxCHex = c1.adjustForRGB();
     const maxC = c1.c;
     return {
         maxC,
-        c: { min: chroma.oklch(l / 100, 0, h).hex('rgb'), max: maxCHex },
+        gradient: `linear-gradient(to right in oklab, ${chroma.oklch(l / 100, 0, h).css('oklch')}, ${maxCHex})`,
     };
 });
 </script>
@@ -33,9 +33,9 @@ const borders = computed(() => {
             label="C"
             id="oklchC"
             :min="0"
-            :max="borders.maxC"
-            :width="borders.maxC / 40"
-            :gradient-borders="borders.c"
+            :max="bordersC.maxC"
+            :width="bordersC.maxC / 40"
+            :gradient="bordersC.gradient"
         />
         <InputRangeColor
             v-model="color.l"
@@ -43,7 +43,7 @@ const borders = computed(() => {
             id="oklchL"
             :min="0"
             :max="100"
-            gradient="linear-gradient(to right in oklch, black, white)"
+            gradient="linear-gradient(to right in oklab, black, white)"
         />
     </div>
 </template>

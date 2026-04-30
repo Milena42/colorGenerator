@@ -39,8 +39,8 @@ const borders = computed(() => {
     const s = s1 / 100;
     const b = b1 / 100;
     return {
-        s: { min: chroma.hsv(h, 0, b).hex('rgb'), max: chroma.hsv(h, 1, b).hex('rgb') },
-        b: { min: chroma.hsv(h, s, 0).hex('rgb'), max: chroma.hsv(h, s, 1).hex('rgb') },
+        s: `linear-gradient(to right, ${chroma.hsv(h, 0, b).hex('rgb')}, ${chroma.hsv(h, 1, b).hex('rgb')}`,
+        b: `linear-gradient(to right, ${chroma.hsv(h, s, 0).hex('rgb')}, ${chroma.hsv(h, s, 1).hex('rgb')}`,
     };
 });
 </script>
@@ -62,7 +62,7 @@ const borders = computed(() => {
             id="hsbS"
             :min="0"
             :max="100"
-            :gradient-borders="borders.s"
+            :gradient="borders.s"
             @update:model-value="localInput = true"
         />
         <InputRangeColor
@@ -71,7 +71,7 @@ const borders = computed(() => {
             id="hsbB"
             :min="0"
             :max="100"
-            :gradient-borders="borders.b"
+            :gradient="borders.b"
             @update:model-value="localInput = true"
         />
     </div>

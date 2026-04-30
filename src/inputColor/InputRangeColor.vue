@@ -8,19 +8,11 @@ const props = defineProps<{
     min: number;
     max: number;
     circle?: boolean;
-    gradient?: string;
-    gradientBorders?: { min: string; max: string };
+    gradient: string;
     id: string;
     label: string;
     width?: number;
 }>();
-
-const cssGradient = computed(() => {
-    if (props.gradient) return props.gradient;
-    if (props.gradientBorders)
-        return `linear-gradient(to right, ${props.gradientBorders.min},${props.gradientBorders.max})`;
-    return '';
-});
 
 const widthCorrected = computed(() => (props.width ? props.width : 0.001));
 </script>
@@ -79,7 +71,7 @@ const widthCorrected = computed(() => (props.width ? props.width : 0.001));
     flex-shrink: 0;
     margin: 0px;
 
-    background-image: v-bind(cssGradient);
+    background-image: v-bind(gradient);
 }
 
 .input-range-color-width {

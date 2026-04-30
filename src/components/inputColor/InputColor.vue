@@ -82,7 +82,7 @@ const emit = defineEmits<{
                     <button
                         class="open-color-editor"
                         @click="editing ? emit('closeEditing') : emit('openEditing', role)"
-                        title="редактировать цвет"
+                        :title="editing ? 'закрыть' : 'редактировать цвет'"
                     >
                         <IconTune />
                     </button>

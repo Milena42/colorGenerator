@@ -157,6 +157,7 @@ const emit = defineEmits<{
     }
 
     .color-preview {
+        background-origin: border-box;
         border-radius: 0.3rem;
         border: 1px solid var(--transparent-border);
         display: flex;

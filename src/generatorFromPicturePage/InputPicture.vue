@@ -14,6 +14,8 @@ const emit = defineEmits<{
 const imageHere = ref(false);
 const image = ref();
 
+const isDraggingOver = ref(false);
+
 const canvas = ref<HTMLCanvasElement>();
 const ctx = ref<CanvasRenderingContext2D>();
 
@@ -33,19 +35,9 @@ function inputFile(e: Event) {
     readFile(file);
 }
 
-function dragenter(e: DragEvent) {
-    e.stopPropagation();
-    e.preventDefault();
-}
-
-function dragover(e: DragEvent) {
-    e.stopPropagation();
-    e.preventDefault();
-}
-
 function drop(e: DragEvent) {
-    e.stopPropagation();
-    e.preventDefault();
+    isDraggingOver.value = false;
+
     if (!e.dataTransfer) return;
 
     const file = e.dataTransfer.files[0];
@@ -100,7 +92,14 @@ function clear() {
 </script>
 
 <template>
-    <div class="dropbox" @dragenter="dragenter" @dragover="dragover" @drop="drop">
+    <div
+        class="dropbox"
+        :class="{ 'drag-over': isDraggingOver }"
+        @dragenter.stop.prevent="isDraggingOver = true"
+        @dragleave.stop.prevent="isDraggingOver = false"
+        @dragover.stop.prevent="isDraggingOver = true"
+        @drop.stop.prevent="drop"
+    >
         <button v-if="imageHere" @click="clear">
             <IconClose />
         </button>
@@ -108,6 +107,9 @@ function clear() {
         <div v-else class="input-file">
             <input type="file" id="file" @change="inputFile" accept=".jpg, .jpeg, .png" />
             <label for="file" class="button text-button">Загрузите изображение (PNG, JPG)</label>
+        </div>
+        <div class="drag-over-overlay" v-show="isDraggingOver">
+            <p>Перетащите картинку сюда</p>
         </div>
     </div>
 </template>
@@ -124,6 +126,8 @@ function clear() {
     border-radius: var(--radius-around);
 
     position: relative;
+    overflow: hidden;
+    background-origin: border-box;
 
     button {
         position: absolute;
@@ -131,14 +135,33 @@ function clear() {
         right: 0px;
     }
 
-    & > * {
+    img {
         max-height: 600px;
         max-width: min(100%, 600px);
     }
 
-    &:-moz-drag-over {
-        /*TODO браузеры*/
-        background-color: green;
+    &.drag-over {
+        border-color: var(--accent-small);
+        background: var(--accent-small);
+
+        * {
+            pointer-events: none;
+        }
+    }
+
+    .drag-over-overlay {
+        position: absolute;
+        top: 0px;
+        bottom: 0px;
+        right: 0px;
+        left: 0px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        background: var(--accent-small);
+        color: var(--background);
     }
 }
 

@@ -56,10 +56,15 @@ async function setPicture() {
 }
 
 function generate() {
-    const generatedThemes = generator.generate(['dark', 'light'], colorRoles, {
-        dark: darkThemeModified?.value ?? darkTheme,
-        light: lightThemeModified?.value ?? lightTheme,
+    const generatedThemes = generator.generate({
+        themeKeys: ['dark', 'light'],
+        roleKeys: colorRoles,
+        themes: {
+            dark: darkThemeModified?.value ?? darkTheme,
+            light: lightThemeModified?.value ?? lightTheme,
+        },
     });
+
     generatedDark.value = generatedThemes.dark;
     generatedLight.value = generatedThemes.light;
 

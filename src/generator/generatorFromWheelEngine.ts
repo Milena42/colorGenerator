@@ -1,14 +1,8 @@
-import { Color, type MockupColors, type Theme } from './common';
+import { Color, type MockupColors, type ThemeParams } from './common';
 import { hMinus } from './math';
 
 type HFromL = (l: number) => number;
 export type SchemeType = 'mono' | 'step2' | 'step3' | 'gradient';
-
-export type ThemeParams<T extends string, R extends string> = {
-    themeKeys: readonly T[];
-    roleKeys: readonly R[];
-    themes: Record<T, Theme<R>>;
-};
 
 export type ChromaParams = {
     accentC: number;

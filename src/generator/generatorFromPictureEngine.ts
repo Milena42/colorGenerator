@@ -1,5 +1,5 @@
 import { PolynomialRegression } from 'ml-regression';
-import { Color, type MockupColors, type Theme } from './common';
+import { Color, type MockupColors, type ThemeParams } from './common';
 import { polarFromCartesian } from './math';
 
 function makeClustersNew(
@@ -282,11 +282,8 @@ export class GeneratorFromPicture {
         });
     }
 
-    generate<T extends string, R extends string>(
-        themeKeys: readonly T[],
-        roleKeys: readonly R[],
-        themes: Record<T, Theme<R>>,
-    ) {
+    generate<T extends string, R extends string>(themeParams: ThemeParams<T, R>) {
+        const { themeKeys, roleKeys, themes } = themeParams;
         const generatedThemes: Record<T, MockupColors<R>> = Object.create(null);
         themeKeys.forEach((themeName) => {
             const themeRules = themes[themeName];
@@ -321,13 +318,11 @@ export class GeneratorFromPicture {
 export async function generateFromPictureOnce<T extends string, R extends string>(
     imgMap: Map<string, Color>,
     totalPixels: number,
-    themeKeys: readonly T[],
-    roleKeys: readonly R[],
-    themes: Record<T, Theme<R>>,
+    themeParams: ThemeParams<T, R>,
 ) {
     const generator = await GeneratorFromPicture.create(imgMap, totalPixels);
 
-    const generatedThemes = generator.generate(themeKeys, roleKeys, themes);
+    const generatedThemes = generator.generate(themeParams);
 
     return { generatedThemes, debugInfo: generator.debugInfo };
 }

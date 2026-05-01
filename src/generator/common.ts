@@ -91,14 +91,20 @@ export class Color {
     }
 }
 
-export interface ColorRoleConstraints {
+export type ColorRoleConstraints = {
     l: number;
     cMax: number;
     isAccent?: boolean;
-}
+};
 
 export type Theme<T extends string> = Record<T, ColorRoleConstraints>;
 export type MockupColors<T extends string> = Record<T, Color>;
+
+export type ThemeParams<T extends string, R extends string> = {
+    themeKeys: readonly T[];
+    roleKeys: readonly R[];
+    themes: Record<T, Theme<R>>;
+};
 
 export type ColorMap = {
     totalQ: number;

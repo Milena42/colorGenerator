@@ -34,7 +34,7 @@ export interface circleDisplay {
 import { Color } from '@/generator/common';
 import { computed } from 'vue';
 
-defineEmits(['drag-start']);
+defineEmits(['m-drag-start']);
 const props = defineProps<{
     coords: circleDisplay;
     accent?: boolean;
@@ -65,7 +65,7 @@ const lineOpacity = computed(() => {
             stroke="black"
             :stroke-opacity="lineOpacity"
             stroke-width="2"
-            @mousedown.prevent="$emit('drag-start', $event)"
+            @pointerdown.prevent="$emit('m-drag-start', $event)"
         />
     </g>
 </template>

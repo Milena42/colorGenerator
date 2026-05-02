@@ -180,7 +180,7 @@ let startY = 0;
 let initialCircleX = 0;
 let initialCircleY = 0;
 
-function dragstart(element: typeof accentCircle, event: MouseEvent) {
+function dragStart(element: typeof accentCircle, event: PointerEvent) {
     draggedCircle = element;
     startX = event.clientX;
     startY = event.clientY;
@@ -188,7 +188,7 @@ function dragstart(element: typeof accentCircle, event: MouseEvent) {
     initialCircleY = draggedCircle.cy;
 }
 
-function mousemove(event: MouseEvent) {
+function dragMove(event: PointerEvent) {
     if (!draggedCircle) return;
 
     const deltaX = event.clientX - startX;
@@ -221,7 +221,7 @@ function mousemove(event: MouseEvent) {
     draggedCircle.calculateCoords();
 }
 
-function dragend() {
+function dragEnd() {
     draggedCircle = undefined;
 }
 
@@ -370,9 +370,9 @@ const baseH = computed({
                     :height="WHEEL_SVG_WIDTH"
                     class="color-wheel-svg"
                     xmlns="http://www.w3.org/2000/svg"
-                    @mousemove.prevent="mousemove"
-                    @mouseup.prevent="dragend"
-                    @mouseleave.prevent="dragend"
+                    @pointermove.prevent="dragMove"
+                    @pointerup.prevent="dragEnd"
+                    @pointerleave.prevent="dragEnd"
                 >
                     <ArcShortest
                         v-if="typeOfScheme == 'gradient'"
@@ -388,18 +388,18 @@ const baseH = computed({
                         :coords="accentCircle"
                         accent
                         :title="showAtLeast2Circles ? 'акцентный тон' : 'тон схемы'"
-                        @drag-start="(e) => dragstart(accentCircle, e)"
+                        @m-drag-start="(e) => dragStart(accentCircle, e)"
                     />
                     <CircleInput
                         :coords="lightCircle"
                         title="светлые"
-                        @drag-start="(e) => dragstart(lightCircle, e)"
+                        @m-drag-start="(e) => dragStart(lightCircle, e)"
                         v-if="show3Circles"
                     />
                     <CircleInput
                         :coords="darkCircle"
                         :title="show3Circles ? 'темные' : 'фоновые'"
-                        @drag-start="(e) => dragstart(darkCircle, e)"
+                        @m-drag-start="(e) => dragStart(darkCircle, e)"
                         v-if="showAtLeast2Circles"
                     />
                     <circle

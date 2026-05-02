@@ -32,7 +32,7 @@ import {
 } from '@/generator/themesExample';
 import MockupEditor from '@/mockupEditor/MockupEditor.vue';
 import { vOnClickOutside } from '@vueuse/components';
-import { computed, inject, onUnmounted, reactive, ref, watch, type Ref } from 'vue';
+import { computed, inject, onUnmounted, reactive, ref, useTemplateRef, watch, type Ref } from 'vue';
 import ArcShortest from './ArcShortest.vue';
 import CircleInput, {
     circleObject,
@@ -242,6 +242,28 @@ onUnmounted(() => {
     dragEnd();
 });
 
+const svg = useTemplateRef('svg');
+
+function moveAccentToClick(event: PointerEvent) {
+    if (!svg.value) {
+        return;
+    }
+    const rect = svg.value.getBoundingClientRect();
+    const converterCircle = new circleObject(0);
+    converterCircle.cx = event.clientX - rect.left;
+    converterCircle.cy = event.clientY - rect.top;
+    converterCircle.calculateColorCoords();
+    const c = converterCircle.color.c;
+    const clickOnTrack = R_SPECTRAL_CIRCLE - 3 <= c && c <= R_SPECTRAL_CIRCLE + 3;
+
+    if (!clickOnTrack) {
+        return;
+    }
+
+    const targetH = converterCircle.color.h;
+    baseH.value = targetH;
+}
+
 function moveDependent(dH: number) {
     inputDarkH.value = (inputDarkH.value + dH + 360) % 360;
     inputLightH.value = (inputLightH.value + dH + 360) % 360;
@@ -387,6 +409,8 @@ const baseH = computed({
                     :height="WHEEL_SVG_WIDTH"
                     class="color-wheel-svg"
                     xmlns="http://www.w3.org/2000/svg"
+                    @click="moveAccentToClick"
+                    ref="svg"
                 >
                     <ArcShortest
                         v-if="typeOfScheme == 'gradient'"

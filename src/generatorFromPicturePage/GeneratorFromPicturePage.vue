@@ -35,7 +35,7 @@ const generatedLight = ref<MockupColors<ColorRole>>();
 const loading = ref(false);
 const loaderVisible = ref(false);
 
-let generator: GeneratorFromPicture;
+let generator: GeneratorFromPicture | undefined;
 
 async function startLoading(isLong: boolean) {
     loading.value = true;
@@ -60,6 +60,8 @@ async function setPicture() {
 }
 
 function generate() {
+    if (!generator) return;
+
     const generatedThemes = generator.generate({
         themeKeys: ['dark', 'light'],
         roleKeys: colorRoles,

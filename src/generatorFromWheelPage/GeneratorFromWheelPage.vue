@@ -1,5 +1,9 @@
 <script setup lang="ts">
-import { setWithTransition } from '@/assets/animation';
+import {
+    lockBodyInteractions,
+    setWithTransition,
+    unlockBodyInteractions,
+} from '@/assets/animation';
 import IconAnalog from '@/assets/icons/colorSchemes/IconAnalog.vue';
 import IconComplementary from '@/assets/icons/colorSchemes/IconComplementary.vue';
 import IconMono from '@/assets/icons/colorSchemes/IconMono.vue';
@@ -28,7 +32,7 @@ import {
 } from '@/generator/themesExample';
 import MockupEditor from '@/mockupEditor/MockupEditor.vue';
 import { vOnClickOutside } from '@vueuse/components';
-import { computed, inject, reactive, ref, watch, type Ref } from 'vue';
+import { computed, inject, onUnmounted, reactive, ref, watch, type Ref } from 'vue';
 import ArcShortest from './ArcShortest.vue';
 import CircleInput, {
     circleObject,
@@ -186,10 +190,15 @@ function dragStart(element: typeof accentCircle, event: PointerEvent) {
     startY = event.clientY;
     initialCircleX = draggedCircle.cx;
     initialCircleY = draggedCircle.cy;
+
+    document.addEventListener('pointermove', dragMove);
+    document.addEventListener('pointerup', dragEnd);
+    lockBodyInteractions();
 }
 
 function dragMove(event: PointerEvent) {
     if (!draggedCircle) return;
+    event.preventDefault();
 
     const deltaX = event.clientX - startX;
     const deltaY = event.clientY - startY;
@@ -223,7 +232,15 @@ function dragMove(event: PointerEvent) {
 
 function dragEnd() {
     draggedCircle = undefined;
+
+    document.removeEventListener('pointermove', dragMove);
+    document.removeEventListener('pointerup', dragEnd);
+    unlockBodyInteractions();
 }
+
+onUnmounted(() => {
+    dragEnd();
+});
 
 function moveDependent(dH: number) {
     inputDarkH.value = (inputDarkH.value + dH + 360) % 360;
@@ -370,9 +387,6 @@ const baseH = computed({
                     :height="WHEEL_SVG_WIDTH"
                     class="color-wheel-svg"
                     xmlns="http://www.w3.org/2000/svg"
-                    @pointermove.prevent="dragMove"
-                    @pointerup.prevent="dragEnd"
-                    @pointerleave.prevent="dragEnd"
                 >
                     <ArcShortest
                         v-if="typeOfScheme == 'gradient'"

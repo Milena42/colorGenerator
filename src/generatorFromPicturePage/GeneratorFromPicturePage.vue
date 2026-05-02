@@ -37,10 +37,16 @@ const loaderVisible = ref(false);
 
 let generator: GeneratorFromPicture;
 
-async function turnOnLoading(isLong: boolean) {
+async function startLoading(isLong: boolean) {
     loading.value = true;
     document.body.style.pointerEvents = 'none';
     loaderVisible.value = isLong;
+}
+
+async function stopLoading() {
+    loading.value = false;
+    loaderVisible.value = false;
+    document.body.style.pointerEvents = 'auto';
 }
 
 async function setPicture() {
@@ -50,9 +56,7 @@ async function setPicture() {
     generator = await GeneratorFromPicture.create(imgMap.value.data, imgMap.value.totalQ);
     generate();
 
-    loading.value = false;
-    loaderVisible.value = false;
-    document.body.style.pointerEvents = 'auto';
+    stopLoading();
 }
 
 function generate() {
@@ -86,7 +90,12 @@ const showPlots: Ref<boolean> = inject('showPlots') ?? ref(false);
 <template>
     <div class="col">
         <div class="grow generator-picture-page-main">
-            <InputPicture v-model:imgMap="imgMap" @change="setPicture" @loading="turnOnLoading" />
+            <InputPicture
+                v-model:imgMap="imgMap"
+                @change="setPicture"
+                @loading="startLoading"
+                @stopLoading="stopLoading"
+            />
             <MockupEditor
                 class="grow"
                 :colorsDark="generatedDark"

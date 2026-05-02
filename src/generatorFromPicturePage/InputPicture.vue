@@ -9,6 +9,7 @@ const imgMap = defineModel<ColorMap | undefined>('imgMap');
 const emit = defineEmits<{
     change: [];
     loading: [isLong: boolean];
+    stopLoading: [];
 }>();
 
 const imageHere = ref(false);
@@ -40,48 +41,70 @@ function drop(e: DragEvent) {
 
     if (!e.dataTransfer) return;
 
-    const file = e.dataTransfer.files[0];
+    const files = e.dataTransfer.files;
+    if (files.length < 1) {
+        return;
+    }
+    const file = files.item(0);
+    if (file != null) {
+        readFile(file);
+    }
+}
 
-    readFile(file);
+const validationError = ref('');
+function showError(message: string) {
+    validationError.value = message;
+    clear();
 }
 
 function readFile(file: File) {
-    imageHere.value = true;
-    const reader = new FileReader();
+    validationError.value = '';
 
+    if (!file.type.startsWith('image/')) {
+        imageError();
+        return;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+        showError('Максимальный размер: 10 МБ');
+        return;
+    }
+
+    const reader = new FileReader();
     reader.onload = () => {
         if (reader.result == image.value) {
-            emit('change'); // чтобы было событие загрузки даже если картинка та же
+            emit('change');
         } else {
             image.value = reader.result;
+            imageHere.value = true;
         }
     };
-
     reader.onerror = (e) => {
         console.error(reader.error, e);
-        alert('ошибка при чтении файла'); //TODO
+        showError('Ошибка при чтении файла');
     };
-
     reader.readAsDataURL(file);
+}
+
+function imageError() {
+    showError('Загрузите изображение, например, .png или .jpg');
 }
 
 async function loadImgData(e: Event) {
     const img1: HTMLImageElement = e.target as HTMLImageElement;
 
     const size = img1.naturalHeight * img1.naturalWidth;
-
     const isLong = size > 200000;
     emit('loading', isLong);
     await new Promise((r) => setTimeout(r, 50));
 
-    if (!canvas.value || !ctx.value) {
-        console.error('canvas not found');
-        return;
+    try {
+        imgMap.value = await mapFromImage(img1, canvas.value!, ctx.value!);
+        emit('change');
+    } catch (e) {
+        console.error(e);
+        showError('Ошибка при чтении файла');
+        emit('stopLoading');
     }
-
-    imgMap.value = await mapFromImage(img1, canvas.value, ctx.value);
-
-    emit('change');
 }
 
 function clear() {
@@ -103,10 +126,11 @@ function clear() {
         <button v-if="imageHere" @click="clear">
             <IconClose />
         </button>
-        <img v-if="imageHere" :src="image" @load="loadImgData" />
+        <img v-if="imageHere" :src="image" @load="loadImgData" @error="imageError" />
         <div v-else class="input-file">
             <input type="file" id="file" @change="inputFile" accept=".jpg, .jpeg, .png" />
-            <label for="file" class="button text-button">Загрузите изображение (PNG, JPG)</label>
+            <label for="file" class="button text-button">Загрузить изображение</label>
+            <p class="validation-error">{{ validationError }}</p>
         </div>
         <div class="drag-over-overlay" v-show="isDraggingOver">
             <p>Перетащите картинку сюда</p>
@@ -166,6 +190,11 @@ function clear() {
 }
 
 .input-file {
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: center;
+    justify-content: center;
+
     position: relative;
 
     input[type='file'] {
@@ -177,5 +206,9 @@ function clear() {
         height: 1px;
         overflow: hidden;
     }
+}
+
+.validation-error {
+    color: var(--error-text);
 }
 </style>

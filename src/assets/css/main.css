@@ -48,6 +48,8 @@ body,
 
     --transparent-overlay: rgba(255, 255, 255, 0.5);
     --transparent-border: rgba(0, 0, 0, 0.2);
+
+    --error-text: #a2041a;
 }
 
 .app-root.dark {
@@ -66,6 +68,8 @@ body,
 
     --transparent-overlay: rgba(0, 0, 0, 0.5);
     --transparent-border: rgba(255, 255, 255, 0.25);
+
+    --error-text: #ea726c;
 }
 
 .icon-harmony {

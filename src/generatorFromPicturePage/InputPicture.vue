@@ -167,10 +167,6 @@ function clear() {
     &.drag-over {
         border-color: var(--accent-small);
         background: var(--accent-small);
-
-        * {
-            pointer-events: none;
-        }
     }
 
     .drag-over-overlay {

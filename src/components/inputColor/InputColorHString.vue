@@ -2,7 +2,7 @@
 import chroma from 'chroma-js';
 import { ref } from 'vue';
 
-const h = defineModel();
+const h = defineModel<number>();
 
 const emit = defineEmits<{
     change: [];
@@ -11,7 +11,7 @@ const emit = defineEmits<{
 const colorString = ref('');
 
 function change() {
-    let h1;
+    let h1: number;
     try {
         h1 = chroma(colorString.value).get('oklch.h');
     } catch {

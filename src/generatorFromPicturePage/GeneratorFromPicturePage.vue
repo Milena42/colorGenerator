@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { lockBodyInteractions, unlockBodyInteractions } from '@/assets/animation';
 import { Color, type ColorMap, type MockupColors, type Theme } from '@/generator/common';
 import { GeneratorFromPicture } from '@/generator/generatorFromPictureEngine';
 import { colorRoles, darkTheme, lightTheme, type ColorRole } from '@/generator/themesExample';
@@ -39,14 +40,14 @@ let generator: GeneratorFromPicture | undefined;
 
 async function startLoading(isLong: boolean) {
     loading.value = true;
-    document.body.style.pointerEvents = 'none';
+    lockBodyInteractions();
     loaderVisible.value = isLong;
 }
 
 async function stopLoading() {
     loading.value = false;
     loaderVisible.value = false;
-    document.body.style.pointerEvents = 'auto';
+    unlockBodyInteractions();
 }
 
 async function setPicture() {

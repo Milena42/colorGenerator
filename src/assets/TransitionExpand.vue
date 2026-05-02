@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { onUnmounted } from 'vue';
+import { lockBodyInteractions, unlockBodyInteractions } from './animation';
 
 function setMin(el: Element) {
     const e = el as HTMLElement;
@@ -69,45 +70,39 @@ function leave(el: Element, done: () => void) {
     e.addEventListener('transitionend', onEnd);
 }
 
-function lock() {
-    document.body.classList.add('is-animating');
-}
-function unlock() {
-    document.body.classList.remove('is-animating');
-}
 onUnmounted(() => {
-    unlock();
+    unlockBodyInteractions();
 });
 </script>
 
 <template>
     <Transition
-        @before-enter="lock"
-        @before-leave="lock"
+        @before-enter="lockBodyInteractions"
+        @before-leave="unlockBodyInteractions"
         @enter="enter"
         @leave="leave"
         @after-enter="
             (el) => {
                 setNull(el);
-                unlock();
+                unlockBodyInteractions();
             }
         "
         @after-leave="
             (el) => {
                 setNull(el);
-                unlock();
+                unlockBodyInteractions();
             }
         "
         @enter-cancelled="
             (el) => {
                 setNull(el);
-                unlock();
+                unlockBodyInteractions();
             }
         "
         @leave-cancelled="
             (el) => {
                 setNull(el);
-                unlock();
+                unlockBodyInteractions();
             }
         "
         name="expand"

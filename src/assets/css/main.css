@@ -377,6 +377,11 @@ input {
     gap: 0.2rem;
 }
 
+figure {
+    margin: 0px;
+    padding: 0px;
+}
+
 figcaption {
     text-align: center;
 }

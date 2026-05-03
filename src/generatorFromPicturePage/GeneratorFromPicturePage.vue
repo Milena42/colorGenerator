@@ -164,9 +164,9 @@ const showPlots: Ref<boolean> = inject('showPlots') ?? ref(false);
 }
 
 .plots {
-    margin: 6rem 1rem;
+    margin: calc(var(--adaptive-gap) * 6) var(--adaptive-gap);
     align-items: stretch;
-    gap: 4rem;
+    gap: calc(var(--adaptive-gap) * 4);
 
     p {
         text-align: center;

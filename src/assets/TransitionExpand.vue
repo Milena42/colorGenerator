@@ -122,27 +122,31 @@ onUnmounted(() => {
 }
 .expand-enter-active {
     transition:
-        max-height 0.5s linear,
-        max-width 0.5s linear,
-        opacity 0.5s linear;
+        max-height 0.55s ease-out,
+        max-width 0.5s ease-out,
+        opacity 0.5s ease-in;
 
     overflow: hidden;
 }
 .expand-leave-active {
     transition:
-        max-height 0.8s linear,
-        max-width 0.8s linear,
-        opacity 0.5s linear;
+        max-height 0.55s ease-out,
+        max-width 0.5s ease-out,
+        opacity 0.3s ease-out;
 
     overflow: hidden;
 }
 
 .palette-swap-transition {
     .expand-enter-active {
-        transition: max-height 1.5s cubic-bezier(1, 0, 0.87, 0.4);
+        transition:
+            max-height 0.5s ease-out,
+            opacity 0.45s ease-in-out;
     }
     .expand-leave-active {
-        transition: max-height 1.5s cubic-bezier(0, 1.03, 0.72, 0.65);
+        transition:
+            max-height 0.45s ease-out,
+            opacity 0.4s ease-in-out;
     }
 }
 </style>

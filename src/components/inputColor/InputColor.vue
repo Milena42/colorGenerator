@@ -191,11 +191,30 @@ const emit = defineEmits<{
     opacity: 0;
 }
 .fade-enter-active {
-    transition: all 1s linear;
+    transition: all 0.4s ease-in-out;
     transition-delay: 0.1s;
+    overflow: hidden;
 }
 
 .fade-leave-active {
-    transition: all 0.4s linear;
+    transition: all 0.2s linear;
+    overflow: hidden;
+}
+
+.palette-swap-transition {
+    .fade-enter-from,
+    .fade-leave-to {
+        max-width: 20em;
+        opacity: 0;
+    }
+
+    .fade-enter-active {
+        transition: opacity 0.4s ease-out;
+        transition-delay: 0s;
+    }
+
+    .fade-leave-active {
+        transition: opacity 0.1s ease-out;
+    }
 }
 </style>

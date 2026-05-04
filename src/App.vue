@@ -66,7 +66,7 @@ provide('lightThemeLightness', lightThemeLightness);
                     <button @click="showSettings = !showSettings">
                         <IconSettings />
                     </button>
-                    <TransitionExpand>
+                    <TransitionExpand hideContent>
                         <div v-if="showSettings" class="popup right-0">
                             <div class="row">
                                 <p>Редактирование цветов:</p>
@@ -149,7 +149,7 @@ provide('lightThemeLightness', lightThemeLightness);
                     <button @click="showMenu = !showMenu">
                         <IconMenu width="24px" height="auto" />
                     </button>
-                    <TransitionExpand>
+                    <TransitionExpand hideContent>
                         <div v-if="showMenu" class="popup right-0">
                             <a
                                 href="https://forms.yandex.ru/u/69be9a001f1eb598d3b3d764"

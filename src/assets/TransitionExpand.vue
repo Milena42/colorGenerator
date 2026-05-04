@@ -2,12 +2,20 @@
 import { onUnmounted } from 'vue';
 import { lockBodyInteractions, unlockBodyInteractions } from './animation';
 
+const props = defineProps<{
+    hideContent?: boolean;
+}>();
+
 function setMin(el: Element) {
     const e = el as HTMLElement;
 
     e.style.maxHeight = '0px';
     e.style.maxWidth = '0px';
     e.style.overflow = 'hidden';
+
+    if (props.hideContent) {
+        e.classList.add('hide-content');
+    }
 }
 
 function setNull(el: Element) {
@@ -16,6 +24,8 @@ function setNull(el: Element) {
     e.style.maxHeight = '';
     e.style.maxWidth = '';
     e.style.overflow = '';
+
+    e.classList.remove('hide-content');
 }
 
 function calcMax(el: Element) {
@@ -29,6 +39,7 @@ function setMax(el: Element, h: string, w: string) {
     e.style.maxWidth = w;
     e.style.overflow = '';
 }
+
 function enter(el: Element, done: () => void) {
     const e = el as HTMLElement;
 
@@ -147,6 +158,27 @@ onUnmounted(() => {
         transition:
             max-height 0.45s ease-out,
             opacity 0.4s ease-in-out;
+    }
+}
+
+.hide-content * {
+    opacity: 0;
+    transition: opacity 0.05s ease-in-out;
+}
+
+.hide-content {
+    &.expand-enter-active {
+        transition:
+            max-height 0.25s ease-out,
+            max-width 0.2s ease-out,
+            opacity 0.2s ease-in;
+    }
+
+    &.expand-leave-active {
+        transition:
+            max-height 0.2s ease-in,
+            max-width 0.15s ease-in,
+            opacity 0.15s ease-out;
     }
 }
 </style>

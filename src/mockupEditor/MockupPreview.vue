@@ -23,7 +23,7 @@ const cssColors = computed(() => getCssColors(props.colors, 'rgbHex'));
                 Еще текст, чтобы строки переносились...
             </p>
             <div class="mockup-icons-row">
-                <div class="button">Кнопка</div>
+                <div class="mockup-button">Кнопка</div>
                 <IconHeart class="icon" />
                 <IconPlus class="icon" />
                 <IconStar class="icon" />
@@ -35,7 +35,7 @@ const cssColors = computed(() => getCssColors(props.colors, 'rgbHex'));
                 Пример текста. <span class="a">Типа ссылка</span>, чтобы посмотреть контрастность.
                 Еще текст, чтобы строки переносились...
             </p>
-            <div class="button">Кнопка</div>
+            <div class="mockup-button">Кнопка</div>
         </div>
     </div>
 </template>
@@ -52,13 +52,13 @@ const cssColors = computed(() => getCssColors(props.colors, 'rgbHex'));
     .landing-second {
         background-color: var(--overlay);
 
-        .button {
+        .mockup-button {
             background-color: var(--accentBright);
             color: var(--bg);
         }
     }
 
-    .button {
+    .mockup-button {
         background-color: var(--accentLarge);
         color: var(--textOnAccent);
     }
@@ -129,7 +129,7 @@ const cssColors = computed(() => getCssColors(props.colors, 'rgbHex'));
     justify-content: space-between;
 }
 
-.button {
+.mockup-button {
     display: inline-flex;
     align-items: center;
     justify-content: center;

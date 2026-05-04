@@ -39,6 +39,11 @@ const darkThemeLightness = ref(darkTheme);
 provide('darkThemeLightness', darkThemeLightness);
 const lightThemeLightness = ref(lightTheme);
 provide('lightThemeLightness', lightThemeLightness);
+
+function resetThemeRules() {
+    darkThemeLightness.value = darkTheme;
+    lightThemeLightness.value = lightTheme;
+}
 </script>
 
 <template>
@@ -54,6 +59,7 @@ provide('lightThemeLightness', lightThemeLightness);
             </div>
 
             <InputThemeLightness v-model="darkThemeLightness" class="grow" />
+            <button @click="resetThemeRules">*</button>
             <InputThemeLightness v-model="lightThemeLightness" themeIsLight class="grow" />
 
             <div class="row">

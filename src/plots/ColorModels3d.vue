@@ -141,7 +141,7 @@ onMounted(() => {
 });
 
 const showQuantity: Ref<boolean> = inject('showQuantityOnPlots') ?? ref(true);
-const defaultSizeOfPoint = 5;
+const defaultSizeOfPoint = 0.1;
 
 function plotPoints() {
     if (props.data) {

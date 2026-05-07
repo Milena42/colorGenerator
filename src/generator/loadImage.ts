@@ -29,7 +29,7 @@ export async function mapFromImage(
 
     canvas.width = theWidth;
     canvas.height = theHeight;
-
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(img, 0, 0, theWidth, theHeight); // TODO InvalidStateError, TypeMismatchError
     const imgData = ctx.getImageData(0, 0, theWidth, theHeight); // TODO IndexSizeError, SecurityError
 

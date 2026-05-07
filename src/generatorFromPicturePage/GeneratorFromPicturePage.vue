@@ -1,11 +1,18 @@
 <script setup lang="ts">
 import { lockBodyInteractions, unlockBodyInteractions } from '@/assets/animation';
 import { Color, type ColorMap, type MockupColors, type Theme } from '@/generator/common';
-import { GeneratorFromPicture } from '@/generator/generatorFromPictureEngine';
-import { colorRoles, darkTheme, lightTheme, type ColorRole } from '@/generator/themesExample';
+import { GeneratorFromPicture, type GeneratedThemes } from '@/generator/generatorFromPictureEngine';
+import {
+    colorRoles,
+    darkTheme,
+    lightTheme,
+    themeKeys,
+    type ColorRole,
+    type ThemeName,
+} from '@/generator/themesExample';
 import MockupEditor from '@/mockupEditor/MockupEditor.vue';
 import ArrayOfPlots from '@/plots/ArrayOfPlots.vue';
-import { defineAsyncComponent, inject, ref, shallowRef, watch, type Ref } from 'vue';
+import { computed, defineAsyncComponent, inject, ref, shallowRef, watch, type Ref } from 'vue';
 import InputPicture from './InputPicture.vue';
 
 const ColorModels3d = defineAsyncComponent(() => import('@/plots/ColorModels3d.vue'));
@@ -29,9 +36,6 @@ const polarHistogramCircle = ref(0);
 const polarHistogramBorders = ref<number[]>([]);
 
 const graysMap = shallowRef(new Map<string, Color>());
-
-const generatedDark = ref<MockupColors<ColorRole>>();
-const generatedLight = ref<MockupColors<ColorRole>>();
 
 const loading = ref(false);
 const loaderVisible = ref(false);
@@ -60,11 +64,30 @@ async function setPicture() {
     stopLoading();
 }
 
+const themeVariants = ref<GeneratedThemes<ThemeName, ColorRole>>();
+
+const generated = computed(() => {
+    if (!themeVariants.value) {
+        return undefined;
+    }
+
+    const themes: Record<ThemeName, MockupColors<ColorRole>> = Object.create(null);
+    themeKeys.forEach((themeName) => {
+        themes[themeName] = Object.create(null);
+        colorRoles.forEach((role) => {
+            if (!themeVariants.value) return;
+            const n = themeVariants.value[themeName].chosen[role];
+            themes[themeName][role] = themeVariants.value[themeName].variants[n][role];
+        });
+    });
+    return themes;
+});
+
 function generate() {
     if (!generator) return;
 
     const generatedThemes = generator.generate({
-        themeKeys: ['dark', 'light'],
+        themeKeys,
         roleKeys: colorRoles,
         themes: {
             dark: darkThemeModified?.value ?? darkTheme,
@@ -72,8 +95,7 @@ function generate() {
         },
     });
 
-    generatedDark.value = generatedThemes.dark;
-    generatedLight.value = generatedThemes.light;
+    themeVariants.value = generatedThemes;
 
     const debugInfo = generator.debugInfo;
 
@@ -99,12 +121,34 @@ const showPlots: Ref<boolean> = inject('showPlots') ?? ref(false);
                 @loading="startLoading"
                 @stopLoading="stopLoading"
             />
-            <MockupEditor
-                class="grow"
-                :colorsDark="generatedDark"
-                :colorsLight="generatedLight"
-                v-if="imgMap?.totalQ && generatedDark && generatedLight"
-            />
+            <MockupEditor class="grow" :colors="generated" v-if="imgMap?.totalQ && generated" />
+        </div>
+        <div v-if="themeVariants" class="generator-picture-variants">
+            <p>Выбрать другие варианты сгенерированных цветов:</p>
+            <div>
+                <div :key="key" v-for="(theme, key) in themeVariants" class="row">
+                    <div class="role-names">
+                        <p :key="key" v-for="(rolesVariant, key) in theme.chosen">
+                            {{ key }}
+                        </p>
+                    </div>
+
+                    <div
+                        :key="clusterNumber"
+                        v-for="(rolesVariant, clusterNumber) in theme.variants"
+                        class="col"
+                    >
+                        <button
+                            :key="role"
+                            v-for="(color, role) in rolesVariant"
+                            class="button-color-variant"
+                            :style="{ background: color.adjustForRGB() }"
+                            :class="{ 'chosen-variant': theme.chosen[role] == clusterNumber }"
+                            @click="theme.chosen[role] = clusterNumber"
+                        ></button>
+                    </div>
+                </div>
+            </div>
         </div>
         <div v-if="showPlots && imgMap?.totalQ" class="col plots">
             <div class="row">
@@ -160,6 +204,54 @@ const showPlots: Ref<boolean> = inject('showPlots') ?? ref(false);
     .dropbox {
         flex: 5 1 0;
         align-self: stretch;
+    }
+}
+
+.generator-picture-variants {
+    margin: calc(var(--adaptive-gap) * 6) var(--adaptive-gap);
+    text-align: center;
+
+    & > div {
+        display: flex;
+        flex-flow: row wrap;
+        justify-content: center;
+        gap: calc(var(--adaptive-gap) * 8);
+
+        row-gap: calc(var(--adaptive-gap) * 8);
+    }
+
+    --row-gap: 3rem;
+
+    .row {
+        gap: 2rem;
+    }
+
+    .col {
+        gap: var(--row-gap);
+        justify-content: space-around;
+    }
+
+    .role-names {
+        font-family: var(--font-mono);
+        display: flex;
+        flex-flow: column nowrap;
+        justify-content: space-around;
+        gap: var(--row-gap);
+
+        p {
+            margin: 0px;
+        }
+    }
+
+    .button-color-variant {
+        height: 2rem;
+        width: 2rem;
+        border-radius: 50%;
+        border: 1px solid var(--transparent-border);
+
+        &.chosen-variant {
+            transform: scale(1.6);
+        }
     }
 }
 

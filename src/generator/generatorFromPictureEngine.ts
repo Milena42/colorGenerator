@@ -2,7 +2,7 @@ import { PolynomialRegression } from 'ml-regression';
 import { Color, type MockupColors, type ThemeParams } from './common';
 import { polarFromCartesian } from './math';
 
-function makeClustersNew(
+function makeClusters(
     mapOfColors: Map<string, Color>,
 ):
     | { clusters: []; debugInfo: undefined }
@@ -128,42 +128,62 @@ function arraysForRegression(m: Map<string, Color>) {
     return [lArray, xArray, yArray];
 }
 
-function regrFunction(mapOfColors: Map<string, Color>) {
+function regression(mapOfColors: Map<string, Color>) {
     const [l, x, y] = arraysForRegression(mapOfColors);
+    //////////////
+    /// Это потому что регрессии надо минимум 3 точки
+    l.push(0, 100);
+    x.push(0, 0);
+    y.push(0, 0);
+    ///////////
     const xFromL = new PolynomialRegression(l, x, 2);
     const yFromL = new PolynomialRegression(l, y, 2);
     return { xFromL, yFromL };
 }
 
-function addBlack(map: Map<string, Color>) {
-    map.set('#000000', new Color(0, { c: 0, h: 0 }));
-    map.set('#010101', new Color(1, { c: 0, h: 0 }));
-    map.set('#020202', new Color(2, { c: 0, h: 0 }));
-}
-
-function addWhite(map: Map<string, Color>) {
-    map.set('#ffffff', new Color(100, { c: 0, h: 0 }));
-    map.set('#fefefe', new Color(99, { c: 0, h: 0 }));
-    map.set('#fdfdfd', new Color(98, { c: 0, h: 0 }));
-}
-
 type LRange = {
-    start: number;
-    end: number;
-    function: {
-        xFromL: PolynomialRegression;
-        yFromL: PolynomialRegression;
-    } | null;
+    min: number;
+    max: number;
 };
 
 function lInRange(l: number, lRange: LRange) {
-    return lRange.start <= l && l <= lRange.end;
+    return lRange.min <= l && l <= lRange.max;
 }
 
-function getLFunction(l: number, lRanges: LRange[]) {
-    const range = lRanges.find((r) => lInRange(l, r));
-    if (!range) console.error('lRanges не покрывает весь диапазон');
-    return range!.function!;
+function rangesOverlap(a: LRange, b: LRange) {
+    return b.min <= a.max && a.min <= b.max;
+}
+
+class Cluster {
+    colors: Map<string, Color>;
+    lRange: LRange;
+
+    private regression: {
+        xFromL: PolynomialRegression;
+        yFromL: PolynomialRegression;
+    };
+
+    chFromL(l: number) {
+        const x = this.regression.xFromL.predict(l);
+        const y = this.regression.yFromL.predict(l);
+        const [c, h] = polarFromCartesian(x, y);
+        return [c, h];
+    }
+
+    constructor(mapOfColors: Map<string, Color>) {
+        this.regression = regression(mapOfColors);
+        this.colors = mapOfColors;
+        const arr = Array.from(mapOfColors);
+        this.lRange = arr
+            .map(([, { l }]) => l)
+            .reduce(
+                (m, current) => ({
+                    min: Math.min(m.min, current),
+                    max: Math.max(m.max, current),
+                }),
+                { min: 200, max: -100 },
+            );
+    }
 }
 
 type ClusteringDebugInfo = {
@@ -173,6 +193,7 @@ type ClusteringDebugInfo = {
     smoothedCircularHistogram: number[];
     minQForHistogram: number;
 };
+
 type GeneratorDebugInfo = {
     grays: Map<string, Color>;
     chromaTorus: Map<string, Color>;
@@ -180,80 +201,93 @@ type GeneratorDebugInfo = {
     clusteringDebug: ClusteringDebugInfo | undefined;
 };
 
+type LRangeCluster = { lRange: LRange; cluster: number | null };
+
 export class GeneratorFromPicture {
-    lRanges: LRange[];
+    clusters: Cluster[];
+    lRangeClusters: LRangeCluster[];
 
     debugInfo: GeneratorDebugInfo;
 
-    private constructor(lRanges: LRange[], debugInfo: GeneratorDebugInfo) {
-        this.lRanges = lRanges;
+    private constructor(
+        clusters: Cluster[],
+        lRangeClusters: LRangeCluster[],
+        debugInfo: GeneratorDebugInfo,
+    ) {
+        this.clusters = clusters;
+        this.lRangeClusters = lRangeClusters;
         this.debugInfo = debugInfo;
     }
 
     static async create(imgMap: Map<string, Color>, totalPixels: number) {
         const chromaLimit = 8;
-        const sufficientNumber = 0.005 * totalPixels;
-        //console.log("sN", sufficientNumber);
 
         const chromaTorus = new Map(Array.from(imgMap).filter(([, v]) => v.c > chromaLimit));
         const grays = new Map(Array.from(imgMap).filter(([, v]) => v.c < chromaLimit));
 
-        addWhite(grays);
-        addBlack(grays);
-
-        const grayFunction = regrFunction(grays);
-        const sectors: (typeof grayFunction)[] = [];
+        const allClusters: Cluster[] = [];
+        if (grays.size) allClusters.push(new Cluster(grays));
 
         let clusteringDebug;
         let mapsClustered: Map<string, Color>[];
         if (!chromaTorus.size) {
-            // видимо, это нечто серое
-            console.log('gray');
             mapsClustered = [];
             clusteringDebug = undefined;
         } else {
-            const { clusters, debugInfo } = makeClustersNew(chromaTorus);
+            const { clusters, debugInfo } = makeClusters(chromaTorus);
             clusteringDebug = debugInfo;
             mapsClustered = clusters;
             mapsClustered.forEach((mapOfColors) => {
-                const newMap = new Map(mapOfColors);
-                addBlack(newMap);
-                addWhite(newMap);
-                sectors.push(regrFunction(newMap));
+                allClusters.push(new Cluster(mapOfColors));
             });
         }
-        const lRanges: LRange[] = [
+
+        const lRangeClusters: LRangeCluster[] = [
             {
-                start: 0,
-                end: 30,
-                function: null,
+                lRange: {
+                    min: 0,
+                    max: 30,
+                },
+                cluster: null,
             },
             {
-                start: 30,
-                end: 40,
-                function: null,
+                lRange: {
+                    min: 30,
+                    max: 40,
+                },
+                cluster: null,
             },
             {
-                start: 40,
-                end: 70,
-                function: null,
+                lRange: {
+                    min: 40,
+                    max: 70,
+                },
+                cluster: null,
             },
             {
-                start: 70,
-                end: 80,
-                function: null,
+                lRange: {
+                    min: 70,
+                    max: 80,
+                },
+                cluster: null,
             },
             {
-                start: 80,
-                end: 100,
-                function: null,
+                lRange: {
+                    min: 80,
+                    max: 100,
+                },
+                cluster: null,
             },
         ];
 
-        lRanges.forEach((lRange) => {
+        const sufficientNumber = 0.005 * totalPixels;
+
+        lRangeClusters.forEach((lRangeCluster) => {
             const { i } = mapsClustered.reduce(
-                (best, currentMap, i) => {
-                    const arr = Array.from(currentMap).filter(([, v]) => lInRange(v.l, lRange));
+                (best, colors, i) => {
+                    const arr = Array.from(colors).filter(([, v]) =>
+                        lInRange(v.l, lRangeCluster.lRange),
+                    );
                     let q, c;
                     if (arr.length == 0) {
                         q = 0;
@@ -270,11 +304,17 @@ export class GeneratorFromPicture {
             );
 
             if (i == -1) {
-                lRange.function = grayFunction;
-            } else lRange.function = sectors[i];
+                if (
+                    Array.from(grays).filter(([, v]) => lInRange(v.l, lRangeCluster.lRange)).length
+                ) {
+                    lRangeCluster.cluster = 0;
+                } else {
+                    lRangeCluster.cluster = null;
+                }
+            } else lRangeCluster.cluster = i + 1; // TODO надо ключи
         });
 
-        return new GeneratorFromPicture(lRanges, {
+        return new GeneratorFromPicture(allClusters, lRangeClusters, {
             grays,
             chromaTorus,
             mapsClustered,
@@ -284,32 +324,82 @@ export class GeneratorFromPicture {
 
     generate<T extends string, R extends string>(themeParams: ThemeParams<T, R>) {
         const { themeKeys, roleKeys, themes } = themeParams;
-        const generatedThemes: Record<T, MockupColors<R>> = Object.create(null);
+        const generatedThemes: Record<
+            T,
+            { variants: GeneratedVariants<R>; chosen: ChosenVariants<R> }
+        > = Object.create(null);
         themeKeys.forEach((themeName) => {
             const themeRules = themes[themeName];
 
-            const generatedTheme: MockupColors<R> = Object.create(null);
-            roleKeys.forEach((roleName) => {
-                const { l, cMax } = themeRules[roleName];
+            generatedThemes[themeName] = { variants: [], chosen: Object.create(null) };
 
-                const { xFromL, yFromL } = getLFunction(l, this.lRanges);
-                const x = xFromL.predict(l);
-                const y = yFromL.predict(l);
+            this.clusters.forEach((cluster) => {
+                const generatedTheme: MockupColors<R> = Object.create(null);
+                roleKeys.forEach((roleName) => {
+                    const { l, cMax } = themeRules[roleName];
 
-                const [cF, h] = polarFromCartesian(x, y);
-                const c = Math.min(cF, cMax);
+                    const [cF, h] = cluster.chFromL(l);
+                    const c = Math.min(cF, cMax);
 
-                const elem = new Color(l, { c, h });
-                elem.adjustForRGB();
+                    const elem = new Color(l, { c, h });
+                    elem.adjustForRGB();
 
-                generatedTheme[roleName] = elem;
+                    generatedTheme[roleName] = elem;
+                });
+
+                generatedThemes[themeName].variants.push(generatedTheme);
             });
 
-            generatedThemes[themeName] = generatedTheme;
+            const grayTheme: MockupColors<R> = Object.create(null);
+            roleKeys.forEach((roleName) => {
+                const { l } = themeRules[roleName];
+
+                const elem = new Color(l, { c: 0, h: 0 });
+                elem.adjustForRGB();
+
+                grayTheme[roleName] = elem;
+            });
+            generatedThemes[themeName].variants.push(grayTheme);
+
+            const grayI = this.clusters.length;
+            roleKeys.forEach((roleName) => {
+                const { l, isAccent } = themeRules[roleName];
+                const range = this.lRangeClusters.find((r) => lInRange(l, r.lRange))?.cluster;
+                if (!range && isAccent) {
+                    const almostSameL = 8;
+                    const clusters = this.clusters
+                        .filter((c) =>
+                            rangesOverlap({ min: l - almostSameL, max: l + almostSameL }, c.lRange),
+                        )
+                        .map((c, i) => i);
+                    const n = generatedThemes[themeName].variants
+                        .map((m, i) => ({ c: m[roleName].c, i }))
+                        .filter(({ i }) => clusters.includes(i))
+                        .reduce(
+                            (best, { c, i }) => {
+                                return c > best.c ? { c, i } : best;
+                            },
+                            { c: 0, i: grayI },
+                        );
+                    generatedThemes[themeName].chosen[roleName] = n.i;
+                } else {
+                    generatedThemes[themeName].chosen[roleName] = range ?? grayI;
+                }
+            });
         });
         return generatedThemes;
     }
 }
+
+export type GeneratedThemes<T extends string, R extends string> = Record<
+    T,
+    {
+        variants: GeneratedVariants<R>;
+        chosen: ChosenVariants<R>;
+    }
+>;
+export type GeneratedVariants<R extends string> = MockupColors<R>[];
+export type ChosenVariants<R extends string> = Record<R, number>;
 
 /**
  * Создает и инициализирует объект генератора, выдает результат генерации.

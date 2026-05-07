@@ -464,8 +464,7 @@ const baseH = computed({
         <div class="editor-view-space">
             <div class="editor-view">
                 <MockupEditor
-                    :colorsLight="generatedLight"
-                    :colorsDark="generatedDark"
+                    :colors="{ dark: generatedDark, light: generatedLight }"
                     class="editor-view-content"
                     v-if="generatedDark && generatedLight"
                 />

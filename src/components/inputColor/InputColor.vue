@@ -91,14 +91,12 @@ const emit = defineEmits<{
                     </button>
                 </div>
             </div>
-            <TransitionExpand>
-                <p v-show="alwaysShowColorStrings && !editing" class="input-color-gap-x">
+            <Transition name="fade" mode="out-in">
+                <p v-if="alwaysShowColorStrings && !editing" class="input-color-gap-x">
                     {{ colorString }}
                 </p>
-            </TransitionExpand>
-            <Transition name="fade">
                 <input
-                    v-if="editing"
+                    v-else-if="editing"
                     v-model.lazy="colorString"
                     type="text"
                     class="input-color-input-text input-color-gap-x"

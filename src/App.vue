@@ -103,11 +103,6 @@ function resetThemeRules() {
                                         class="choice-chip"
                                         :class="{ current: colorFormatCopy == 'rgbHex' }"
                                         @click="colorFormatCopy = 'rgbHex'"
-                                        :title="
-                                            colorFormatCopy == 'rgbHex'
-                                                ? ''
-                                                : 'выбрать RGB для кодов цветов'
-                                        "
                                     >
                                         RGB (hex)
                                     </button>
@@ -115,11 +110,6 @@ function resetThemeRules() {
                                         class="choice-chip"
                                         :class="{ current: colorFormatCopy == 'oklch' }"
                                         @click="colorFormatCopy = 'oklch'"
-                                        :title="
-                                            colorFormatCopy == 'oklch'
-                                                ? ''
-                                                : 'выбрать OKLCH для кодов цветов'
-                                        "
                                     >
                                         OKLCH
                                     </button>

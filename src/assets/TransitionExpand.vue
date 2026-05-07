@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onUnmounted } from 'vue';
-import { lockBodyInteractions, unlockBodyInteractions } from './animation';
+import { lockBodyInteractions, unlockBodyInteractions } from './animationLockController';
 
 const props = defineProps<{
     hideContent?: boolean;
@@ -89,7 +89,7 @@ onUnmounted(() => {
 <template>
     <Transition
         @before-enter="lockBodyInteractions"
-        @before-leave="unlockBodyInteractions"
+        @before-leave="lockBodyInteractions"
         @enter="enter"
         @leave="leave"
         @after-enter="

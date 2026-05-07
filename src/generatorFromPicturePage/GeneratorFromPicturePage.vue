@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { lockBodyInteractions, unlockBodyInteractions } from '@/assets/animation';
+import { lockBodyInteractions, unlockBodyInteractions } from '@/assets/animationLockController';
 import { Color, type ColorMap, type MockupColors, type Theme } from '@/generator/common';
 import { GeneratorFromPicture, type GeneratedThemes } from '@/generator/generatorFromPictureEngine';
 import {

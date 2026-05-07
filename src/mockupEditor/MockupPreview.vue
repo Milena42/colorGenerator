@@ -15,7 +15,7 @@ const cssColors = computed(() => getCssColors(props.colors, 'rgbHex'));
 </script>
 
 <template>
-    <div class="mockup" :style="cssColors">
+    <div class="mockup" :style="cssColors" inert>
         <p class="h">Заголовок</p>
         <div class="mockup-top">
             <p>
@@ -47,6 +47,8 @@ const cssColors = computed(() => getCssColors(props.colors, 'rgbHex'));
     color: var(--text);
 }
 .mockup {
+    user-select: none;
+
     .mockup-overlay,
     .landing-header,
     .landing-second {

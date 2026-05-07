@@ -40,7 +40,7 @@ const secondOverlays = computed(() => props.theme == 'dark' || props.theme == 'l
 </script>
 
 <template>
-    <div class="mockup">
+    <div class="mockup" inert>
         <div class="landing-part landing-header" :style="main">
             <div class="landing-logo">
                 <div class="logo-circle"></div>

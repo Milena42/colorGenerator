@@ -6,6 +6,7 @@ import IconDarkTheme from './assets/icons/IconDarkTheme.vue';
 import IconImage from './assets/icons/IconImage.vue';
 import IconLightTheme from './assets/icons/IconLightTheme.vue';
 import IconMenu from './assets/icons/IconMenu.vue';
+import IconReset from './assets/icons/IconReset.vue';
 import IconSettings from './assets/icons/IconSettings.vue';
 import TransitionExpand from './assets/TransitionExpand.vue';
 import InputThemeLightness from './components/InputThemeLightness.vue';
@@ -59,7 +60,9 @@ function resetThemeRules() {
             </div>
 
             <InputThemeLightness v-model="darkThemeLightness" class="grow" />
-            <button @click="resetThemeRules">*</button>
+            <button @click="resetThemeRules" title="сбросить параметры светлоты">
+                <IconReset />
+            </button>
             <InputThemeLightness v-model="lightThemeLightness" themeIsLight class="grow" />
 
             <div class="row">

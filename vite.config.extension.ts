@@ -23,6 +23,7 @@ export default defineConfig({
             '@': fileURLToPath(new URL('./src', import.meta.url)),
         },
     },
+    publicDir: 'public-icons',
     build: {
         cssCodeSplit: false,
         outDir: 'dist-extension',

@@ -5,12 +5,11 @@ import IconImage from '@/assets/icons/IconImage.vue';
 import IconLightTheme from '@/assets/icons/IconLightTheme.vue';
 import IconMenu from '@/assets/icons/IconMenu.vue';
 import IconSettings from '@/assets/icons/IconSettings.vue';
+import IconTune from '@/assets/icons/IconTune.vue';
 import TransitionExpand from '@/assets/TransitionExpand.vue';
-import { type ColorFormat, type ColorRoleConstraints, type Theme } from '@/generator/common';
-import GeneratorFromWheelPage from '@/generatorFromWheelPage/GeneratorFromWheelPage.vue';
+import { type ColorFormat, type Theme, type ThemeParams } from '@/generator/common';
 import { vOnClickOutside } from '@vueuse/components';
-import chroma from 'chroma-js';
-import { onMounted, provide, ref } from 'vue';
+import { provide, ref } from 'vue';
 import ColorsEditor from './ColorsEditor.vue';
 import { ContentClient } from './contentClient';
 
@@ -45,37 +44,12 @@ provide('contentScriptClient', contentScriptClient);
 
 provide('ColorsOutput', ColorsEditor);
 
-const themeParams = ref();
-provide('themeParams', themeParams);
-
-onMounted(async () => {
-    const variables = await contentScriptClient.call('getCssVariables', undefined);
-    console.log(variables);
-    themeRules.value = Object.fromEntries(
-        Object.entries(variables)
-            .map(([key, value]): [string, ColorRoleConstraints] => {
-                try {
-                    let [l, c] = chroma(value).oklch();
-                    if (!l) l = 0;
-                    if (!c) c = 0;
-                    l *= 100;
-                    c *= 100;
-                    return [key, { l, cMax: c }];
-                } catch {
-                    return ['', { l: 0, cMax: 0 }];
-                }
-            })
-            .filter(([key]) => key != ''),
-    ); //TODO прозрачность
-    console.log(themeRules.value);
-    themeParams.value = {
-        themeKeys: ['theme'],
-        roleKeys: Object.keys(themeRules.value),
-        themes: {
-            theme: themeRules.value,
-        },
-    };
+const themeParams = ref<ThemeParams<string, string>>({
+    themeKeys: ['theme'],
+    roleKeys: [],
+    themes: { theme: {} },
 });
+provide('themeParams', themeParams);
 </script>
 
 <template>
@@ -87,6 +61,9 @@ onMounted(async () => {
                 </RouterLink>
                 <RouterLink class="choice-chip router" activeClass="current" to="/wheel">
                     <IconTriad /> По цветовому кругу
+                </RouterLink>
+                <RouterLink class="choice-chip router" activeClass="current" to="/theme-params">
+                    <IconTune /> Параметры темы
                 </RouterLink>
             </div>
 
@@ -198,7 +175,10 @@ onMounted(async () => {
                 </div>
             </div>
         </header>
-        <GeneratorFromWheelPage class="grow w-full" />
+        <RouterView
+            class="grow w-full"
+            @theme-params-change="(v: ThemeParams<string, string>) => (themeParams = v)"
+        />
     </div>
 </template>
 

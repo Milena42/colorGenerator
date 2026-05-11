@@ -138,14 +138,17 @@ const showPlots: Ref<boolean> = inject('showPlots') ?? ref(false);
                         v-for="(rolesVariant, clusterNumber) in theme.variants"
                         class="col"
                     >
-                        <button
+                        <div
                             :key="role"
                             v-for="(color, role) in rolesVariant"
                             class="button-color-variant"
-                            :style="{ background: color.adjustForRGB() }"
                             :class="{ 'chosen-variant': theme.chosen[role] == clusterNumber }"
-                            @click="theme.chosen[role] = clusterNumber"
-                        ></button>
+                        >
+                            <button
+                                :style="{ background: color.adjustForRGB() }"
+                                @click="theme.chosen[role] = clusterNumber"
+                            ></button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -244,13 +247,21 @@ const showPlots: Ref<boolean> = inject('showPlots') ?? ref(false);
     }
 
     .button-color-variant {
-        height: 2rem;
-        width: 2rem;
+        border: 0.2rem solid var(--background);
+        background: var(--background);
+        padding: 0.3rem;
         border-radius: 50%;
-        border: 1px solid var(--transparent-border);
+
+        button {
+            height: 2rem;
+            width: 2rem;
+            border-radius: 50%;
+            border: 1px solid var(--transparent-border);
+        }
 
         &.chosen-variant {
-            transform: scale(1.6);
+            border-color: var(--text);
+            transform: scale(0.8);
         }
     }
 }

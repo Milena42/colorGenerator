@@ -13,7 +13,7 @@ import IconLockOn from '@/assets/icons/IconLockOn.vue';
 import IconSwap from '@/assets/icons/IconSwap.vue';
 import InputColorHString from '@/components/inputColor/InputColorHString.vue';
 import InputNumber from '@/components/InputNumber.vue';
-import { type MockupColors, type Theme } from '@/generator/common';
+import { type MockupColors, type Theme, type ThemeParams } from '@/generator/common';
 import {
     generateFromWheelGradient,
     generateFromWheelMono,
@@ -22,14 +22,7 @@ import {
     type ChromaParams,
     type SchemeType,
 } from '@/generator/generatorFromWheelEngine';
-import {
-    colorRoles,
-    darkTheme,
-    lightTheme,
-    maxCAccent,
-    maxCBg,
-    type ColorRole,
-} from '@/generator/themesExample';
+import { maxCAccent, maxCBg, type ColorRole } from '@/generator/themesExample';
 import MockupEditor from '@/mockupEditor/MockupEditor.vue';
 import { vOnClickOutside } from '@vueuse/components';
 import { computed, inject, onUnmounted, reactive, ref, useTemplateRef, watch, type Ref } from 'vue';
@@ -40,6 +33,9 @@ import CircleInput, {
     SCALE,
     WHEEL_SVG_WIDTH,
 } from './CircleInput.vue';
+
+const ColorsOutput = inject('ColorsOutput') ?? MockupEditor;
+const themeParams = inject<Ref<ThemeParams<string, string>>>('themeParams');
 
 const generatedLight = ref<MockupColors<ColorRole>>();
 const generatedDark = ref<MockupColors<ColorRole>>();
@@ -82,14 +78,7 @@ watch([darkThemeModified, lightThemeModified], () => {
 });
 
 function generate() {
-    const themeParams = {
-        themeKeys: ['dark', 'light'],
-        roleKeys: colorRoles,
-        themes: {
-            dark: darkThemeModified?.value ?? darkTheme,
-            light: lightThemeModified?.value ?? lightTheme,
-        },
-    } as const;
+    if (!themeParams?.value) return;
 
     const chromaParams: ChromaParams = {
         accentC: inputAccentC.value / maxCAccent,
@@ -99,12 +88,12 @@ function generate() {
     const generatedThemes = (() => {
         switch (typeOfScheme.value) {
             case 'mono':
-                return generateFromWheelMono(inputAccentH.value, themeParams, chromaParams);
+                return generateFromWheelMono(inputAccentH.value, themeParams.value, chromaParams);
             case 'step2':
                 return generateFromWheelStep2(
                     inputAccentH.value,
                     inputDarkH.value,
-                    themeParams,
+                    themeParams.value,
                     chromaParams,
                 );
             case 'step3':
@@ -112,7 +101,7 @@ function generate() {
                     inputAccentH.value,
                     inputDarkH.value,
                     inputLightH.value,
-                    themeParams,
+                    themeParams.value,
                     chromaParams,
                 );
             case 'gradient':
@@ -120,14 +109,14 @@ function generate() {
                     inputAccentH.value,
                     inputDarkH.value,
                     inputLightH.value,
-                    themeParams,
+                    themeParams.value,
                     chromaParams,
                 );
         }
     })();
 
-    generatedDark.value = generatedThemes.dark;
-    generatedLight.value = generatedThemes.light;
+    generatedDark.value = generatedThemes.theme;
+    generatedLight.value = generatedThemes.theme;
 }
 
 watch([inputAccentH, inputDarkH, inputLightH], generate, { immediate: true });
@@ -463,7 +452,8 @@ const baseH = computed({
         </div>
         <div class="editor-view-space">
             <div class="editor-view">
-                <MockupEditor
+                <component
+                    :is="ColorsOutput"
                     :colorsLight="generatedLight"
                     :colorsDark="generatedDark"
                     class="editor-view-content"

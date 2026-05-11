@@ -1,9 +1,39 @@
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    if (message.action === 'add-style') {
-        //TODO сюда надо отправлять сами сгенерированные стили
-        document.body.style.border = '5px solid #42b883';
+import type { ContentFunctionName, ContentFunctions } from './contentScriptInterface';
 
-        sendResponse({ status: 'Styles applied!' });
-    }
-    sendResponse({ status: 'unknown command' });
+const handlers: {
+    [K in ContentFunctionName]: (
+        p: ContentFunctions[K]['params'],
+    ) => ContentFunctions[K]['response'];
+} = {
+    getCssVariables: () => {
+        const computedStyle = window.getComputedStyle(document.body);
+
+        const result: Record<string, string> = {};
+        for (let i = 0; i < computedStyle.length; i++) {
+            const propName = computedStyle[i];
+
+            if (propName.startsWith('--')) {
+                const value = computedStyle.getPropertyValue(propName).trim();
+                if (CSS.supports('color', value)) {
+                    result[propName.replace(/^[\s-]+/, '')] = value;
+                }
+            }
+        }
+
+        return result;
+    },
+
+    setCss: ({ css }) => {
+        document.body.style = css;
+    },
+};
+
+chrome.runtime.onConnect.addListener((port) => {
+    port.onMessage.addListener((request) => {
+        const handler = handlers[request.type as ContentFunctionName];
+        if (handler) {
+            const result = handler(request.params);
+            port.postMessage({ id: request.id, payload: result });
+        }
+    });
 });

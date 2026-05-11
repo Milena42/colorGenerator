@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { Color, MockupColors } from '@/generator/common';
 import { cartesianFromPolar } from '@/generator/math';
-import type { ColorRole } from '@/generator/themesExample';
 import chroma from 'chroma-js';
 import {
     BoxGeometry,
@@ -30,7 +29,7 @@ const props = defineProps<{
     wireframe?: boolean;
     size?: number; //TODO графики адаптивить?
     k: number;
-    data: Map<string, Color> | MockupColors<ColorRole>;
+    data: Map<string, Color> | MockupColors<string>;
     totalQ: number;
     hsl?: boolean;
 }>();

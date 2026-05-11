@@ -6,12 +6,13 @@ import IconLightTheme from '@/assets/icons/IconLightTheme.vue';
 import IconMenu from '@/assets/icons/IconMenu.vue';
 import IconSettings from '@/assets/icons/IconSettings.vue';
 import TransitionExpand from '@/assets/TransitionExpand.vue';
-import InputThemeLightness from '@/components/InputThemeLightness.vue';
-import type { ColorFormat } from '@/generator/common';
-import { darkTheme, lightTheme } from '@/generator/themesExample';
+import { type ColorFormat, type ColorRoleConstraints, type Theme } from '@/generator/common';
 import GeneratorFromWheelPage from '@/generatorFromWheelPage/GeneratorFromWheelPage.vue';
 import { vOnClickOutside } from '@vueuse/components';
-import { provide, ref } from 'vue';
+import chroma from 'chroma-js';
+import { onMounted, provide, ref } from 'vue';
+import ColorsEditor from './ColorsEditor.vue';
+import { ContentClient } from './contentClient';
 
 const showQuantityOnPlots = ref(true);
 provide('showQuantityOnPlots', showQuantityOnPlots);
@@ -36,23 +37,45 @@ const themeIsDark = ref(false);
 const showSettings = ref(false);
 const showMenu = ref(false);
 
-const darkThemeLightness = ref(darkTheme);
-provide('darkThemeLightness', darkThemeLightness);
-const lightThemeLightness = ref(lightTheme);
-provide('lightThemeLightness', lightThemeLightness);
+const themeRules = ref<Theme<string>>();
+provide('darkThemeLightness', themeRules);
 
-function addCssToPage() {
-    const tabId = chrome.devtools.inspectedWindow.tabId;
+const contentScriptClient = new ContentClient(chrome.devtools.inspectedWindow.tabId);
+provide('contentScriptClient', contentScriptClient);
 
-    chrome.tabs.sendMessage(tabId, { action: 'add-style' }, (response) => {
-        if (chrome.runtime.lastError) {
-            console.error('Ошибка:', chrome.runtime.lastError.message);
-        } else {
-            console.log('Ответ от страницы:', response.status);
-        }
-    });
-}
-provide('addCssToPage', addCssToPage);
+provide('ColorsOutput', ColorsEditor);
+
+const themeParams = ref();
+provide('themeParams', themeParams);
+
+onMounted(async () => {
+    const variables = await contentScriptClient.call('getCssVariables', undefined);
+    console.log(variables);
+    themeRules.value = Object.fromEntries(
+        Object.entries(variables)
+            .map(([key, value]): [string, ColorRoleConstraints] => {
+                try {
+                    let [l, c] = chroma(value).oklch();
+                    if (!l) l = 0;
+                    if (!c) c = 0;
+                    l *= 100;
+                    c *= 100;
+                    return [key, { l, cMax: c }];
+                } catch {
+                    return ['', { l: 0, cMax: 0 }];
+                }
+            })
+            .filter(([key]) => key != ''),
+    ); //TODO прозрачность
+    console.log(themeRules.value);
+    themeParams.value = {
+        themeKeys: ['theme'],
+        roleKeys: Object.keys(themeRules.value),
+        themes: {
+            theme: themeRules.value,
+        },
+    };
+});
 </script>
 
 <template>
@@ -66,9 +89,6 @@ provide('addCssToPage', addCssToPage);
                     <IconTriad /> По цветовому кругу
                 </RouterLink>
             </div>
-
-            <InputThemeLightness v-model="darkThemeLightness" class="grow" />
-            <InputThemeLightness v-model="lightThemeLightness" themeIsLight class="grow" />
 
             <div class="row">
                 <button @click="themeIsDark = !themeIsDark">

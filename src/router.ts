@@ -1,9 +1,10 @@
 import { createRouter, createWebHistory } from 'vue-router';
 
 const GeneratorFromPicture = () =>
-    import('./generatorFromPicturePage/GeneratorFromPicturePage.vue');
+    import('./generatorFromPicturePage/GeneratorFromPicturePageWrapper.vue');
 
-const GeneratorFromWheel = () => import('./generatorFromWheelPage/GeneratorFromWheelPage.vue');
+const GeneratorFromWheel = () =>
+    import('./generatorFromWheelPage/GeneratorFromWheelPageWrapper.vue');
 
 const routes = [
     { path: '/', redirect: '/wheel' },

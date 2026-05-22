@@ -111,6 +111,8 @@ export type ColorMap = {
     data: Map<string, Color>;
 };
 
+export type GenericColorRole = string;
+
 export type ColorFormat = 'rgbHex' | 'hsb' | 'oklch';
 
 export function getColorString(color: Color, format: ColorFormat) {

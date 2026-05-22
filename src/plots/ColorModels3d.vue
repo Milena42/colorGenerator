@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Color, MockupColors } from '@/generator/common';
 import { cartesianFromPolar } from '@/generator/math';
-import type { ColorRole } from '@/generator/themesExample';
+import { SHOW_QUANTITY_ON_PLOTS, SHOW_WIREFRAME_ON_PLOTS } from '@/injectionKeys';
 import chroma from 'chroma-js';
 import {
     BoxGeometry,
@@ -22,7 +22,7 @@ import {
     WebGLRenderer,
 } from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { inject, onMounted, onUnmounted, ref, watch, type Ref } from 'vue';
+import { inject, onMounted, onUnmounted, ref, watch } from 'vue';
 import fragmentShader from './shaders/material-frag.glsl?raw';
 import vertexShader from './shaders/material-vert.glsl?raw';
 
@@ -30,7 +30,7 @@ const props = defineProps<{
     wireframe?: boolean;
     size?: number; //TODO графики адаптивить?
     k: number;
-    data: Map<string, Color> | MockupColors<ColorRole>;
+    data: Map<string, Color> | MockupColors<string>;
     totalQ: number;
     hsl?: boolean;
 }>();
@@ -44,7 +44,7 @@ let controls;
 
 const PIXELS = props.wireframe ? 5 : 200;
 
-const showWireframeOnPlots: Ref<boolean> = inject('showWireframeOnPlots') ?? ref(false);
+const showWireframeOnPlots = inject(SHOW_WIREFRAME_ON_PLOTS) ?? ref(false);
 let oklchMesh: Mesh | null;
 
 function makeModel() {
@@ -140,7 +140,7 @@ onMounted(() => {
     renderer.setAnimationLoop(animate);
 });
 
-const showQuantity: Ref<boolean> = inject('showQuantityOnPlots') ?? ref(true);
+const showQuantity = inject(SHOW_QUANTITY_ON_PLOTS) ?? ref(true);
 const defaultSizeOfPoint = 0.1;
 
 function plotPoints() {

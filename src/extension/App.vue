@@ -1,26 +1,26 @@
 <script setup lang="ts">
-import { vOnClickOutside } from '@vueuse/components';
-import { computed, provide, ref } from 'vue';
-import IconTriad from './assets/icons/colorSchemes/IconTriad.vue';
-import IconDarkTheme from './assets/icons/IconDarkTheme.vue';
-import IconImage from './assets/icons/IconImage.vue';
-import IconLightTheme from './assets/icons/IconLightTheme.vue';
-import IconMenu from './assets/icons/IconMenu.vue';
-import IconReset from './assets/icons/IconReset.vue';
-import IconSettings from './assets/icons/IconSettings.vue';
-import TransitionExpand from './assets/TransitionExpand.vue';
-import InputThemeLightness from './components/InputThemeLightness.vue';
-import type { ColorFormat } from './generator/common';
-import { colorRoles, darkTheme, lightTheme, themeKeys } from './generator/themesExample';
+import IconTriad from '@/assets/icons/colorSchemes/IconTriad.vue';
+import IconDarkTheme from '@/assets/icons/IconDarkTheme.vue';
+import IconImage from '@/assets/icons/IconImage.vue';
+import IconLightTheme from '@/assets/icons/IconLightTheme.vue';
+import IconMenu from '@/assets/icons/IconMenu.vue';
+import IconSettings from '@/assets/icons/IconSettings.vue';
+import IconTune from '@/assets/icons/IconTune.vue';
+import TransitionExpand from '@/assets/TransitionExpand.vue';
+import { type ColorFormat, type GenericColorRole, type ThemeParams } from '@/generator/common';
 import {
     ALWAYS_SHOW_COLOR_STRINGS,
     COLOR_FORMAT_COPY,
     COLOR_FORMAT_EDIT,
+    CONTENT_SCRIPT_CLIENT,
     SHOW_PLOTS,
     SHOW_QUANTITY_ON_PLOTS,
     SHOW_WIREFRAME_ON_PLOTS,
-    THEME_PARAMS,
-} from './injectionKeys';
+    THEME_PARAMS_USER,
+} from '@/injectionKeys';
+import { vOnClickOutside } from '@vueuse/components';
+import { provide, ref } from 'vue';
+import { ContentClient } from './contentClient';
 
 const showQuantityOnPlots = ref(true);
 provide(SHOW_QUANTITY_ON_PLOTS, showQuantityOnPlots);
@@ -45,23 +45,15 @@ const themeIsDark = ref(false);
 const showSettings = ref(false);
 const showMenu = ref(false);
 
-const darkThemeLightness = ref(darkTheme);
-const lightThemeLightness = ref(lightTheme);
+const contentScriptClient = new ContentClient(chrome.devtools.inspectedWindow.tabId);
+provide(CONTENT_SCRIPT_CLIENT, contentScriptClient);
 
-function resetThemeRules() {
-    darkThemeLightness.value = darkTheme;
-    lightThemeLightness.value = lightTheme;
-}
-
-const themeParams = computed(() => ({
-    themeKeys,
-    roleKeys: colorRoles,
-    themes: {
-        dark: darkThemeLightness.value,
-        light: lightThemeLightness.value,
-    },
-}));
-provide(THEME_PARAMS, themeParams);
+const themeParams = ref<ThemeParams<'theme', GenericColorRole>>({
+    themeKeys: ['theme'],
+    roleKeys: [],
+    themes: { theme: {} },
+});
+provide(THEME_PARAMS_USER, themeParams);
 </script>
 
 <template>
@@ -74,13 +66,10 @@ provide(THEME_PARAMS, themeParams);
                 <RouterLink class="choice-chip router" activeClass="current" to="/wheel">
                     <IconTriad /> По цветовому кругу
                 </RouterLink>
+                <RouterLink class="choice-chip router" activeClass="current" to="/theme-params">
+                    <IconTune /> Параметры темы
+                </RouterLink>
             </div>
-
-            <InputThemeLightness v-model="darkThemeLightness" class="grow" />
-            <button @click="resetThemeRules" title="сбросить параметры светлоты">
-                <IconReset />
-            </button>
-            <InputThemeLightness v-model="lightThemeLightness" themeIsLight class="grow" />
 
             <div class="row">
                 <button @click="themeIsDark = !themeIsDark">
@@ -92,7 +81,7 @@ provide(THEME_PARAMS, themeParams);
                     <button @click="showSettings = !showSettings">
                         <IconSettings />
                     </button>
-                    <TransitionExpand hideContent>
+                    <TransitionExpand>
                         <div v-if="showSettings" class="popup right-0">
                             <div class="row">
                                 <p>Редактирование цветов:</p>
@@ -165,7 +154,7 @@ provide(THEME_PARAMS, themeParams);
                     <button @click="showMenu = !showMenu">
                         <IconMenu width="24px" height="auto" />
                     </button>
-                    <TransitionExpand hideContent>
+                    <TransitionExpand>
                         <div v-if="showMenu" class="popup right-0">
                             <a
                                 href="https://forms.yandex.ru/u/69be9a001f1eb598d3b3d764"
@@ -180,7 +169,10 @@ provide(THEME_PARAMS, themeParams);
                 </div>
             </div>
         </header>
-        <RouterView class="grow w-full" />
+        <RouterView
+            class="grow w-full"
+            @theme-params-change="(v: ThemeParams<'theme', string>) => (themeParams = v)"
+        />
     </div>
 </template>
 

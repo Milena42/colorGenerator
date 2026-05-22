@@ -1,13 +1,12 @@
 <script setup lang="ts">
 import InputColor from '@/components/inputColor/InputColor.vue';
-import { type MockupColors } from '@/generator/common';
-import type { ColorRole } from '@/generator/themesExample';
+import { type GenericColorRole, type MockupColors } from '@/generator/common';
 import { vOnClickOutside } from '@vueuse/components';
 import { ref } from 'vue';
 
-const colors = defineModel<MockupColors<ColorRole>>({ required: true });
+const colors = defineModel<MockupColors<GenericColorRole>>({ required: true });
 
-const editingColor = ref<ColorRole | null>(null);
+const editingColor = ref<GenericColorRole | null>(null);
 const isSwap = ref(false);
 
 function closeEditing() {
@@ -15,7 +14,7 @@ function closeEditing() {
     editingColor.value = null;
 }
 
-function swapOrOpenEditing(role: ColorRole) {
+function swapOrOpenEditing(role: GenericColorRole) {
     if (editingColor.value) {
         isSwap.value = true;
     } else {
@@ -33,7 +32,7 @@ function swapOrOpenEditing(role: ColorRole) {
     >
         <InputColor
             v-model="colors[role]"
-            v-for="(color, role) in colors"
+            v-for="(color, role) of colors"
             :key="role"
             :role="role"
             :editing="editingColor == role"
@@ -50,5 +49,7 @@ function swapOrOpenEditing(role: ColorRole) {
     justify-content: space-between;
     padding: 1rem;
     align-items: flex-start;
+    gap: 1rem;
+    white-space: nowrap;
 }
 </style>

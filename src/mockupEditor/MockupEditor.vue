@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { type MockupColors } from '@/generator/common';
 import type { ColorRole, ThemeName } from '@/generator/themesExample';
-import { defineAsyncComponent, inject, ref, shallowRef, watch, type Ref } from 'vue';
+import { SHOW_PLOTS } from '@/injectionKeys';
+import { defineAsyncComponent, inject, ref, shallowRef, watch } from 'vue';
 import CssOutput from './CssOutput.vue';
 import MockupPreview from './MockupPreview.vue';
 import MockupPreviewLanding from './MockupPreviewLanding.vue';
@@ -21,7 +22,7 @@ watch([() => props.colors.light, () => props.colors.dark], () => {
     colorsDarkLocal.value = props.colors.dark;
 });
 
-const showPlots: Ref<boolean> = inject('showPlots') ?? ref(false);
+const showPlots = inject(SHOW_PLOTS) ?? ref(false);
 
 const previewType = ref<'elementsUI' | 'landingsMixed' | 'landings' | 'css'>('elementsUI');
 </script>
@@ -81,8 +82,7 @@ const previewType = ref<'elementsUI' | 'landingsMixed' | 'landings' | 'css'>('el
             </div>
             <CssOutput
                 v-if="previewType == 'css'"
-                :colorsDark="colorsDarkLocal"
-                :colorsLight="colorsLightLocal"
+                :colors="{ dark: colorsDarkLocal, light: colorsLightLocal }"
             />
             <div class="row">
                 <MockupPreviewLanding

@@ -1,4 +1,4 @@
-<script setup lang="ts" generic="T extends string">
+<script setup lang="ts" generic="T extends string, R extends string">
 import { ContentClient } from '@/extension/contentClient';
 import { getCssColors, type MockupColors } from '@/generator/common';
 import CssOutput from '@/mockupEditor/CssOutput.vue';
@@ -17,16 +17,15 @@ import {
 const ColorModels3d = defineAsyncComponent(() => import('@/plots/ColorModels3d.vue'));
 
 const props = defineProps<{
-    colorsLight: MockupColors<T>;
-    colorsDark: MockupColors<T>;
+    colors: Record<T, MockupColors<R>>;
 }>();
 
-const colorsLocal: ShallowRef<MockupColors<T>> = shallowRef<MockupColors<T>>(props.colorsLight);
+const colorsLocal: ShallowRef<MockupColors<R>> = shallowRef<MockupColors<R>>(props.colors.theme);
 
 watch(
-    () => props.colorsLight,
+    () => props.colors.theme,
     () => {
-        colorsLocal.value = props.colorsLight;
+        colorsLocal.value = props.colors.theme;
     },
 );
 

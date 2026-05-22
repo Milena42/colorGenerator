@@ -11,7 +11,7 @@ const cssColors = computed(() => getCssColors(props.colors, 'rgbHex'));
 </script>
 
 <template>
-    <div class="mockup" :style="cssColors">
+    <div class="mockup" :style="cssColors" inert>
         <div>
             <div class="shape color1"></div>
             <div class="shape color2"></div>

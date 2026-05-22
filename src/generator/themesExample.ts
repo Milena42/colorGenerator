@@ -3,6 +3,9 @@ import type { Theme } from './common';
 export const maxCBg = 5;
 export const maxCAccent = 15;
 
+export const themeKeys = ['dark', 'light'] as const;
+export type ThemeName = (typeof themeKeys)[number];
+
 export const colorRoles = [
     'bg',
     'overlay',

@@ -1,12 +1,5 @@
 import type { Ref } from 'vue';
 
-export function lockBodyInteractions() {
-    document.body.classList.add('is-animating');
-}
-export function unlockBodyInteractions() {
-    document.body.classList.remove('is-animating');
-}
-
 export function linear(from: number, to: number, progress: number) {
     return from + (to - from) * progress;
 }

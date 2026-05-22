@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { onUnmounted } from 'vue';
-import { lockBodyInteractions, unlockBodyInteractions } from './animation';
+import { lockBodyInteractions, unlockBodyInteractions } from './animationLockController';
+
+const props = defineProps<{
+    hideContent?: boolean;
+}>();
 
 function setMin(el: Element) {
     const e = el as HTMLElement;
@@ -8,6 +12,10 @@ function setMin(el: Element) {
     e.style.maxHeight = '0px';
     e.style.maxWidth = '0px';
     e.style.overflow = 'hidden';
+
+    if (props.hideContent) {
+        e.classList.add('hide-content');
+    }
 }
 
 function setNull(el: Element) {
@@ -16,6 +24,8 @@ function setNull(el: Element) {
     e.style.maxHeight = '';
     e.style.maxWidth = '';
     e.style.overflow = '';
+
+    e.classList.remove('hide-content');
 }
 
 function calcMax(el: Element) {
@@ -29,6 +39,7 @@ function setMax(el: Element, h: string, w: string) {
     e.style.maxWidth = w;
     e.style.overflow = '';
 }
+
 function enter(el: Element, done: () => void) {
     const e = el as HTMLElement;
 
@@ -78,7 +89,7 @@ onUnmounted(() => {
 <template>
     <Transition
         @before-enter="lockBodyInteractions"
-        @before-leave="unlockBodyInteractions"
+        @before-leave="lockBodyInteractions"
         @enter="enter"
         @leave="leave"
         @after-enter="
@@ -122,27 +133,52 @@ onUnmounted(() => {
 }
 .expand-enter-active {
     transition:
-        max-height 0.5s linear,
-        max-width 0.5s linear,
-        opacity 0.5s linear;
+        max-height 0.55s ease-out,
+        max-width 0.5s ease-out,
+        opacity 0.5s ease-in;
 
     overflow: hidden;
 }
 .expand-leave-active {
     transition:
-        max-height 0.8s linear,
-        max-width 0.8s linear,
-        opacity 0.5s linear;
+        max-height 0.55s ease-out,
+        max-width 0.5s ease-out,
+        opacity 0.3s ease-out;
 
     overflow: hidden;
 }
 
 .palette-swap-transition {
     .expand-enter-active {
-        transition: max-height 1.5s cubic-bezier(1, 0, 0.87, 0.4);
+        transition:
+            max-height 0.5s ease-out,
+            opacity 0.45s ease-in-out;
     }
     .expand-leave-active {
-        transition: max-height 1.5s cubic-bezier(0, 1.03, 0.72, 0.65);
+        transition:
+            max-height 0.45s ease-out,
+            opacity 0.4s ease-in-out;
+    }
+}
+
+.hide-content * {
+    opacity: 0;
+    transition: opacity 0.05s ease-in-out;
+}
+
+.hide-content {
+    &.expand-enter-active {
+        transition:
+            max-height 0.25s ease-out,
+            max-width 0.2s ease-out,
+            opacity 0.2s ease-in;
+    }
+
+    &.expand-leave-active {
+        transition:
+            max-height 0.2s ease-in,
+            max-width 0.15s ease-in,
+            opacity 0.15s ease-out;
     }
 }
 </style>

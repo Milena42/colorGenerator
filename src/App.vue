@@ -6,6 +6,7 @@ import IconDarkTheme from './assets/icons/IconDarkTheme.vue';
 import IconImage from './assets/icons/IconImage.vue';
 import IconLightTheme from './assets/icons/IconLightTheme.vue';
 import IconMenu from './assets/icons/IconMenu.vue';
+import IconReset from './assets/icons/IconReset.vue';
 import IconSettings from './assets/icons/IconSettings.vue';
 import TransitionExpand from './assets/TransitionExpand.vue';
 import InputThemeLightness from './components/InputThemeLightness.vue';
@@ -39,6 +40,11 @@ const darkThemeLightness = ref(darkTheme);
 provide('darkThemeLightness', darkThemeLightness);
 const lightThemeLightness = ref(lightTheme);
 provide('lightThemeLightness', lightThemeLightness);
+
+function resetThemeRules() {
+    darkThemeLightness.value = darkTheme;
+    lightThemeLightness.value = lightTheme;
+}
 </script>
 
 <template>
@@ -54,6 +60,9 @@ provide('lightThemeLightness', lightThemeLightness);
             </div>
 
             <InputThemeLightness v-model="darkThemeLightness" class="grow" />
+            <button @click="resetThemeRules" title="сбросить параметры светлоты">
+                <IconReset />
+            </button>
             <InputThemeLightness v-model="lightThemeLightness" themeIsLight class="grow" />
 
             <div class="row">
@@ -66,7 +75,7 @@ provide('lightThemeLightness', lightThemeLightness);
                     <button @click="showSettings = !showSettings">
                         <IconSettings />
                     </button>
-                    <TransitionExpand>
+                    <TransitionExpand hideContent>
                         <div v-if="showSettings" class="popup right-0">
                             <div class="row">
                                 <p>Редактирование цветов:</p>
@@ -94,11 +103,6 @@ provide('lightThemeLightness', lightThemeLightness);
                                         class="choice-chip"
                                         :class="{ current: colorFormatCopy == 'rgbHex' }"
                                         @click="colorFormatCopy = 'rgbHex'"
-                                        :title="
-                                            colorFormatCopy == 'rgbHex'
-                                                ? ''
-                                                : 'выбрать RGB для кодов цветов'
-                                        "
                                     >
                                         RGB (hex)
                                     </button>
@@ -106,11 +110,6 @@ provide('lightThemeLightness', lightThemeLightness);
                                         class="choice-chip"
                                         :class="{ current: colorFormatCopy == 'oklch' }"
                                         @click="colorFormatCopy = 'oklch'"
-                                        :title="
-                                            colorFormatCopy == 'oklch'
-                                                ? ''
-                                                : 'выбрать OKLCH для кодов цветов'
-                                        "
                                     >
                                         OKLCH
                                     </button>
@@ -149,7 +148,7 @@ provide('lightThemeLightness', lightThemeLightness);
                     <button @click="showMenu = !showMenu">
                         <IconMenu width="24px" height="auto" />
                     </button>
-                    <TransitionExpand>
+                    <TransitionExpand hideContent>
                         <div v-if="showMenu" class="popup right-0">
                             <a
                                 href="https://forms.yandex.ru/u/69be9a001f1eb598d3b3d764"

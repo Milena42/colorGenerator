@@ -40,7 +40,7 @@ const secondOverlays = computed(() => props.theme == 'dark' || props.theme == 'l
 </script>
 
 <template>
-    <div class="mockup">
+    <div class="mockup" inert>
         <div class="landing-part landing-header" :style="main">
             <div class="landing-logo">
                 <div class="logo-circle"></div>
@@ -49,7 +49,7 @@ const secondOverlays = computed(() => props.theme == 'dark' || props.theme == 'l
             <p class="a">Ссылка</p>
             <p class="a">Ссылка</p>
             <p class="a">Ссылка</p>
-            <div class="button">Кнопка</div>
+            <div class="mockup-button">Кнопка</div>
         </div>
         <div class="landing-part" :style="main">
             <div class="landing-block">
@@ -58,7 +58,7 @@ const secondOverlays = computed(() => props.theme == 'dark' || props.theme == 'l
                     Пример текста. <span class="a">Типа ссылка</span>, чтобы посмотреть
                     контрастность. Еще текст, чтобы строки переносились...
                 </p>
-                <div class="button">Кнопка</div>
+                <div class="mockup-button">Кнопка</div>
             </div>
             <div class="landing-picture"></div>
         </div>
@@ -67,7 +67,7 @@ const secondOverlays = computed(() => props.theme == 'dark' || props.theme == 'l
                 Пример текста. <span class="a">Типа ссылка</span>, чтобы посмотреть контрастность.
                 Еще текст, чтобы строки переносились...
             </p>
-            <div class="button">Кнопка</div>
+            <div class="mockup-button">Кнопка</div>
         </div>
         <div class="landing-part landing-variants" :style="main">
             <p class="h">Заголовок</p>
@@ -77,21 +77,21 @@ const secondOverlays = computed(() => props.theme == 'dark' || props.theme == 'l
                         Пример текста. <span class="a">Типа ссылка</span>, чтобы посмотреть
                         контрастность.
                     </p>
-                    <div class="button">Кнопка</div>
+                    <div class="mockup-button">Кнопка</div>
                 </div>
                 <div class="mockup-overlay">
                     <p>
                         Пример текста. <span class="a">Типа ссылка</span>, чтобы посмотреть
                         контрастность.
                     </p>
-                    <div class="button">Кнопка</div>
+                    <div class="mockup-button">Кнопка</div>
                 </div>
                 <div class="mockup-overlay">
                     <p>
                         Пример текста. <span class="a">Типа ссылка</span>, чтобы посмотреть
                         контрастность.
                     </p>
-                    <div class="button">Кнопка</div>
+                    <div class="mockup-button">Кнопка</div>
                 </div>
             </div>
         </div>
@@ -100,7 +100,7 @@ const secondOverlays = computed(() => props.theme == 'dark' || props.theme == 'l
                 Пример текста. <span class="a">Типа ссылка</span>, чтобы посмотреть контрастность.
                 Еще текст, чтобы строки переносились...
             </p>
-            <div class="button">Кнопка</div>
+            <div class="mockup-button">Кнопка</div>
         </div>
         <div class="landing-part" :style="second">
             <div class="landing-picture"></div>
@@ -110,7 +110,7 @@ const secondOverlays = computed(() => props.theme == 'dark' || props.theme == 'l
                     Пример текста. <span class="a">Типа ссылка</span>, чтобы посмотреть
                     контрастность. Еще текст, чтобы строки переносились...
                 </p>
-                <div class="button">Кнопка</div>
+                <div class="mockup-button">Кнопка</div>
             </div>
         </div>
         <div
@@ -249,7 +249,7 @@ const secondOverlays = computed(() => props.theme == 'dark' || props.theme == 'l
     justify-content: space-between;
 }
 
-.button {
+.mockup-button {
     display: inline-flex;
     align-items: center;
     justify-content: center;

@@ -1,9 +1,6 @@
 <script setup lang="ts">
-import {
-    lockBodyInteractions,
-    setWithTransition,
-    unlockBodyInteractions,
-} from '@/assets/animation';
+import { setWithTransition } from '@/assets/animation';
+import { lockBodyInteractions, unlockBodyInteractions } from '@/assets/animationLockController';
 import IconAnalog from '@/assets/icons/colorSchemes/IconAnalog.vue';
 import IconComplementary from '@/assets/icons/colorSchemes/IconComplementary.vue';
 import IconMono from '@/assets/icons/colorSchemes/IconMono.vue';
@@ -454,8 +451,7 @@ const baseH = computed({
             <div class="editor-view">
                 <component
                     :is="ColorsOutput"
-                    :colorsLight="generatedLight"
-                    :colorsDark="generatedDark"
+                    :colors="{ dark: generatedDark, light: generatedLight }"
                     class="editor-view-content"
                     v-if="generatedDark && generatedLight"
                 />

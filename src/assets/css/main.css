@@ -14,6 +14,9 @@ body,
     width: 100%;
     height: 100%;
 }
+#app {
+    overflow: scroll;
+}
 
 .plot {
     min-width: 500px;

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { type MockupColors } from '@/generator/common';
-import type { ColorRole } from '@/generator/themesExample';
+import type { ColorRole, ThemeName } from '@/generator/themesExample';
 import { defineAsyncComponent, inject, ref, shallowRef, watch, type Ref } from 'vue';
 import CssOutput from './CssOutput.vue';
 import MockupPreview from './MockupPreview.vue';
@@ -10,16 +10,15 @@ import PaletteOutput from './PaletteOutput.vue';
 const ColorModels3d = defineAsyncComponent(() => import('@/plots/ColorModels3d.vue'));
 
 const props = defineProps<{
-    colorsLight: MockupColors<ColorRole>;
-    colorsDark: MockupColors<ColorRole>;
+    colors: Record<ThemeName, MockupColors<ColorRole>>;
 }>();
 
-const colorsLightLocal = shallowRef(props.colorsLight);
-const colorsDarkLocal = shallowRef(props.colorsDark);
+const colorsLightLocal = shallowRef(props.colors.light);
+const colorsDarkLocal = shallowRef(props.colors.dark);
 
-watch([() => props.colorsLight, () => props.colorsDark], () => {
-    colorsLightLocal.value = props.colorsLight;
-    colorsDarkLocal.value = props.colorsDark;
+watch([() => props.colors.light, () => props.colors.dark], () => {
+    colorsLightLocal.value = props.colors.light;
+    colorsDarkLocal.value = props.colors.dark;
 });
 
 const showPlots: Ref<boolean> = inject('showPlots') ?? ref(false);

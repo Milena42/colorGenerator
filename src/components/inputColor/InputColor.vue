@@ -91,14 +91,12 @@ const emit = defineEmits<{
                     </button>
                 </div>
             </div>
-            <TransitionExpand>
-                <p v-show="alwaysShowColorStrings && !editing" class="input-color-gap-x">
+            <Transition name="fade" mode="out-in">
+                <p v-if="alwaysShowColorStrings && !editing" class="input-color-gap-x">
                     {{ colorString }}
                 </p>
-            </TransitionExpand>
-            <Transition name="fade">
                 <input
-                    v-if="editing"
+                    v-else-if="editing"
                     v-model.lazy="colorString"
                     type="text"
                     class="input-color-input-text input-color-gap-x"
@@ -191,11 +189,30 @@ const emit = defineEmits<{
     opacity: 0;
 }
 .fade-enter-active {
-    transition: all 1s linear;
+    transition: all 0.4s ease-in-out;
     transition-delay: 0.1s;
+    overflow: hidden;
 }
 
 .fade-leave-active {
-    transition: all 0.4s linear;
+    transition: all 0.2s linear;
+    overflow: hidden;
+}
+
+.palette-swap-transition {
+    .fade-enter-from,
+    .fade-leave-to {
+        max-width: 20em;
+        opacity: 0;
+    }
+
+    .fade-enter-active {
+        transition: opacity 0.4s ease-out;
+        transition-delay: 0s;
+    }
+
+    .fade-leave-active {
+        transition: opacity 0.1s ease-out;
+    }
 }
 </style>

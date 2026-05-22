@@ -2,27 +2,21 @@
 import IconClose from '@/assets/icons/IconClose.vue';
 import InputRangeColor from '@/components/inputColor/InputRangeColor.vue';
 import type { ColorRoleConstraints, ThemeParams } from '@/generator/common';
+import { CONTENT_SCRIPT_CLIENT, THEME_PARAMS_USER } from '@/injectionKeys';
 import chroma from 'chroma-js';
-import { inject, ref, type Ref } from 'vue';
-import type { ContentClient } from './contentClient';
+import { inject, ref } from 'vue';
 
 const emit = defineEmits<{
-    'theme-params-change': [value: ThemeParams<string, string>];
+    'theme-params-change': [value: ThemeParams<'theme', string>];
 }>();
 
-const themeParams: Ref<ThemeParams<string, string>> =
-    inject('themeParams') ??
-    ref({
-        themeKeys: ['theme'],
-        roleKeys: [],
-        themes: { theme: {} },
-    });
+const themeParams = inject(THEME_PARAMS_USER)!;
 
 function emitChange() {
     //TODO это пока тема только одна, иначе придется поменять
     const theme = themeParams.value.themes['theme'];
     const params = {
-        themeKeys: ['theme'],
+        themeKeys: ['theme'] as const,
         roleKeys: Object.keys(theme),
         themes: {
             theme: theme,
@@ -32,7 +26,7 @@ function emitChange() {
     emit('theme-params-change', params);
 }
 
-const contentScriptClient = inject<ContentClient>('contentScriptClient');
+const contentScriptClient = inject(CONTENT_SCRIPT_CLIENT);
 
 async function takeVariablesFromPage() {
     if (!contentScriptClient) {

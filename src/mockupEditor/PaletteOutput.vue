@@ -1,12 +1,12 @@
-<script setup lang="ts" generic="T extends string">
+<script setup lang="ts">
 import InputColor from '@/components/inputColor/InputColor.vue';
-import { type MockupColors } from '@/generator/common';
+import { type GenericColorRole, type MockupColors } from '@/generator/common';
 import { vOnClickOutside } from '@vueuse/components';
 import { ref } from 'vue';
 
-const colors = defineModel<MockupColors<T>>({ required: true });
+const colors = defineModel<MockupColors<GenericColorRole>>({ required: true });
 
-const editingColor = ref<T | null>(null);
+const editingColor = ref<GenericColorRole | null>(null);
 const isSwap = ref(false);
 
 function closeEditing() {
@@ -14,7 +14,7 @@ function closeEditing() {
     editingColor.value = null;
 }
 
-function swapOrOpenEditing(role: T) {
+function swapOrOpenEditing(role: GenericColorRole) {
     if (editingColor.value) {
         isSwap.value = true;
     } else {
@@ -32,7 +32,7 @@ function swapOrOpenEditing(role: T) {
     >
         <InputColor
             v-model="colors[role]"
-            v-for="(color, role) in colors"
+            v-for="(color, role) of colors"
             :key="role"
             :role="role"
             :editing="editingColor == role"

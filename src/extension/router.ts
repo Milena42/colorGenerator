@@ -1,9 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router';
 
-const GeneratorFromPicture = () =>
-    import('@/generatorFromPicturePage/GeneratorFromPicturePage.vue');
+const GeneratorFromPicture = () => import('./GeneratorFromPicturePage.vue');
 
-const GeneratorFromWheel = () => import('@/generatorFromWheelPage/GeneratorFromWheelPage.vue');
+const GeneratorFromWheel = () => import('./GeneratorFromWheelPage.vue');
 
 const InputTheme = () => import('./InputThemePage.vue');
 

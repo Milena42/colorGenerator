@@ -1,6 +1,6 @@
-<script setup lang="ts" generic="T extends string, R extends string">
-import { ContentClient } from '@/extension/contentClient';
+<script setup lang="ts" generic="R extends string">
 import { getCssColors, type MockupColors } from '@/generator/common';
+import { CONTENT_SCRIPT_CLIENT, SHOW_PLOTS } from '@/injectionKeys';
 import CssOutput from '@/mockupEditor/CssOutput.vue';
 import PaletteOutput from '@/mockupEditor/PaletteOutput.vue';
 import {
@@ -10,14 +10,13 @@ import {
     ref,
     shallowRef,
     watch,
-    type Ref,
     type ShallowRef,
 } from 'vue';
 
 const ColorModels3d = defineAsyncComponent(() => import('@/plots/ColorModels3d.vue'));
 
 const props = defineProps<{
-    colors: Record<T, MockupColors<R>>;
+    colors: Record<'theme', MockupColors<R>>;
 }>();
 
 const colorsLocal: ShallowRef<MockupColors<R>> = shallowRef<MockupColors<R>>(props.colors.theme);
@@ -29,11 +28,11 @@ watch(
     },
 );
 
-const showPlots: Ref<boolean> = inject('showPlots') ?? ref(false);
+const showPlots = inject(SHOW_PLOTS) ?? ref(false);
 
 const css = computed(() => getCssColors(colorsLocal.value, 'rgbHex'));
 
-const contentScriptClient = inject<ContentClient>('contentScriptClient');
+const contentScriptClient = inject(CONTENT_SCRIPT_CLIENT);
 
 watch(css, () => {
     contentScriptClient?.call('setCss', { css: css.value });
@@ -43,7 +42,7 @@ watch(css, () => {
 <template>
     <div class="mockup-editor-wrapper">
         <div class="mockup-editor">
-            <CssOutput :colorsDark="colorsLocal" :colorsLight="colorsLocal" />
+            <CssOutput :colors="{ theme: colorsLocal }" />
             <PaletteOutput v-model="colorsLocal" />
         </div>
 

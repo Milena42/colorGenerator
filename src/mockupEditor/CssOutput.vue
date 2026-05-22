@@ -1,23 +1,19 @@
 <script setup lang="ts">
 import IconCopy from '@/assets/icons/IconCopy.vue';
-import { getCssColors, type ColorFormat, type MockupColors } from '@/generator/common';
-import type { ColorRole } from '@/generator/themesExample';
-import { computed, inject, ref, type Ref } from 'vue';
+import { type ColorFormat, getCssColors, type MockupColors } from '@/generator/common';
+import { COLOR_FORMAT_COPY } from '@/injectionKeys';
+import { computed, inject, ref } from 'vue';
 
 const props = defineProps<{
-    colorsLight: MockupColors<ColorRole>;
-    colorsDark: MockupColors<ColorRole>;
+    colors: Record<string, MockupColors<string>>;
 }>();
 
-const colorFormatCopy = inject<Ref<ColorFormat>>('colorFormatCopy', ref('rgbHex'));
+const colorFormatCopy = inject(COLOR_FORMAT_COPY, ref<ColorFormat>('rgbHex'));
 
-const css = computed(
-    () => `.dark {
-${getCssColors(props.colorsDark, colorFormatCopy.value)}
-}
-.light {
-${getCssColors(props.colorsLight, colorFormatCopy.value)}
-}`,
+const css = computed(() =>
+    Object.entries(props.colors)
+        .map(([t, colors]) => `.${t} {\n${getCssColors(colors, colorFormatCopy.value)}\n}`)
+        .join('\n'),
 );
 
 async function copyAll() {

@@ -1,30 +1,36 @@
-<script setup lang="ts">
+<script setup lang="ts" generic="T extends string, R extends string">
 import { lockBodyInteractions, unlockBodyInteractions } from '@/assets/animationLockController';
-import { Color, type ColorMap, type MockupColors, type Theme } from '@/generator/common';
+import { Color, type ColorMap, type MockupColors, type ThemeParams } from '@/generator/common';
 import { GeneratorFromPicture, type GeneratedThemes } from '@/generator/generatorFromPictureEngine';
-import {
-    colorRoles,
-    darkTheme,
-    lightTheme,
-    themeKeys,
-    type ColorRole,
-    type ThemeName,
-} from '@/generator/themesExample';
-import MockupEditor from '@/mockupEditor/MockupEditor.vue';
+import { SHOW_PLOTS } from '@/injectionKeys';
 import ArrayOfPlots from '@/plots/ArrayOfPlots.vue';
-import { computed, defineAsyncComponent, inject, ref, shallowRef, watch, type Ref } from 'vue';
+import {
+    computed,
+    defineAsyncComponent,
+    inject,
+    ref,
+    shallowRef,
+    watch,
+    type Component,
+} from 'vue';
 import InputPicture from './InputPicture.vue';
 
 const ColorModels3d = defineAsyncComponent(() => import('@/plots/ColorModels3d.vue'));
 
+const props = defineProps<{
+    themeParams: ThemeParams<T, R>;
+    ColorsOutput: Component<{ colors: Record<T, MockupColors<R>> }>;
+}>();
+
 const imgMap = ref<ColorMap>();
 const totalPixels = ref(1);
 
-const darkThemeModified = inject<Ref<Theme<ColorRole>>>('darkThemeLightness');
-const lightThemeModified = inject<Ref<Theme<ColorRole>>>('lightThemeLightness');
-watch([darkThemeModified, lightThemeModified], () => {
-    generate();
-});
+watch(
+    () => props.themeParams,
+    () => {
+        generate();
+    },
+);
 
 const chromaTorusMap = shallowRef(new Map<string, Color>());
 
@@ -64,17 +70,17 @@ async function setPicture() {
     stopLoading();
 }
 
-const themeVariants = ref<GeneratedThemes<ThemeName, ColorRole>>();
+const themeVariants = ref<GeneratedThemes<T, R>>();
 
 const generated = computed(() => {
     if (!themeVariants.value) {
         return undefined;
     }
 
-    const themes: Record<ThemeName, MockupColors<ColorRole>> = Object.create(null);
-    themeKeys.forEach((themeName) => {
+    const themes: Record<T, MockupColors<R>> = Object.create(null);
+    props.themeParams.themeKeys.forEach((themeName) => {
         themes[themeName] = Object.create(null);
-        colorRoles.forEach((role) => {
+        props.themeParams.roleKeys.forEach((role) => {
             if (!themeVariants.value) return;
             const n = themeVariants.value[themeName].chosen[role];
             themes[themeName][role] = themeVariants.value[themeName].variants[n][role];
@@ -86,14 +92,7 @@ const generated = computed(() => {
 function generate() {
     if (!generator) return;
 
-    const generatedThemes = generator.generate({
-        themeKeys,
-        roleKeys: colorRoles,
-        themes: {
-            dark: darkThemeModified?.value ?? darkTheme,
-            light: lightThemeModified?.value ?? lightTheme,
-        },
-    });
+    const generatedThemes = generator.generate(props.themeParams);
 
     themeVariants.value = generatedThemes;
 
@@ -109,7 +108,7 @@ function generate() {
     polarHistogramBorders.value = debugInfo.clusteringDebug?.borders ?? [];
 }
 
-const showPlots: Ref<boolean> = inject('showPlots') ?? ref(false);
+const showPlots = inject(SHOW_PLOTS) ?? ref(false);
 </script>
 
 <template>
@@ -121,7 +120,12 @@ const showPlots: Ref<boolean> = inject('showPlots') ?? ref(false);
                 @loading="startLoading"
                 @stopLoading="stopLoading"
             />
-            <MockupEditor class="grow" :colors="generated" v-if="imgMap?.totalQ && generated" />
+            <component
+                class="grow"
+                :is="ColorsOutput"
+                :colors="generated"
+                v-if="imgMap?.totalQ && generated"
+            />
         </div>
         <div v-if="themeVariants" class="generator-picture-variants">
             <p>Выбрать другие варианты сгенерированных цветов:</p>

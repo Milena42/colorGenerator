@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup lang="ts" generic="T extends string, R extends string">
 import { setWithTransition } from '@/assets/animation';
 import { lockBodyInteractions, unlockBodyInteractions } from '@/assets/animationLockController';
 import IconAnalog from '@/assets/icons/colorSchemes/IconAnalog.vue';
@@ -10,7 +10,7 @@ import IconLockOn from '@/assets/icons/IconLockOn.vue';
 import IconSwap from '@/assets/icons/IconSwap.vue';
 import InputColorHString from '@/components/inputColor/InputColorHString.vue';
 import InputNumber from '@/components/InputNumber.vue';
-import { type MockupColors, type Theme, type ThemeParams } from '@/generator/common';
+import { type MockupColors, type ThemeParams } from '@/generator/common';
 import {
     generateFromWheelGradient,
     generateFromWheelMono,
@@ -19,10 +19,9 @@ import {
     type ChromaParams,
     type SchemeType,
 } from '@/generator/generatorFromWheelEngine';
-import { maxCAccent, maxCBg, type ColorRole } from '@/generator/themesExample';
-import MockupEditor from '@/mockupEditor/MockupEditor.vue';
+import { maxCAccent, maxCBg } from '@/generator/themesExample';
 import { vOnClickOutside } from '@vueuse/components';
-import { computed, inject, onUnmounted, reactive, ref, useTemplateRef, watch, type Ref } from 'vue';
+import { computed, onUnmounted, reactive, ref, useTemplateRef, watch, type Component } from 'vue';
 import ArcShortest from './ArcShortest.vue';
 import CircleInput, {
     circleObject,
@@ -31,11 +30,12 @@ import CircleInput, {
     WHEEL_SVG_WIDTH,
 } from './CircleInput.vue';
 
-const ColorsOutput = inject('ColorsOutput') ?? MockupEditor;
-const themeParams = inject<Ref<ThemeParams<string, string>>>('themeParams');
+const props = defineProps<{
+    themeParams: ThemeParams<T, R>;
+    ColorsOutput: Component<{ colors: Record<T, MockupColors<R>> }>;
+}>();
 
-const generatedLight = ref<MockupColors<ColorRole>>();
-const generatedDark = ref<MockupColors<ColorRole>>();
+const generated = ref<Record<string, MockupColors<string>>>();
 
 const accentCircle = reactive(new circleObject(236));
 const lightCircle = reactive(new circleObject(0));
@@ -68,15 +68,14 @@ const typeOfScheme = ref<SchemeType>('mono');
 const inputBgC = ref<number>(maxCBg);
 const inputAccentC = ref<number>(maxCAccent);
 
-const darkThemeModified = inject<Ref<Theme<ColorRole>>>('darkThemeLightness');
-const lightThemeModified = inject<Ref<Theme<ColorRole>>>('lightThemeLightness');
-watch([darkThemeModified, lightThemeModified], () => {
-    generate();
-});
+watch(
+    () => props.themeParams,
+    () => {
+        generate();
+    },
+);
 
 function generate() {
-    if (!themeParams?.value) return;
-
     const chromaParams: ChromaParams = {
         accentC: inputAccentC.value / maxCAccent,
         bgC: inputBgC.value / maxCBg,
@@ -85,12 +84,12 @@ function generate() {
     const generatedThemes = (() => {
         switch (typeOfScheme.value) {
             case 'mono':
-                return generateFromWheelMono(inputAccentH.value, themeParams.value, chromaParams);
+                return generateFromWheelMono(inputAccentH.value, props.themeParams, chromaParams);
             case 'step2':
                 return generateFromWheelStep2(
                     inputAccentH.value,
                     inputDarkH.value,
-                    themeParams.value,
+                    props.themeParams,
                     chromaParams,
                 );
             case 'step3':
@@ -98,7 +97,7 @@ function generate() {
                     inputAccentH.value,
                     inputDarkH.value,
                     inputLightH.value,
-                    themeParams.value,
+                    props.themeParams,
                     chromaParams,
                 );
             case 'gradient':
@@ -106,14 +105,13 @@ function generate() {
                     inputAccentH.value,
                     inputDarkH.value,
                     inputLightH.value,
-                    themeParams.value,
+                    props.themeParams,
                     chromaParams,
                 );
         }
     })();
 
-    generatedDark.value = generatedThemes.theme;
-    generatedLight.value = generatedThemes.theme;
+    generated.value = generatedThemes;
 }
 
 watch([inputAccentH, inputDarkH, inputLightH], generate, { immediate: true });
@@ -451,9 +449,9 @@ const baseH = computed({
             <div class="editor-view">
                 <component
                     :is="ColorsOutput"
-                    :colors="{ dark: generatedDark, light: generatedLight }"
+                    :colors="generated"
                     class="editor-view-content"
-                    v-if="generatedDark && generatedLight"
+                    v-if="generated"
                 />
             </div>
         </div>

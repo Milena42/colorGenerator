@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import type { Color } from '@/generator/common';
+import { SHOW_QUANTITY_ON_PLOTS } from '@/injectionKeys';
 import type { Data } from 'plotly.js';
 import Plotly from 'plotly.js-dist';
-import { inject, onMounted, ref, useTemplateRef, watch, type Ref } from 'vue';
+import { inject, onMounted, ref, useTemplateRef, watch } from 'vue';
 
 const props = defineProps<{
     k: number;
@@ -10,7 +11,7 @@ const props = defineProps<{
     totalQ: number;
 }>();
 
-const showQuantity: Ref<boolean> = inject('showQuantityOnPlots') ?? ref(true);
+const showQuantity = inject(SHOW_QUANTITY_ON_PLOTS) ?? ref(true);
 const defaultSizeOfPoint = 5;
 
 const graphDiv = useTemplateRef<HTMLElement>('graphDiv');

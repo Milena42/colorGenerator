@@ -2,26 +2,25 @@
 import IconCopy from '@/assets/icons/IconCopy.vue';
 import IconTune from '@/assets/icons/IconTune.vue';
 import TransitionExpand from '@/assets/TransitionExpand.vue';
-import { getColorString, type Color, type ColorFormat } from '@/generator/common';
-import type { ColorRole } from '@/generator/themesExample';
+import { getColorString, type Color, type GenericColorRole } from '@/generator/common';
+import { ALWAYS_SHOW_COLOR_STRINGS, COLOR_FORMAT_COPY, COLOR_FORMAT_EDIT } from '@/injectionKeys';
 import { vOnClickOutside } from '@vueuse/components';
 import chroma from 'chroma-js';
-import { computed, inject, type Ref } from 'vue';
+import { computed, inject } from 'vue';
 import InputColorHSB from './InputColorHSB.vue';
 import InputColorOKLCH from './InputColorOKLCH.vue';
 
 defineProps<{
-    role: ColorRole;
+    role: GenericColorRole;
     editing: boolean;
 }>();
 
 const color = defineModel<Color>({ required: true });
 
-const colorFormatEdit = inject<Ref<ColorFormat>>('colorFormatEdit');
+const colorFormatEdit = inject(COLOR_FORMAT_EDIT);
+const colorFormatCopy = inject(COLOR_FORMAT_COPY);
 
-const colorFormatCopy = inject<Ref<ColorFormat>>('colorFormatCopy');
-
-const alwaysShowColorStrings = inject<Ref<boolean>>('alwaysShowColorStrings');
+const alwaysShowColorStrings = inject(ALWAYS_SHOW_COLOR_STRINGS);
 
 const colorHex = computed({
     get: () => color.value.adjustForRGB(),
@@ -60,7 +59,7 @@ async function copy() {
 }
 
 const emit = defineEmits<{
-    openEditing: [ColorRole];
+    openEditing: [GenericColorRole];
     closeEditing: [];
 }>();
 </script>

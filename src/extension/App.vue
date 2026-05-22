@@ -7,49 +7,53 @@ import IconMenu from '@/assets/icons/IconMenu.vue';
 import IconSettings from '@/assets/icons/IconSettings.vue';
 import IconTune from '@/assets/icons/IconTune.vue';
 import TransitionExpand from '@/assets/TransitionExpand.vue';
-import { type ColorFormat, type Theme, type ThemeParams } from '@/generator/common';
+import { type ColorFormat, type GenericColorRole, type ThemeParams } from '@/generator/common';
+import {
+    ALWAYS_SHOW_COLOR_STRINGS,
+    COLOR_FORMAT_COPY,
+    COLOR_FORMAT_EDIT,
+    CONTENT_SCRIPT_CLIENT,
+    SHOW_PLOTS,
+    SHOW_QUANTITY_ON_PLOTS,
+    SHOW_WIREFRAME_ON_PLOTS,
+    THEME_PARAMS_USER,
+} from '@/injectionKeys';
 import { vOnClickOutside } from '@vueuse/components';
 import { provide, ref } from 'vue';
-import ColorsEditor from './ColorsEditor.vue';
 import { ContentClient } from './contentClient';
 
 const showQuantityOnPlots = ref(true);
-provide('showQuantityOnPlots', showQuantityOnPlots);
+provide(SHOW_QUANTITY_ON_PLOTS, showQuantityOnPlots);
 
 const showWireframeOnPlots = ref(false);
-provide('showWireframeOnPlots', showWireframeOnPlots);
+provide(SHOW_WIREFRAME_ON_PLOTS, showWireframeOnPlots);
 
 const showPlots = ref(false);
-provide('showPlots', showPlots);
+provide(SHOW_PLOTS, showPlots);
 
 const alwaysShowColorStrings = ref(false);
-provide('alwaysShowColorStrings', alwaysShowColorStrings);
+provide(ALWAYS_SHOW_COLOR_STRINGS, alwaysShowColorStrings);
 
 const colorFormatEdit = ref<ColorFormat>('oklch');
-provide('colorFormatEdit', colorFormatEdit);
+provide(COLOR_FORMAT_EDIT, colorFormatEdit);
 
 const colorFormatCopy = ref<ColorFormat>('rgbHex');
-provide('colorFormatCopy', colorFormatCopy);
+provide(COLOR_FORMAT_COPY, colorFormatCopy);
 
 const themeIsDark = ref(false);
 
 const showSettings = ref(false);
 const showMenu = ref(false);
 
-const themeRules = ref<Theme<string>>();
-provide('darkThemeLightness', themeRules);
-
 const contentScriptClient = new ContentClient(chrome.devtools.inspectedWindow.tabId);
-provide('contentScriptClient', contentScriptClient);
+provide(CONTENT_SCRIPT_CLIENT, contentScriptClient);
 
-provide('ColorsOutput', ColorsEditor);
-
-const themeParams = ref<ThemeParams<string, string>>({
+const themeParams = ref<ThemeParams<'theme', GenericColorRole>>({
     themeKeys: ['theme'],
     roleKeys: [],
     themes: { theme: {} },
 });
-provide('themeParams', themeParams);
+provide(THEME_PARAMS_USER, themeParams);
 </script>
 
 <template>
@@ -105,11 +109,6 @@ provide('themeParams', themeParams);
                                         class="choice-chip"
                                         :class="{ current: colorFormatCopy == 'rgbHex' }"
                                         @click="colorFormatCopy = 'rgbHex'"
-                                        :title="
-                                            colorFormatCopy == 'rgbHex'
-                                                ? ''
-                                                : 'выбрать RGB для кодов цветов'
-                                        "
                                     >
                                         RGB (hex)
                                     </button>
@@ -117,11 +116,6 @@ provide('themeParams', themeParams);
                                         class="choice-chip"
                                         :class="{ current: colorFormatCopy == 'oklch' }"
                                         @click="colorFormatCopy = 'oklch'"
-                                        :title="
-                                            colorFormatCopy == 'oklch'
-                                                ? ''
-                                                : 'выбрать OKLCH для кодов цветов'
-                                        "
                                     >
                                         OKLCH
                                     </button>
@@ -177,7 +171,7 @@ provide('themeParams', themeParams);
         </header>
         <RouterView
             class="grow w-full"
-            @theme-params-change="(v: ThemeParams<string, string>) => (themeParams = v)"
+            @theme-params-change="(v: ThemeParams<'theme', string>) => (themeParams = v)"
         />
     </div>
 </template>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { vOnClickOutside } from '@vueuse/components';
-import { provide, ref } from 'vue';
+import { computed, provide, ref } from 'vue';
 import IconTriad from './assets/icons/colorSchemes/IconTriad.vue';
 import IconDarkTheme from './assets/icons/IconDarkTheme.vue';
 import IconImage from './assets/icons/IconImage.vue';
@@ -11,25 +11,34 @@ import IconSettings from './assets/icons/IconSettings.vue';
 import TransitionExpand from './assets/TransitionExpand.vue';
 import InputThemeLightness from './components/InputThemeLightness.vue';
 import type { ColorFormat } from './generator/common';
-import { darkTheme, lightTheme } from './generator/themesExample';
+import { colorRoles, darkTheme, lightTheme, themeKeys } from './generator/themesExample';
+import {
+    ALWAYS_SHOW_COLOR_STRINGS,
+    COLOR_FORMAT_COPY,
+    COLOR_FORMAT_EDIT,
+    SHOW_PLOTS,
+    SHOW_QUANTITY_ON_PLOTS,
+    SHOW_WIREFRAME_ON_PLOTS,
+    THEME_PARAMS,
+} from './injectionKeys';
 
 const showQuantityOnPlots = ref(true);
-provide('showQuantityOnPlots', showQuantityOnPlots);
+provide(SHOW_QUANTITY_ON_PLOTS, showQuantityOnPlots);
 
 const showWireframeOnPlots = ref(false);
-provide('showWireframeOnPlots', showWireframeOnPlots);
+provide(SHOW_WIREFRAME_ON_PLOTS, showWireframeOnPlots);
 
 const showPlots = ref(false);
-provide('showPlots', showPlots);
+provide(SHOW_PLOTS, showPlots);
 
 const alwaysShowColorStrings = ref(false);
-provide('alwaysShowColorStrings', alwaysShowColorStrings);
+provide(ALWAYS_SHOW_COLOR_STRINGS, alwaysShowColorStrings);
 
 const colorFormatEdit = ref<ColorFormat>('oklch');
-provide('colorFormatEdit', colorFormatEdit);
+provide(COLOR_FORMAT_EDIT, colorFormatEdit);
 
 const colorFormatCopy = ref<ColorFormat>('rgbHex');
-provide('colorFormatCopy', colorFormatCopy);
+provide(COLOR_FORMAT_COPY, colorFormatCopy);
 
 const themeIsDark = ref(false);
 
@@ -37,14 +46,22 @@ const showSettings = ref(false);
 const showMenu = ref(false);
 
 const darkThemeLightness = ref(darkTheme);
-provide('darkThemeLightness', darkThemeLightness);
 const lightThemeLightness = ref(lightTheme);
-provide('lightThemeLightness', lightThemeLightness);
 
 function resetThemeRules() {
     darkThemeLightness.value = darkTheme;
     lightThemeLightness.value = lightTheme;
 }
+
+const themeParams = computed(() => ({
+    themeKeys,
+    roleKeys: colorRoles,
+    themes: {
+        dark: darkThemeLightness.value,
+        light: lightThemeLightness.value,
+    },
+}));
+provide(THEME_PARAMS, themeParams);
 </script>
 
 <template>

@@ -1,8 +1,17 @@
 <script setup lang="ts">
 import chroma from 'chroma-js';
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 
 const h = defineModel<number>();
+
+const localInput = ref(false);
+watch(h, () => {
+    if (localInput.value) {
+        localInput.value = false;
+        return;
+    }
+    colorString.value = '';
+});
 
 const emit = defineEmits<{
     change: [];
@@ -21,6 +30,7 @@ function change() {
     if (!h1) h1 = 0;
     h.value = h1;
 
+    localInput.value = true;
     emit('change');
 }
 </script>

@@ -51,14 +51,14 @@ const previewType = ref<'elementsUI' | 'landingsMixed' | 'landings' | 'css'>('el
                     :class="{ current: previewType == 'landingsMixed' }"
                     @click="previewType = 'landingsMixed'"
                 >
-                    Лендинги
+                    Макет 1
                 </button>
                 <button
                     class="choice-chip"
                     :class="{ current: previewType == 'landings' }"
                     @click="previewType = 'landings'"
                 >
-                    Лендинги 2
+                    Макет 2
                 </button>
             </div>
         </div>

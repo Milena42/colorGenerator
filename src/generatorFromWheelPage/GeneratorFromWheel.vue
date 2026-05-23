@@ -20,7 +20,6 @@ import {
     type SchemeType,
 } from '@/generator/generatorFromWheelEngine';
 import { maxCAccent, maxCBg } from '@/generator/themesExample';
-import { vOnClickOutside } from '@vueuse/components';
 import { computed, onUnmounted, reactive, ref, useTemplateRef, watch, type Component } from 'vue';
 import ArcShortest from './ArcShortest.vue';
 import CircleInput, {
@@ -269,8 +268,6 @@ function reverseDependentHues() {
     setWithTransition(inputLightH, startDark, time, { circle: true });
 }
 
-const inputHFromColor = ref(false);
-
 const baseH = computed({
     get: () => inputAccentH.value,
     set: (v) => {
@@ -370,20 +367,12 @@ const baseH = computed({
                     </button>
                 </div>
 
-                <div class="color-wheel-square-base-color">
-                    <button
-                        v-if="!inputHFromColor"
-                        @click="inputHFromColor = true"
-                        title="задать акцентный тон на основе цвета"
-                        class="text-button"
-                    >
-                        Из цвета
-                    </button>
+                <div class="color-wheel-square-base-color col">
+                    <label for="hFromColor"> из цвета: </label>
                     <InputColorHString
-                        v-if="inputHFromColor"
+                        id="hFromColor"
+                        title="задать акцентный тон на основе цвета"
                         v-model.lazy="baseH"
-                        @change="inputHFromColor = false"
-                        v-on-click-outside="() => (inputHFromColor = false)"
                     />
                 </div>
 
@@ -561,6 +550,7 @@ const baseH = computed({
     position: absolute;
     bottom: 0px;
     right: 0px;
+    text-align: end;
 }
 
 .color-wheel-square-base-h {

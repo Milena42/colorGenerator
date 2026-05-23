@@ -7,6 +7,7 @@ const GeneratorFromWheel = () => import('./generatorFromWheelPage/GeneratorFromW
 
 const routes = [
     { path: '/', redirect: '/wheel' },
+    { path: '/index.html', redirect: '/wheel' },
     { path: '/picture', component: GeneratorFromPicture },
     { path: '/wheel', component: GeneratorFromWheel },
 ];

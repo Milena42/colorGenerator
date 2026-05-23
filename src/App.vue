@@ -48,9 +48,11 @@ const showMenu = ref(false);
 const darkThemeLightness = ref(darkTheme);
 const lightThemeLightness = ref(lightTheme);
 
-function resetThemeRules() {
-    darkThemeLightness.value = darkTheme;
+function resetThemeRulesLight() {
     lightThemeLightness.value = lightTheme;
+}
+function resetThemeRulesDark() {
+    darkThemeLightness.value = darkTheme;
 }
 
 const themeParams = computed(() => ({
@@ -77,7 +79,10 @@ provide(THEME_PARAMS, themeParams);
             </div>
 
             <InputThemeLightness v-model="darkThemeLightness" class="grow" />
-            <button @click="resetThemeRules" title="сбросить параметры светлоты">
+            <button @click="resetThemeRulesDark" title="сбросить параметры светлоты темной темы">
+                <IconReset />
+            </button>
+            <button @click="resetThemeRulesLight" title="сбросить параметры светлоты светлой темы">
                 <IconReset />
             </button>
             <InputThemeLightness v-model="lightThemeLightness" themeIsLight class="grow" />

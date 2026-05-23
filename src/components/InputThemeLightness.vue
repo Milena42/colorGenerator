@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { lockBodyInteractions, unlockBodyInteractions } from '@/assets/animationLockController';
 import type { Theme } from '@/generator/common';
 import type { ColorRole } from '@/generator/themesExample';
 import { onUnmounted, ref, useTemplateRef } from 'vue';
@@ -147,6 +148,7 @@ function dragStart(event: PointerEvent, key: ColorRole) {
 
     updateContainerWidth();
 
+    lockBodyInteractions();
     document.addEventListener('pointermove', dragMove);
     document.addEventListener('pointerup', dragEnd);
 }
@@ -179,11 +181,13 @@ function dragMove(event: PointerEvent) {
 function dragEnd() {
     activeHandle.value = null;
 
+    unlockBodyInteractions();
     document.removeEventListener('pointermove', dragMove);
     document.removeEventListener('pointerup', dragEnd);
 }
 
 onUnmounted(() => {
+    unlockBodyInteractions();
     document.removeEventListener('pointermove', dragMove);
     document.removeEventListener('pointerup', dragEnd);
 });
@@ -219,10 +223,6 @@ onUnmounted(() => {
     background-image: linear-gradient(to right in oklch, black, white);
 }
 
-.slider-handle:hover {
-    z-index: 10;
-}
-
 .slider-handle-label {
     position: absolute;
     top: 100%;
@@ -232,6 +232,7 @@ onUnmounted(() => {
     margin-top: 0.3rem;
     padding: 0.1em 0.5em;
     background: var(--pale);
+    border: 1px solid var(--transparent-border);
     font-size: 0.8rem;
     border-radius: 0.2rem;
     font-family: var(--font-mono);

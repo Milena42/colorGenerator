@@ -3,7 +3,6 @@ import IconTriad from '@/assets/icons/colorSchemes/IconTriad.vue';
 import IconDarkTheme from '@/assets/icons/IconDarkTheme.vue';
 import IconImage from '@/assets/icons/IconImage.vue';
 import IconLightTheme from '@/assets/icons/IconLightTheme.vue';
-import IconMenu from '@/assets/icons/IconMenu.vue';
 import IconSettings from '@/assets/icons/IconSettings.vue';
 import IconTune from '@/assets/icons/IconTune.vue';
 import TransitionExpand from '@/assets/TransitionExpand.vue';
@@ -43,7 +42,6 @@ provide(COLOR_FORMAT_COPY, colorFormatCopy);
 const themeIsDark = ref(false);
 
 const showSettings = ref(false);
-const showMenu = ref(false);
 
 const contentScriptClient = new ContentClient(chrome.devtools.inspectedWindow.tabId);
 provide(CONTENT_SCRIPT_CLIENT, contentScriptClient);
@@ -60,14 +58,29 @@ provide(THEME_PARAMS_USER, themeParams);
     <div class="col app-root" :class="themeIsDark ? 'dark' : 'light'">
         <header class="row">
             <div class="choice-chips">
-                <RouterLink class="choice-chip router" activeClass="current" to="/picture">
-                    <IconImage /> Из картинки
+                <RouterLink
+                    class="choice-chip router"
+                    activeClass="current"
+                    to="/picture"
+                    title="Генератор из картинки"
+                >
+                    <IconImage /> <span>Из картинки</span>
                 </RouterLink>
-                <RouterLink class="choice-chip router" activeClass="current" to="/wheel">
-                    <IconTriad /> По цветовому кругу
+                <RouterLink
+                    class="choice-chip router"
+                    activeClass="current"
+                    to="/wheel"
+                    title="Генератор по цветовому кругу"
+                >
+                    <IconTriad /><span>По цветовому кругу</span>
                 </RouterLink>
-                <RouterLink class="choice-chip router" activeClass="current" to="/theme-params">
-                    <IconTune /> Параметры темы
+                <RouterLink
+                    class="choice-chip router"
+                    activeClass="current"
+                    to="/theme-params"
+                    title="Изменить параметры темы для генерации"
+                >
+                    <IconTune /> <span>Параметры темы</span>
                 </RouterLink>
             </div>
 
@@ -147,23 +160,6 @@ provide(THEME_PARAMS_USER, themeParams);
                                 <input type="checkbox" v-model="showQuantityOnPlots" id="showQ" />
                                 <label for="showQ">Показывать количество на графиках</label>
                             </div>
-                        </div>
-                    </TransitionExpand>
-                </div>
-                <div class="relative" v-on-click-outside="() => (showMenu = false)">
-                    <button @click="showMenu = !showMenu">
-                        <IconMenu width="24px" height="auto" />
-                    </button>
-                    <TransitionExpand>
-                        <div v-if="showMenu" class="popup right-0">
-                            <a
-                                href="https://forms.yandex.ru/u/69be9a001f1eb598d3b3d764"
-                                referrerpolicy="no-referrer"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                >Сообщить об ошибке или предложить улучшение</a
-                            >
-                            <a href="">Как работает генератор</a>
                         </div>
                     </TransitionExpand>
                 </div>

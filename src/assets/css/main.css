@@ -201,6 +201,7 @@ code {
 .slider-handle:hover,
 .slider-handle.active {
     transform: translateX(-50%) scale(1.1);
+    z-index: 10;
 }
 
 input[type='range']:hover {
@@ -303,6 +304,15 @@ input[type='checkbox'] {
     .icon-harmony {
         fill: none;
         padding: 0.3rem;
+    }
+}
+
+@media (max-width: 1200px) {
+    .choice-chip.router span {
+        display: none;
+    }
+    .choice-chip.router {
+        padding: var(--padding);
     }
 }
 

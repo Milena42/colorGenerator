@@ -70,11 +70,21 @@ provide(THEME_PARAMS, themeParams);
     <div class="col app-root" :class="themeIsDark ? 'dark' : 'light'">
         <header class="row">
             <div class="choice-chips">
-                <RouterLink class="choice-chip router" activeClass="current" to="/picture">
-                    <IconImage /> Из картинки
+                <RouterLink
+                    class="choice-chip router"
+                    activeClass="current"
+                    to="/picture"
+                    title="Генератор из картинки"
+                >
+                    <IconImage /> <span>Из картинки</span>
                 </RouterLink>
-                <RouterLink class="choice-chip router" activeClass="current" to="/wheel">
-                    <IconTriad /> По цветовому кругу
+                <RouterLink
+                    class="choice-chip router"
+                    activeClass="current"
+                    to="/wheel"
+                    title="Генератор по цветовому кругу"
+                >
+                    <IconTriad /><span>По цветовому кругу</span>
                 </RouterLink>
             </div>
 

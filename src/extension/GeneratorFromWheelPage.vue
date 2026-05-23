@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import GeneratorFromWheel from '@/generatorFromWheelPage/GeneratorFromWheelPage.vue';
+import GeneratorFromWheel from '@/generatorFromWheelPage/GeneratorFromWheel.vue';
 import { THEME_PARAMS_USER } from '@/injectionKeys';
 import { inject } from 'vue';
 import ColorsEditor from './ColorsEditor.vue';

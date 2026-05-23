@@ -76,14 +76,14 @@ const generated = computed(() => {
     if (!themeVariants.value) {
         return undefined;
     }
+    const variants = themeVariants.value;
 
     const themes: Record<T, MockupColors<R>> = Object.create(null);
     props.themeParams.themeKeys.forEach((themeName) => {
         themes[themeName] = Object.create(null);
         props.themeParams.roleKeys.forEach((role) => {
-            if (!themeVariants.value) return;
-            const n = themeVariants.value[themeName].chosen[role];
-            themes[themeName][role] = themeVariants.value[themeName].variants[n][role];
+            const id = variants[themeName].chosen[role];
+            themes[themeName][role] = variants[themeName].variants[role][id];
         });
     });
     return themes;
@@ -127,32 +127,33 @@ const showPlots = inject(SHOW_PLOTS) ?? ref(false);
                 v-if="imgMap?.totalQ && generated"
             />
         </div>
-        <div v-if="themeVariants" class="generator-picture-variants">
+        <div v-if="imgMap?.totalQ && themeVariants" class="generator-picture-variants">
             <p>Выбрать другие варианты сгенерированных цветов:</p>
             <div>
-                <div :key="key" v-for="(theme, key) in themeVariants" class="row">
-                    <div class="role-names">
-                        <p :key="key" v-for="(rolesVariant, key) in theme.chosen">
-                            {{ key }}
-                        </p>
-                    </div>
-
-                    <div
-                        :key="clusterNumber"
-                        v-for="(rolesVariant, clusterNumber) in theme.variants"
-                        class="col"
-                    >
-                        <div
-                            :key="role"
-                            v-for="(color, role) in rolesVariant"
-                            class="button-color-variant"
-                            :class="{ 'chosen-variant': theme.chosen[role] == clusterNumber }"
-                        >
-                            <button
-                                :style="{ background: color.adjustForRGB() }"
-                                @click="theme.chosen[role] = clusterNumber"
-                            ></button>
-                        </div>
+                <div :key="themeName" v-for="themeName of themeParams.themeKeys" class="col">
+                    <p>{{ themeName }}</p>
+                    <div class="variants-grid">
+                        <template :key="role" v-for="role of themeParams.roleKeys">
+                            <p class="role-name">
+                                {{ role }}
+                            </p>
+                            <div class="row">
+                                <div
+                                    :key="id"
+                                    v-for="(color, id) of themeVariants[themeName].variants[role]"
+                                    class="button-color-variant"
+                                    :class="{
+                                        'chosen-variant':
+                                            themeVariants[themeName].chosen[role] == id,
+                                    }"
+                                >
+                                    <button
+                                        :style="{ background: color.adjustForRGB() }"
+                                        @click="themeVariants[themeName].chosen[role] = id"
+                                    ></button>
+                                </div>
+                            </div>
+                        </template>
                     </div>
                 </div>
             </div>
@@ -225,29 +226,21 @@ const showPlots = inject(SHOW_PLOTS) ?? ref(false);
         gap: calc(var(--adaptive-gap) * 8);
 
         row-gap: calc(var(--adaptive-gap) * 8);
-    }
-
-    --row-gap: 3rem;
-
-    .row {
-        gap: 2rem;
-    }
-
-    .col {
-        gap: var(--row-gap);
-        justify-content: space-around;
-    }
-
-    .role-names {
         font-family: var(--font-mono);
-        display: flex;
-        flex-flow: column nowrap;
-        justify-content: space-around;
-        gap: var(--row-gap);
+    }
 
-        p {
-            margin: 0px;
-        }
+    .variants-grid {
+        display: grid;
+        grid-template-columns: auto auto;
+        grid-auto-rows: auto;
+        align-items: center;
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+
+    .role-name {
+        margin: 0px;
+        text-align: right;
     }
 
     .button-color-variant {

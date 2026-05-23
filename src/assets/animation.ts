@@ -4,6 +4,10 @@ export function linear(from: number, to: number, progress: number) {
     return from + (to - from) * progress;
 }
 
+export function ease(from: number, to: number, progress: number) {
+    return from + (to - from) * progress * progress * (3 - 2 * progress);
+}
+
 export function setWithTransition(
     animatedRef: Ref<number>,
     end: number,
@@ -34,7 +38,7 @@ export function setWithTransition(
             return;
         }
 
-        const newV = linear(start, endCorrected, progress);
+        const newV = ease(start, endCorrected, progress);
 
         animatedRef.value = circle ? (newV + 360) % 360 : newV;
 

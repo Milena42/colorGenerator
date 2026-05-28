@@ -132,7 +132,7 @@ const previewType = ref<'elementsUI' | 'landingsMixed' | 'landings' | 'css'>('el
 .mockup-editor-wrapper {
     display: flex;
     flex-flow: column nowrap;
-    gap: 2rem;
+    gap: 1rem;
     align-items: center;
 }
 

@@ -344,7 +344,13 @@ const baseH = computed({
                     />
                 </div>
             </div>
-            <div class="color-wheel-square">
+            <div
+                class="color-wheel-square"
+                :style="{
+                    width: WHEEL_SVG_WIDTH + 'px',
+                    height: WHEEL_SVG_WIDTH + 'px',
+                }"
+            >
                 <div class="color-wheel-square-base-h" title="акцентный тон">
                     <InputNumber v-model.lazy.number="baseH" :min="0" :max="360" :step="1" circle />
                 </div>
@@ -367,7 +373,7 @@ const baseH = computed({
                     </button>
                 </div>
 
-                <div class="color-wheel-square-base-color col">
+                <div class="color-wheel-square-base-color">
                     <label for="hFromColor"> из цвета: </label>
                     <InputColorHString
                         id="hFromColor"
@@ -396,12 +402,6 @@ const baseH = computed({
                         :end="lightCircle.color.h"
                     />
                     <CircleInput
-                        :coords="accentCircle"
-                        accent
-                        :title="showAtLeast2Circles ? 'акцентный тон' : 'тон схемы'"
-                        @m-drag-start="(e) => dragStart(accentCircle, e)"
-                    />
-                    <CircleInput
                         :coords="lightCircle"
                         title="светлые"
                         @m-drag-start="(e) => dragStart(lightCircle, e)"
@@ -413,8 +413,15 @@ const baseH = computed({
                         @m-drag-start="(e) => dragStart(darkCircle, e)"
                         v-if="showAtLeast2Circles"
                     />
+                    <CircleInput
+                        :coords="accentCircle"
+                        class="bold"
+                        accent
+                        :title="showAtLeast2Circles ? 'акцентный тон' : 'тон схемы'"
+                        @m-drag-start="(e) => dragStart(accentCircle, e)"
+                    />
                     <circle
-                        class="wheel-svg-controls"
+                        class="wheel-svg-controls bold"
                         :r="(inputAccentC * WHEEL_SVG_WIDTH * SCALE) / 100"
                         :cx="WHEEL_SVG_WIDTH / 2"
                         :cy="WHEEL_SVG_WIDTH / 2"
@@ -423,7 +430,7 @@ const baseH = computed({
                         stroke-width="2"
                     />
                     <circle
-                        class="wheel-svg-controls"
+                        class="wheel-svg-controls bold"
                         :r="(inputBgC * WHEEL_SVG_WIDTH * SCALE) / 100"
                         :cx="WHEEL_SVG_WIDTH / 2"
                         :cy="WHEEL_SVG_WIDTH / 2"
@@ -544,13 +551,19 @@ const baseH = computed({
     position: absolute;
     top: 0px;
     right: 0px;
+    button + button {
+        margin-top: 0.2rem;
+    }
 }
 
 .color-wheel-square-base-color {
     position: absolute;
     bottom: 0px;
     right: 0px;
-    text-align: end;
+    label {
+        display: block;
+        text-align: end;
+    }
 }
 
 .color-wheel-square-base-h {

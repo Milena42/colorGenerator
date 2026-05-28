@@ -32,18 +32,13 @@ export interface circleDisplay {
 
 <script setup lang="ts">
 import { Color } from '@/generator/common';
-import { computed } from 'vue';
 
 defineEmits(['m-drag-start']);
-const props = defineProps<{
+defineProps<{
     coords: circleDisplay;
     accent?: boolean;
     title: string;
 }>();
-
-const lineOpacity = computed(() => {
-    return props.accent ? 1 : 0.5;
-});
 </script>
 <template>
     <g class="wheel-svg-controls">
@@ -53,17 +48,18 @@ const lineOpacity = computed(() => {
             :x2="coords.cx"
             :y2="coords.cy"
             stroke="black"
-            :stroke-opacity="lineOpacity"
+            :stroke-opacity="0.5"
             stroke-width="2"
+            stroke-linecap="round"
         />
         <title>{{ title }}</title>
         <circle
             :cx="coords.cx"
             :cy="coords.cy"
-            :r="10"
+            :r="accent ? 12 : 10"
             fill="rgba(0,0,0,0)"
             stroke="black"
-            :stroke-opacity="lineOpacity"
+            :stroke-opacity="0.5"
             stroke-width="2"
             @pointerdown.prevent="$emit('m-drag-start', $event)"
         />

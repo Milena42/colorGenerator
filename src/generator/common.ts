@@ -119,7 +119,7 @@ export function getColorString(color: Color, format: ColorFormat) {
     switch (format) {
         case 'oklch':
             const { l, c, h } = color;
-            return `oklch(${l}% ${(c / 100).toFixed(2)} ${h.toFixed(2)})`;
+            return `oklch(${l.toFixed(0)}% ${(c / 100).toFixed(2)} ${h.toFixed(2)})`;
         case 'rgbHex':
         default:
             return color.adjustForRGB();

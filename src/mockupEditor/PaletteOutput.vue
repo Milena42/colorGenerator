@@ -50,6 +50,5 @@ function swapOrOpenEditing(role: GenericColorRole) {
     padding: 1rem;
     align-items: flex-start;
     gap: 1rem;
-    white-space: nowrap;
 }
 </style>

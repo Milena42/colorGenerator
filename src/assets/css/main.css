@@ -406,48 +406,31 @@ figcaption {
 }
 
 .dark .wheel-svg-controls {
-    filter: drop-shadow(0 0 1px rgb(24, 24, 24)) drop-shadow(0 0 1px rgba(0, 0, 0, 0.788));
-    stroke-width: 3;
+    filter: drop-shadow(0 0 1px rgb(24, 24, 24)) drop-shadow(0 0 1px rgba(0, 0, 0, 0.575));
+
     stroke: white;
     stroke-opacity: 1;
-    & > * {
-        stroke-width: 3;
-        stroke: white;
-        stroke-opacity: 1;
-    }
-    /*
-    filter: drop-shadow(1px 1px 0 rgb(255, 255, 255)) drop-shadow(-1px -1px 0 rgb(255, 255, 255))
-        drop-shadow(1px -1px 0 rgb(255, 255, 255)) drop-shadow(-1px 1px 0 rgb(255, 255, 255));
-        */
-    /*
-    filter: drop-shadow(0 0 1px rgb(24, 24, 24)) drop-shadow(0 0 1px rgba(0, 0, 0, 0.788));
-
-    stroke: white;
-
-    & > * {
-        stroke: white;
-    }*/
-
-    /*
-    filter: drop-shadow(1px 1px 0 rgb(0, 0, 0)) drop-shadow(-1px -1px 0 rgb(0, 0, 0))
-        drop-shadow(1px -1px 0 rgb(0, 0, 0)) drop-shadow(-1px 1px 0 rgb(0, 0, 0));
-
-    stroke: white;
     stroke-width: 3;
 
     & > * {
         stroke: white;
+        stroke-opacity: 1;
         stroke-width: 3;
-    }*/
+    }
 }
-/*
-.dark .color-wheel-square {
-    background: radial-gradient(circle, rgb(78, 78, 78) 0%, rgb(78, 78, 78) 60%, black 61%);
+
+.dark .wheel-svg-controls.bold {
+    stroke-width: 4;
+    & > * {
+        stroke-width: 4;
+    }
 }
-*/
-.dark svg.color-wheel-svg {
-    background:
-        linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url('@/assets/color-wheel.png');
+
+.light .wheel-svg-controls.bold {
+    stroke-opacity: 1;
+    & > * {
+        stroke-opacity: 1;
+    }
 }
 
 body.is-animating * {

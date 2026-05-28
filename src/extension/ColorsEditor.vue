@@ -3,34 +3,27 @@ import { getCssColors, type MockupColors } from '@/generator/common';
 import { CONTENT_SCRIPT_CLIENT, SHOW_PLOTS } from '@/injectionKeys';
 import CssOutput from '@/mockupEditor/CssOutput.vue';
 import PaletteOutput from '@/mockupEditor/PaletteOutput.vue';
-import {
-    computed,
-    defineAsyncComponent,
-    inject,
-    ref,
-    shallowRef,
-    watch,
-    type ShallowRef,
-} from 'vue';
+import { computed, defineAsyncComponent, inject, ref, shallowRef, watch } from 'vue';
 
 const ColorModels3d = defineAsyncComponent(() => import('@/plots/ColorModels3d.vue'));
 
 const props = defineProps<{
-    colors: Record<'theme', MockupColors<R>>;
+    colors: Record<string, MockupColors<R>>;
 }>();
 
-const colorsLocal: ShallowRef<MockupColors<R>> = shallowRef<MockupColors<R>>(props.colors.theme);
+const selector = computed(() => Object.keys(props.colors)[0]); //TODO пока 1, потом переделать
+const colorsLocal = shallowRef<Record<string, MockupColors<R>>>(props.colors);
 
 watch(
-    () => props.colors.theme,
+    () => props.colors,
     () => {
-        colorsLocal.value = props.colors.theme;
+        colorsLocal.value = props.colors;
     },
 );
 
 const showPlots = inject(SHOW_PLOTS) ?? ref(false);
 
-const css = computed(() => getCssColors(colorsLocal.value, 'rgbHex'));
+const css = computed(() => getCssColors(colorsLocal.value[selector.value], 'rgbHex'));
 
 const contentScriptClient = inject(CONTENT_SCRIPT_CLIENT);
 
@@ -42,13 +35,19 @@ watch(css, () => {
 <template>
     <div class="mockup-editor-wrapper">
         <div class="mockup-editor">
-            <CssOutput :colors="{ theme: colorsLocal }" />
-            <PaletteOutput v-model="colorsLocal" />
+            <CssOutput :colors="colorsLocal" customSelectors />
+            <PaletteOutput v-model="colorsLocal[selector]" />
         </div>
 
         <div v-if="showPlots" class="row">
             <figure>
-                <ColorModels3d :k="0.003" :data="colorsLocal" :totalQ="7" wireframe :size="500" />
+                <ColorModels3d
+                    :k="0.003"
+                    :data="colorsLocal[selector]"
+                    :totalQ="7"
+                    wireframe
+                    :size="500"
+                />
                 <figcaption>Полученные цвета</figcaption>
             </figure>
         </div>

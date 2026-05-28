@@ -46,16 +46,16 @@ const showSettings = ref(false);
 const contentScriptClient = new ContentClient(chrome.devtools.inspectedWindow.tabId);
 provide(CONTENT_SCRIPT_CLIENT, contentScriptClient);
 
-const themeParams = ref<ThemeParams<'theme', GenericColorRole>>({
-    themeKeys: ['theme'],
+const themeParams = ref<ThemeParams<string, GenericColorRole>>({
+    themeKeys: [':root'],
     roleKeys: [],
-    themes: { theme: {} },
+    themes: { ':root': {} },
 });
 provide(THEME_PARAMS_USER, themeParams);
 </script>
 
 <template>
-    <div class="col app-root" :class="themeIsDark ? 'dark' : 'light'">
+    <div class="col app-root extension" :class="themeIsDark ? 'dark' : 'light'">
         <header class="row">
             <div class="choice-chips">
                 <RouterLink
@@ -167,7 +167,7 @@ provide(THEME_PARAMS_USER, themeParams);
         </header>
         <RouterView
             class="grow w-full"
-            @theme-params-change="(v: ThemeParams<'theme', string>) => (themeParams = v)"
+            @theme-params-change="(v: ThemeParams<string, string>) => (themeParams = v)"
         />
     </div>
 </template>

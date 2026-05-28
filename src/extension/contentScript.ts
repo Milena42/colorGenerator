@@ -1,14 +1,26 @@
 import type { ContentFunctionName, ContentFunctions } from './contentScriptInterface';
 
+let root: HTMLElement;
+
 const handlers: {
     [K in ContentFunctionName]: (
         p: ContentFunctions[K]['params'],
     ) => ContentFunctions[K]['response'];
 } = {
-    getCssVariables: () => {
-        const computedStyle = window.getComputedStyle(document.body);
+    setRoot: ({ selector }) => {
+        const r = document.querySelector(selector);
+        if (r && r instanceof HTMLElement) {
+            root = r;
+            return 'ok';
+        } else {
+            return 'notFound';
+        }
+    },
 
-        const result: Record<string, string> = {};
+    getCssVariables: () => {
+        const computedStyle = window.getComputedStyle(root);
+
+        const result: Record<string, string> = Object.create(null);
         for (let i = 0; i < computedStyle.length; i++) {
             const propName = computedStyle[i];
 
@@ -24,9 +36,11 @@ const handlers: {
     },
 
     setCss: ({ css }) => {
-        document.body.style = css;
+        root.style = css;
     },
 };
+
+handlers.setRoot({ selector: ':root' });
 
 chrome.runtime.onConnect.addListener((port) => {
     port.onMessage.addListener((request) => {

@@ -7,26 +7,44 @@ import chroma from 'chroma-js';
 import { inject, ref } from 'vue';
 
 const emit = defineEmits<{
-    'theme-params-change': [value: ThemeParams<'theme', string>];
+    'theme-params-change': [value: ThemeParams<string, string>];
 }>();
 
 const themeParams = inject(THEME_PARAMS_USER)!;
+console.log(themeParams.value);
 
 function emitChange() {
+    console.log(rootSelector.value);
+    console.log(themeParams.value.themes);
     //TODO это пока тема только одна, иначе придется поменять
-    const theme = themeParams.value.themes['theme'];
+    const theme = themeParams.value.themes[rootSelector.value];
+    console.log(theme);
+    const themes = Object.create(null);
+    themes[rootSelector.value] = theme;
     const params = {
-        themeKeys: ['theme'] as const,
+        themeKeys: [rootSelector.value],
         roleKeys: Object.keys(theme),
-        themes: {
-            theme: theme,
-        },
+        themes: themes,
     };
     console.log('change');
     emit('theme-params-change', params);
 }
 
 const contentScriptClient = inject(CONTENT_SCRIPT_CLIENT);
+
+const rootValidationErrors = ref('');
+const rootSelector = ref(':root');
+
+async function setRoot(v: string) {
+    rootValidationErrors.value = '';
+    const status = await contentScriptClient?.call('setRoot', { selector: v });
+    if (status == 'ok') {
+        rootSelector.value = v;
+        emitChange();
+    } else {
+        rootValidationErrors.value = '';
+    }
+}
 
 async function takeVariablesFromPage() {
     if (!contentScriptClient) {
@@ -40,25 +58,30 @@ async function takeVariablesFromPage() {
         Object.entries(variables)
             .map(([key, value]): [string, ColorRoleConstraints] => {
                 try {
-                    let [l, c] = chroma(value).oklch();
+                    const color = chroma(value);
+                    let [l, c] = color.oklch();
                     if (!l) l = 0;
                     if (!c) c = 0;
                     l *= 100;
                     c *= 100;
-                    return [key, { l, cMax: c }];
+                    const alpha = color.alpha();
+                    if (alpha == 1) {
+                        return [key, { l, cMax: c }];
+                    }
+                    return ['', { l: 0, cMax: 0 }];
                 } catch {
                     return ['', { l: 0, cMax: 0 }];
                 }
             })
             .filter(([key]) => key != ''),
-    ); //TODO прозрачность
+    );
     console.log(themeRules);
+    const themes = Object.create(null);
+    themes[rootSelector.value] = themeRules;
     themeParams.value = {
-        themeKeys: ['theme'],
+        themeKeys: [rootSelector.value],
         roleKeys: Object.keys(themeRules),
-        themes: {
-            theme: themeRules,
-        },
+        themes: themes,
     };
     emitChange();
 }
@@ -74,13 +97,13 @@ function addNewVar() {
         validationErrors.value = 'Заполните название переменной';
         return;
     }
-    if (themeParams.value.themes['theme'][name]) {
+    if (themeParams.value.themes[rootSelector.value][name]) {
         validationErrors.value = 'Переменная с таким названием уже существует';
         return;
     }
     validationErrors.value = '';
 
-    themeParams.value.themes['theme'][name] = { l: 0, cMax: 0 };
+    themeParams.value.themes[rootSelector.value][name] = { l: 0, cMax: 0 };
     resetNewVar();
     emitChange();
 }
@@ -97,6 +120,15 @@ function resetNewVar() {
 </script>
 <template>
     <div>
+        {{ rootSelector }}
+        <label for="selector">Селектор элемента, на котором переменные</label>
+        <input
+            type="text"
+            id="selector"
+            :value="rootSelector"
+            @change="(e) => setRoot((e.target as HTMLInputElement).value)"
+        />
+        <p class="validation">{{ rootValidationErrors }}</p>
         <button @click="takeVariablesFromPage" class="text-button">
             Найти переменные на странице
         </button>

@@ -150,6 +150,7 @@ const emit = defineEmits<{
             top: -1rem;
             left: 50%;
             transform: translateX(-50%);
+            white-space: nowrap;
         }
     }
 

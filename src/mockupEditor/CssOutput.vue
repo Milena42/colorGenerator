@@ -6,15 +6,17 @@ import { computed, inject, ref } from 'vue';
 
 const props = defineProps<{
     colors: Record<string, MockupColors<string>>;
+    customSelectors?: boolean;
 }>();
 
 const colorFormatCopy = inject(COLOR_FORMAT_COPY, ref<ColorFormat>('rgbHex'));
 
-const css = computed(() =>
-    Object.entries(props.colors)
-        .map(([t, colors]) => `.${t} {\n${getCssColors(colors, colorFormatCopy.value)}\n}`)
-        .join('\n'),
-);
+const css = computed(() => {
+    const p = props.customSelectors ? '' : '.';
+    return Object.entries(props.colors)
+        .map(([t, colors]) => `${p}${t} {\n${getCssColors(colors, colorFormatCopy.value)}\n}`)
+        .join('\n');
+});
 
 async function copyAll() {
     const stylesToCopy = css.value;

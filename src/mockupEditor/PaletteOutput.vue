@@ -49,6 +49,6 @@ function swapOrOpenEditing(role: GenericColorRole) {
     justify-content: space-between;
     padding: 1rem;
     align-items: flex-start;
-    gap: 1rem;
+    gap: 1.5rem;
 }
 </style>

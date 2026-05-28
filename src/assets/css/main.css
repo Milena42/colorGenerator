@@ -437,3 +437,9 @@ body.is-animating * {
     pointer-events: none !important;
     /* это чтобы не моргал экран если во время анимации произошел hover на tooltip */
 }
+
+.extension .swatch > .role {
+    text-align: left !important;
+    left: 0px !important;
+    transform: none !important;
+}

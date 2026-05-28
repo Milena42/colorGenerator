@@ -5,7 +5,7 @@ import type { ColorRole, ThemeName } from './generator/themesExample';
 
 export const THEME_PARAMS = Symbol() as InjectionKey<Ref<ThemeParams<ThemeName, ColorRole>>>;
 export const THEME_PARAMS_USER = Symbol() as InjectionKey<
-    Ref<ThemeParams<'theme', GenericColorRole>>
+    Ref<ThemeParams<string, GenericColorRole>>
 >;
 export const CONTENT_SCRIPT_CLIENT = Symbol() as InjectionKey<ContentClient>;
 

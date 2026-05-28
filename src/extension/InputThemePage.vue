@@ -11,21 +11,20 @@ const emit = defineEmits<{
 }>();
 
 const themeParams = inject(THEME_PARAMS_USER)!;
-console.log(themeParams.value);
 
 function emitChange() {
-    console.log(rootSelector.value);
-    console.log(themeParams.value.themes);
     //TODO это пока тема только одна, иначе придется поменять
     const theme = themeParams.value.themes[rootSelector.value];
-    console.log(theme);
+
     const themes = Object.create(null);
     themes[rootSelector.value] = theme;
+
     const params = {
         themeKeys: [rootSelector.value],
-        roleKeys: Object.keys(theme),
+        roleKeys: theme ? Object.keys(theme) : [],
         themes: themes,
     };
+
     console.log('change');
     emit('theme-params-change', params);
 }
@@ -42,7 +41,7 @@ async function setRoot(v: string) {
         rootSelector.value = v;
         emitChange();
     } else {
-        rootValidationErrors.value = '';
+        rootValidationErrors.value = `Элемент "${v}" не найден`;
     }
 }
 
@@ -119,16 +118,17 @@ function resetNewVar() {
 }
 </script>
 <template>
-    <div>
-        {{ rootSelector }}
-        <label for="selector">Селектор элемента, на котором переменные</label>
-        <input
-            type="text"
-            id="selector"
-            :value="rootSelector"
-            @change="(e) => setRoot((e.target as HTMLInputElement).value)"
-        />
-        <p class="validation">{{ rootValidationErrors }}</p>
+    <div class="input-theme-page">
+        <div class="input-selector">
+            <label for="selector">Селектор элемента, на котором переменные:</label>
+            <input
+                type="text"
+                id="selector"
+                :value="rootSelector"
+                @change="(e) => setRoot((e.target as HTMLInputElement).value)"
+            />
+            <p class="validation">{{ rootValidationErrors }}</p>
+        </div>
         <button @click="takeVariablesFromPage" class="text-button">
             Найти переменные на странице
         </button>
@@ -204,6 +204,15 @@ function resetNewVar() {
 </style>
 
 <style scoped>
+.input-theme-page {
+    & > * {
+        margin-top: 2rem;
+    }
+    .input-selector label {
+        margin-right: 1rem;
+    }
+}
+
 .input-theme-role {
     font-family: var(--font-mono);
 

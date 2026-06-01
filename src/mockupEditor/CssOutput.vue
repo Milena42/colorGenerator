@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import IconCheck from '@/assets/icons/IconCheck.vue';
 import IconCopy from '@/assets/icons/IconCopy.vue';
 import { type ColorFormat, getCssColors, type MockupColors } from '@/generator/common';
 import { COLOR_FORMAT_COPY } from '@/injectionKeys';
@@ -18,6 +19,8 @@ const css = computed(() => {
         .join('\n');
 });
 
+const copiedIndicator = ref(false);
+
 async function copyAll() {
     const stylesToCopy = css.value;
 
@@ -30,13 +33,18 @@ async function copyAll() {
         console.error(e);
         return;
     }
-    //alert('цвет скопирован');//TODO сообщение?
+
+    copiedIndicator.value = true;
+    setTimeout(() => {
+        copiedIndicator.value = false;
+    }, 1000);
 }
 </script>
 <template>
     <div class="css-output">
         <button @click="copyAll" title="копировать палитру в CSS">
-            <IconCopy />
+            <IconCopy v-if="!copiedIndicator" />
+            <IconCheck v-if="copiedIndicator" />
         </button>
         <div class="code">
             <code>

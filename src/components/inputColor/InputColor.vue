@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import IconCheck from '@/assets/icons/IconCheck.vue';
 import IconCopy from '@/assets/icons/IconCopy.vue';
 import IconTune from '@/assets/icons/IconTune.vue';
 import TransitionExpand from '@/assets/TransitionExpand.vue';
@@ -6,7 +7,7 @@ import { getColorString, type Color, type GenericColorRole } from '@/generator/c
 import { ALWAYS_SHOW_COLOR_STRINGS, COLOR_FORMAT_COPY, COLOR_FORMAT_EDIT } from '@/injectionKeys';
 import { vOnClickOutside } from '@vueuse/components';
 import chroma from 'chroma-js';
-import { computed, inject } from 'vue';
+import { computed, inject, ref } from 'vue';
 import InputColorHSB from './InputColorHSB.vue';
 import InputColorOKLCH from './InputColorOKLCH.vue';
 
@@ -45,6 +46,8 @@ const colorString = computed({
     },
 });
 
+const copiedIndicator = ref(false);
+
 async function copy() {
     try {
         await navigator.clipboard.writeText(colorString.value);
@@ -55,7 +58,10 @@ async function copy() {
         console.error(e);
         return;
     }
-    //alert('цвет скопирован');//TODO сообщение?
+    copiedIndicator.value = true;
+    setTimeout(() => {
+        copiedIndicator.value = false;
+    }, 1000);
 }
 
 const emit = defineEmits<{
@@ -86,7 +92,8 @@ const emit = defineEmits<{
                         <IconTune />
                     </button>
                     <button @click="copy" :title="`копировать цвет: ${colorString}`">
-                        <IconCopy />
+                        <IconCopy v-if="!copiedIndicator" />
+                        <IconCheck v-if="copiedIndicator" />
                     </button>
                 </div>
             </div>

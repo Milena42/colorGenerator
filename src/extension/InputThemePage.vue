@@ -32,7 +32,7 @@ function emitChange() {
 const contentScriptClient = inject(CONTENT_SCRIPT_CLIENT);
 
 const rootValidationErrors = ref('');
-const rootSelector = ref(':root');
+const rootSelector = ref(themeParams.value.themeKeys[0]);
 
 async function setRoot(v: string) {
     rootValidationErrors.value = '';

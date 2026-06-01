@@ -27,9 +27,13 @@ const css = computed(() => getCssColors(colorsLocal.value[selector.value], 'rgbH
 
 const contentScriptClient = inject(CONTENT_SCRIPT_CLIENT);
 
-watch(css, () => {
-    contentScriptClient?.call('setCss', { css: css.value });
-});
+watch(
+    css,
+    () => {
+        contentScriptClient?.call('setCss', { css: css.value });
+    },
+    { immediate: true },
+);
 </script>
 
 <template>

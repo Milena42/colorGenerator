@@ -3,7 +3,7 @@ import type { ContentFunctionName, ContentFunctions } from './contentScriptInter
 export class ContentClient {
     private port: chrome.runtime.Port | null = null;
     private pendingRequests = new Map<
-        string,
+        number,
         (
             value:
                 | ContentFunctions[ContentFunctionName]['response']
@@ -12,6 +12,7 @@ export class ContentClient {
     >();
 
     constructor(tabId: number) {
+        this.nextId = 0;
         this.port = chrome.tabs.connect(tabId, { name: 'stream' });
         this.port.onMessage.addListener((response) => {
             const resolve = this.pendingRequests.get(response.id);
@@ -22,14 +23,17 @@ export class ContentClient {
         });
     }
 
+    private nextId: number;
+
     async call<K extends ContentFunctionName>(
         type: K,
         params: ContentFunctions[K]['params'],
     ): Promise<ContentFunctions[K]['response']> {
         return new Promise((resolve) => {
-            const id = Math.random().toString(36).slice(2); // ID для сопоставления //TODO
+            const id = this.nextId;
             this.pendingRequests.set(id, resolve);
             this.port?.postMessage({ id, type, params });
+            this.nextId = (this.nextId + 1) % 100000000;
         });
     }
 }

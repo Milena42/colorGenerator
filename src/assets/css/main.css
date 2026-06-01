@@ -259,6 +259,43 @@ input[type='checkbox'] {
     }
 }
 
+button,
+.button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: max-content;
+
+    padding: 0.4rem;
+    border-radius: var(--radius);
+    border: none;
+    background-color: var(--accent-pale);
+    color: var(--text);
+
+    &:hover:not(.current) {
+        background-color: var(--accent-pale-bright);
+    }
+}
+
+button svg {
+    fill: var(--text);
+}
+
+.text-button {
+    padding: 0.4rem 0.8rem;
+}
+
+button,
+input {
+    &:hover {
+        cursor: pointer;
+    }
+    &:disabled:hover {
+        cursor: not-allowed;
+    }
+}
+
 .choice-chips {
     display: flex;
     flex-flow: row nowrap;
@@ -318,43 +355,6 @@ input[type='checkbox'] {
 
 .choice-chip.current {
     border-color: var(--accent-small);
-}
-
-button,
-.button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    width: max-content;
-
-    padding: 0.4rem;
-    border-radius: var(--radius);
-    border: none;
-    background-color: var(--accent-pale);
-    color: var(--text);
-
-    &:hover:not(.current) {
-        background-color: var(--accent-pale-bright);
-    }
-}
-
-button svg {
-    fill: var(--text);
-}
-
-.text-button {
-    padding: 0.4rem 0.8rem;
-}
-
-button,
-input {
-    &:hover {
-        cursor: pointer;
-    }
-    &:disabled:hover {
-        cursor: not-allowed;
-    }
 }
 
 .current:hover {

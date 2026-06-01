@@ -120,12 +120,14 @@ const showPlots = inject(SHOW_PLOTS) ?? ref(false);
                 @loading="startLoading"
                 @stopLoading="stopLoading"
             />
-            <component
-                class="grow"
-                :is="ColorsOutput"
-                :colors="generated"
-                v-if="imgMap?.totalQ && generated"
-            />
+
+            <div class="editor-view" v-if="imgMap?.totalQ && generated">
+                <component
+                    class="grow editor-view-content"
+                    :is="ColorsOutput"
+                    :colors="generated"
+                />
+            </div>
         </div>
         <div v-if="imgMap?.totalQ && themeVariants" class="generator-picture-variants">
             <p>Выбрать другие варианты сгенерированных цветов:</p>
@@ -204,7 +206,7 @@ const showPlots = inject(SHOW_PLOTS) ?? ref(false);
 <style scoped>
 .generator-picture-page-main {
     display: flex;
-    flex-flow: row wrap;
+    flex-flow: row nowrap;
     align-items: center;
     justify-content: space-evenly;
     gap: 1rem;
@@ -212,6 +214,33 @@ const showPlots = inject(SHOW_PLOTS) ?? ref(false);
     .dropbox {
         flex: 5 1 0;
         align-self: stretch;
+    }
+}
+
+@media (max-width: 1800px) {
+    .generator-picture-page-main {
+        flex-flow: column nowrap;
+
+        .dropbox {
+            flex: 1 0 auto;
+        }
+    }
+}
+
+@media (min-width: 600px) and (max-width: 1800px) {
+    .editor-view {
+        width: 100%;
+        overflow-x: auto;
+        border: 2px solid var(--pale);
+        border-radius: var(--radius);
+
+        .editor-view-content {
+            justify-content: center;
+            min-height: 100%;
+            width: max-content;
+            padding: 1rem;
+            margin: 0px auto;
+        }
     }
 }
 

@@ -11,6 +11,7 @@ import {
     Line,
     LinearSRGBColorSpace,
     LineBasicMaterial,
+    Material,
     Mesh,
     MeshBasicMaterial,
     PerspectiveCamera,
@@ -39,8 +40,7 @@ const container = ref<HTMLDivElement | null>(null);
 let scene: Scene;
 let camera: PerspectiveCamera;
 let renderer: WebGLRenderer;
-let mesh: Mesh;
-let controls;
+let controls: OrbitControls;
 
 const PIXELS = props.wireframe ? 5 : 200;
 
@@ -54,6 +54,12 @@ function makeModel() {
         }
         return;
     }
+
+    if (oklchMesh != null) {
+        scene.add(oklchMesh);
+        return;
+    }
+
     //TODO оптимизировать
     const geometry = new BoxGeometry(1, 1, 1, PIXELS, PIXELS, PIXELS);
     const pos = geometry.getAttribute('position');
@@ -81,31 +87,29 @@ function makeModel() {
         wireframe: props.wireframe,
     });
 
-    mesh = new Mesh(geometry, material);
-    oklchMesh = mesh;
-    scene.add(mesh);
+    oklchMesh = new Mesh(geometry, material);
+    scene.add(oklchMesh);
 }
 
+let grid: { circle: PolarGridHelper; line: Line };
+
 function makeGrid() {
-    const b = new PolarGridHelper(0.4, 8, 4, undefined, '#ccc', '#bbb');
-    b.translateY(0.5);
+    const circle = new PolarGridHelper(0.4, 8, 4, undefined, '#ccc', '#bbb');
+    circle.translateY(0.5);
 
     const g = new BufferGeometry();
     g.setAttribute('position', new Float32BufferAttribute([0, 0, 0, 0, 1, 0], 3));
-    const a = new Line(g, new LineBasicMaterial({ color: '#aaa' }));
+    const line = new Line(g, new LineBasicMaterial({ color: '#aaa' }));
 
-    scene.add(b, a);
+    scene.add(circle, line);
+    grid = { circle, line };
 }
 
 function animate() {
     renderer.render(scene, camera);
 }
 
-const material = new ShaderMaterial({
-    vertexShader: vertexShader,
-    fragmentShader: fragmentShader,
-});
-const points = new Points(new BufferGeometry(), material);
+let points: Points;
 
 onMounted(() => {
     if (!container.value) return;
@@ -133,8 +137,12 @@ onMounted(() => {
     if (!props.hsl) makeModel();
     makeGrid();
 
+    const material = new ShaderMaterial({
+        vertexShader: vertexShader,
+        fragmentShader: fragmentShader,
+    });
+    points = new Points(new BufferGeometry(), material);
     scene.add(points);
-
     plotPoints();
 
     renderer.setAnimationLoop(animate);
@@ -166,6 +174,7 @@ function plotPoints() {
             );
         }
 
+        points.geometry.dispose();
         const geometry = new BufferGeometry();
         geometry.setAttribute('position', new Float32BufferAttribute(coords, 3));
         geometry.setAttribute('pointColor', new Float32BufferAttribute(colors, 3));
@@ -173,6 +182,7 @@ function plotPoints() {
 
         points.geometry = geometry;
     } else {
+        points.geometry.dispose();
         points.geometry = new BufferGeometry();
     }
 }
@@ -181,15 +191,36 @@ watch(() => props.data, plotPoints, { deep: true });
 watch(showQuantity, plotPoints, { flush: 'post' });
 watch(showWireframeOnPlots, makeModel, { flush: 'post' });
 
-const destroy = () => {
-    if (renderer) {
-        renderer.dispose();
+function disposeMaterial(material: Material | Material[] | undefined) {
+    if (Array.isArray(material)) {
+        material.forEach((m) => m.dispose());
+    } else {
+        material?.dispose();
     }
+}
+
+const dispose = () => {
+    disposeMaterial(oklchMesh?.material);
+    oklchMesh?.geometry?.dispose();
+
+    points?.geometry?.dispose();
+    disposeMaterial(points?.material);
+
+    grid?.circle?.geometry?.dispose();
+    disposeMaterial(grid?.circle?.material);
+    grid?.line?.geometry?.dispose();
+    disposeMaterial(grid?.line?.material);
+
+    controls?.dispose();
+    renderer?.setAnimationLoop(null);
+    renderer?.dispose();
+
     if (container.value) {
         container.value.innerHTML = '';
     }
 };
-onUnmounted(destroy);
+
+onUnmounted(dispose);
 </script>
 
 <template>

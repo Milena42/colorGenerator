@@ -68,7 +68,7 @@ function makeModel() {
         const b = v.z + 0.5;
         colors.push(r, g, b);
 
-        const [l, x, y] = chroma(r * 255, g * 255, b * 255, 'rgb').oklab();
+        const [l, x, y] = chroma.gl(r, g, b).oklab();
 
         hslPos.push(x, l, -y);
     }
@@ -157,8 +157,8 @@ function plotPoints() {
                 const [x1, y1] = cartesianFromPolar(s1 * Math.min(1 - l1, l1), h1);
                 coords.push(x1, l1, -y1);
             } else coords.push(x / 100, l / 100, -y / 100);
-            const [r, g, b] = chroma(l / 100, c / 100, h, 'oklch').rgb();
-            colors.push(r / 255, g / 255, b / 255);
+            const [r, g, b] = chroma(l / 100, c / 100, h, 'oklch').gl();
+            colors.push(r, g, b);
             sizes.push(
                 showQuantity.value
                     ? Math.sqrt(props.k * Math.sqrt((100 * q) / props.totalQ))

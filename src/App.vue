@@ -178,7 +178,7 @@ provide(THEME_PARAMS, themeParams);
                 </div>
                 <div class="relative" v-on-click-outside="() => (showMenu = false)">
                     <button @click="showMenu = !showMenu">
-                        <IconMenu width="24px" height="auto" />
+                        <IconMenu width="24px" height="24px" />
                     </button>
                     <TransitionExpand hideContent>
                         <div v-if="showMenu" class="popup right-0">
@@ -189,7 +189,13 @@ provide(THEME_PARAMS, themeParams);
                                 rel="noopener noreferrer"
                                 >Сообщить об ошибке или предложить улучшение</a
                             >
-                            <a href="">Как работает генератор</a>
+                            <a
+                                href="https://github.com/Milena42/colorGenerator"
+                                referrerpolicy="no-referrer"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                >Репозиторий github</a
+                            >
                         </div>
                     </TransitionExpand>
                 </div>

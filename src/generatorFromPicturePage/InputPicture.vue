@@ -164,6 +164,13 @@ function clear() {
         max-width: min(100%, 600px);
     }
 
+    @media (max-width: 1800px) {
+        img {
+            max-height: max(200px, 50vh);
+            max-width: 100%;
+        }
+    }
+
     &.drag-over {
         border-color: var(--accent-small);
         background: var(--accent-small);

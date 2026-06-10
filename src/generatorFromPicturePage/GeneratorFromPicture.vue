@@ -161,7 +161,7 @@ const showPlots = inject(SHOW_PLOTS) ?? ref(false);
             </div>
         </div>
         <div v-if="showPlots && imgMap?.totalQ" class="col plots">
-            <div class="row">
+            <div class="row clusters">
                 <figure>
                     <ColorModels3d :k="0.01" :data="imgMap.data" :totalQ="totalPixels" wireframe />
                     <figcaption>Все цвета изображения</figcaption>
@@ -180,14 +180,15 @@ const showPlots = inject(SHOW_PLOTS) ?? ref(false);
                     <figcaption>Ненасыщенные цвета</figcaption>
                 </figure>
             </div>
-
-            <p v-if="mapsClustered.length > 1">Кластеры насыщенных цветов:</p>
-            <ArrayOfPlots
-                v-if="mapsClustered.length > 1"
-                :maps="mapsClustered"
-                :totalQ="totalPixels"
-                class="clusters"
-            />
+            <div>
+                <p v-if="mapsClustered.length > 1">Кластеры насыщенных цветов:</p>
+                <ArrayOfPlots
+                    v-if="mapsClustered.length > 1"
+                    :maps="mapsClustered"
+                    :totalQ="totalPixels"
+                    class="clusters"
+                />
+            </div>
         </div>
         <Transition name="loader">
             <div
@@ -214,6 +215,9 @@ const showPlots = inject(SHOW_PLOTS) ?? ref(false);
     .dropbox {
         flex: 5 1 0;
         align-self: stretch;
+    }
+    .editor-view {
+        flex: 1 0 auto;
     }
 }
 
@@ -335,12 +339,12 @@ const showPlots = inject(SHOW_PLOTS) ?? ref(false);
     &.loader-visible {
         background: var(--transparent-overlay);
         .loading-spinner {
-            visibility: visible;
+            display: inline;
         }
     }
 
     .loading-spinner {
-        visibility: hidden;
+        display: none;
         position: sticky;
         bottom: 40vh;
     }

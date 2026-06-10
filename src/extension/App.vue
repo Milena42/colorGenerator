@@ -18,7 +18,7 @@ import {
     THEME_PARAMS_USER,
 } from '@/injectionKeys';
 import { vOnClickOutside } from '@vueuse/components';
-import { provide, ref } from 'vue';
+import { provide, ref, useTemplateRef } from 'vue';
 import { ContentClient } from './contentClient';
 
 const showQuantityOnPlots = ref(true);
@@ -52,11 +52,27 @@ const themeParams = ref<ThemeParams<string, GenericColorRole>>({
     themes: { ':root': {} },
 });
 provide(THEME_PARAMS_USER, themeParams);
+
+const isScrolled = ref(false);
+const page = useTemplateRef('page');
+function updateScroll() {
+    if (!page.value) return;
+    if (page.value.scrollTop > 0) {
+        isScrolled.value = true;
+    } else {
+        isScrolled.value = false;
+    }
+}
 </script>
 
 <template>
-    <div class="col app-root extension" :class="themeIsDark ? 'dark' : 'light'">
-        <header class="row">
+    <div
+        class="col app-root extension"
+        :class="themeIsDark ? 'dark' : 'light'"
+        ref="page"
+        @scroll="updateScroll"
+    >
+        <header class="row" :class="{ scrolled: isScrolled }">
             <div class="choice-chips">
                 <RouterLink
                     class="choice-chip router"
@@ -174,8 +190,12 @@ provide(THEME_PARAMS_USER, themeParams);
 
 <style scoped>
 .app-root {
-    padding: var(--adaptive-gap);
-    gap: var(--adaptive-gap);
+    padding: 0px 0px var(--adaptive-gap);
+
+    & > * {
+        padding-left: var(--adaptive-gap);
+        padding-right: var(--adaptive-gap);
+    }
 
     min-height: 100%;
     width: 100%;
@@ -185,6 +205,7 @@ provide(THEME_PARAMS_USER, themeParams);
 }
 
 header {
+    padding: var(--adaptive-gap);
     justify-content: space-between;
     align-items: flex-start;
     gap: var(--adaptive-gap);

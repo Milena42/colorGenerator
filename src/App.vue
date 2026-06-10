@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { vOnClickOutside } from '@vueuse/components';
-import { computed, provide, ref } from 'vue';
+import { computed, provide, ref, useTemplateRef } from 'vue';
 import IconTriad from './assets/icons/colorSchemes/IconTriad.vue';
 import IconDarkTheme from './assets/icons/IconDarkTheme.vue';
 import IconImage from './assets/icons/IconImage.vue';
@@ -64,11 +64,27 @@ const themeParams = computed(() => ({
     },
 }));
 provide(THEME_PARAMS, themeParams);
+
+const isScrolled = ref(false);
+const page = useTemplateRef('page');
+function updateScroll() {
+    if (!page.value) return;
+    if (page.value.scrollTop > 0) {
+        isScrolled.value = true;
+    } else {
+        isScrolled.value = false;
+    }
+}
 </script>
 
 <template>
-    <div class="col app-root" :class="themeIsDark ? 'dark' : 'light'">
-        <header class="row">
+    <div
+        class="col app-root"
+        :class="themeIsDark ? 'dark' : 'light'"
+        ref="page"
+        @scroll="updateScroll"
+    >
+        <header class="row" :class="{ scrolled: isScrolled }">
             <div class="choice-chips">
                 <RouterLink
                     class="choice-chip router"
@@ -207,8 +223,12 @@ provide(THEME_PARAMS, themeParams);
 
 <style scoped>
 .app-root {
-    padding: var(--adaptive-gap);
-    gap: var(--adaptive-gap);
+    padding: 0px 0px var(--adaptive-gap);
+
+    & > * {
+        padding-left: var(--adaptive-gap);
+        padding-right: var(--adaptive-gap);
+    }
 
     min-height: 100%;
     width: 100%;
@@ -218,6 +238,7 @@ provide(THEME_PARAMS, themeParams);
 }
 
 header {
+    padding: var(--adaptive-gap);
     justify-content: space-between;
     align-items: flex-start;
     gap: var(--adaptive-gap);

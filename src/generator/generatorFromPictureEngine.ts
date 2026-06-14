@@ -132,9 +132,9 @@ function regression(mapOfColors: Map<string, Color>) {
     const [l, x, y] = arraysForRegression(mapOfColors);
     //////////////
     /// Это потому что регрессии надо минимум 3 точки
-    l.push(0, 100);
-    x.push(0, 0);
-    y.push(0, 0);
+    l.push(0, 0.5, 100);
+    x.push(0, 0, 0);
+    y.push(0, 0, 0);
     ///////////
     const xFromL = new PolynomialRegression(l, x, 2);
     const yFromL = new PolynomialRegression(l, y, 2);
